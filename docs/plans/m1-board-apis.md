@@ -659,7 +659,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - For `remotive`, only assert `status === "success"`, since its free feed is tiny.
   - No DB.
 - Verify: `npm run test:live` passes for all 9 sources. If a source fails because its API changed, stop and report; don't loosen the asserts.
-- [ ] Done
+- [x] Done
 
 ### T21: Wrap-up (depends on all)
 - Delete the `> Target setup…` note under Commands in `CLAUDE.md`. That's the only edit to `CLAUDE.md`.
