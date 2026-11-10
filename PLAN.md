@@ -29,6 +29,8 @@ A personal tool that collects IT jobs from free public job APIs and shows me the
 
 ## Milestones
 ### M1: Direct job board APIs (current)
+Detailed spec: [docs/plans/m1-board-apis.md](docs/plans/m1-board-apis.md)
+
 - [ ] Scaffold: Next.js + TS strict, ESLint, Vitest, tsx, and the npm scripts listed in CLAUDE.md. The DB file goes in `data/` (gitignored).
 - [ ] `Job` Zod schema + `SourceAdapter` interface
 - [ ] Shared HTTP helper (timeout, retry, User-Agent)
