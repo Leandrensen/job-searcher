@@ -120,7 +120,7 @@
   - `toIsoUtc parses RFC 2822`
   - `toIsoUtc returns null for garbage`
 - Verify: `npm test -- src/core` passes, and `npm run typecheck` exits 0.
-- [ ] Done
+- [x] Done
 
 ### T3: `Job` schema and `SourceAdapter` interface (depends on T2)
 - Files: `src/core/job.ts`, `src/core/job.test.ts`, `src/sources/types.ts`
