@@ -14,7 +14,7 @@ Personal, single-user tool that collects IT job postings from free public job AP
 - DB: `npm run db:generate` (new migration), `npm run db:migrate` (apply)
 
 ## Architecture
-Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts.
+Node 22 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts.
 
 - `src/sources/` – one adapter per source: `boards/` (job boards, HN) and `ats/` (Greenhouse, Lever, ...). The interface lives in `types.ts`, enabled adapters in `registry.ts`.
 - `src/core/` – normalized `Job` schema, dedupe, keyword filter, shared HTTP helper

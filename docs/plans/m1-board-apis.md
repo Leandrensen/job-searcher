@@ -13,7 +13,7 @@
   - User-Agent is exactly `job-searcher-mvp/0.1`.
   - Never read or commit `.env*`.
 - Branch: `feat/m1-board-apis`, which already exists. Make one commit per task, with the message `feat(m1): T<n> <summary>`. Never commit to `main`.
-- The repo contains only `CLAUDE.md`, `PLAN.md` and this spec. Node is v20.13.
+- The repo contains only `CLAUDE.md`, `PLAN.md` and this spec. Node is v22 (see `.nvmrc`).
 - Decisions already made:
   - SQLite through `better-sqlite3` + Drizzle.
   - DB file at `./data/jobs.db`, overridable with `DATABASE_URL` (`file:` prefix optional).
