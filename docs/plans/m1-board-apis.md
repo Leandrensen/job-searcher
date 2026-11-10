@@ -188,7 +188,7 @@
   - `rejects lowercase or 2-letter currency`
   - `salaryPeriodFrom maps known values and returns null otherwise`
 - Verify: `npm test -- src/core/job.test.ts` passes, and `npm run typecheck` exits 0.
-- [ ] Done
+- [x] Done
 
 ### T4: HTTP client (depends on T3)
 - Files: `src/core/http.ts`, `src/core/http.test.ts`
