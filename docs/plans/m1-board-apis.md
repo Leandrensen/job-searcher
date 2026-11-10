@@ -226,7 +226,7 @@
   - `gives up after retries` (3 calls, throws)
   - `throws on invalid json`
 - Verify: `npm test -- src/core/http.test.ts` passes.
-- [ ] Done
+- [x] Done
 
 ### T5: Tech filter and dedupe key (depends on T3)
 - Files: `src/core/tech-filter.ts`, `src/core/tech-filter.test.ts`, `src/core/dedupe.ts`, `src/core/dedupe.test.ts`
