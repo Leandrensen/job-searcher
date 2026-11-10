@@ -522,7 +522,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - Salary fields are null (their salary is free text)
   - `postedAt = toIsoUtc(publication_date)` (no timezone, so it's treated as UTC)
 - Extra tests: `naive publication_date is treated as UTC`.
-- [ ] Done
+- [x] Done
 
 ### T14: Himalayas (`himalayas`)
 - Name `Himalayas`, homepage `https://himalayas.app`, `minIntervalMinutes: 60`, `techFilter: true`.
