@@ -585,7 +585,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `tags = normalizeTags([...tags.split(","), category_name])`
   - `postedAt = toIsoUtc(pub_date)`
 - Extra tests: `extracts numeric id from url`, `splits comma tags`.
-- [ ] Done
+- [x] Done
 
 ### T17: Arbeitnow (`arbeitnow`)
 - Name `Arbeitnow`, homepage `https://www.arbeitnow.com`, `minIntervalMinutes: 60`, `techFilter: true`.
