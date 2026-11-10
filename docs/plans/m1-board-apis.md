@@ -502,7 +502,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `tags = normalizeTags([category_name])`
   - `postedAt = toIsoUtc(published_at)`
 - Extra tests: `maps remote modalities`, `uses Unknown when company not expanded`, `stops paging at total_pages` (fake http with 2 pages).
-- [ ] Done
+- [x] Done
 
 ### T13: Remotive (`remotive`)
 - Name `Remotive`, homepage `https://remotive.com`, **`minIntervalMinutes: 360`** (their terms: at most 4 calls a day), `techFilter: true`.
