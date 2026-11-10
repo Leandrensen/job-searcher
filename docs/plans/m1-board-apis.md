@@ -257,7 +257,7 @@
   - `normalizeCompany strips suffix and punctuation`: "Acme, Inc." → "acme"
   - `dedupeKey is stable across formatting`: ("ACME Inc", "Senior React Dev!") equals ("acme", "senior react dev")
 - Verify: `npm test -- src/core` passes.
-- [ ] Done
+- [x] Done
 
 ### T6: DB schema, migrations, client (depends on T3)
 - Files: `src/db/schema.ts`, `src/db/client.ts`, `src/db/client.test.ts`, `drizzle/` (generated)
