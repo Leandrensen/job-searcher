@@ -630,7 +630,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `test/fixtures/hn-hiring/search.json` (2 hits, including a "Who wants to be hired?" one)
   - `test/fixtures/hn-hiring/item.json` (4 children, including one whose header has no `|`)
 - Extra tests: `picks the who-is-hiring thread not who-wants-to-be-hired`, `parses pipe header`, `returns null without pipes`, `detects remote and onsite`, `extracts first href as applyUrl`.
-- [ ] Done
+- [x] Done
 
 ### T19: Cross-source duplicate marking (depends on T7, T11–T18)
 - Files: `src/db/queries.ts` (edit), `src/db/queries.test.ts` (add cases)
