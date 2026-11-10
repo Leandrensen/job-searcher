@@ -469,7 +469,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `postedAt = toIsoUtc(pubDate)`
   - Salary fields are null.
 - Extra tests: `returns null when title has no company separator`, `dedupes the same guid from two feeds` (via `runAdapter`).
-- [ ] Done
+- [x] Done
 
 ### T12: Get on Board (`getonboard`)
 - Name `Get on Board`, homepage `https://www.getonbrd.com`, `minIntervalMinutes: 60`, `techFilter: false`.
