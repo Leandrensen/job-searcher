@@ -1,6 +1,9 @@
+import fs from "node:fs";
+import path from "node:path";
 import { defineConfig } from "drizzle-kit";
 
 const url = (process.env.DATABASE_URL ?? "./data/jobs.db").replace(/^file:/, "");
+if (url !== ":memory:") fs.mkdirSync(path.dirname(path.resolve(url)), { recursive: true });
 
 export default defineConfig({
   dialect: "sqlite",

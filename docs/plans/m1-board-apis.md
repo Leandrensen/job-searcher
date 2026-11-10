@@ -308,7 +308,7 @@
   - `openDb(':memory:', migrate) creates both tables`: insert and select one row in each
   - `unique constraint on source+external_id`: a second insert throws
 - Verify: `npm test -- src/db` passes, and `npm run db:migrate` creates `data/jobs.db`.
-- [ ] Done
+- [x] Done
 
 ### T7: DB queries (depends on T5, T6)
 - Files: `src/db/queries.ts`, `src/db/queries.test.ts`
