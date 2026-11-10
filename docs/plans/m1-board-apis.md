@@ -648,7 +648,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `does not mark when original is older than 30 days`
   - `matches on identical applyUrl`
 - Verify: `npm test -- src/db` passes.
-- [ ] Done
+- [x] Done
 
 ### T20: Live checks (depends on T11–T18)
 - Files: `src/sources/adapters.live.test.ts`

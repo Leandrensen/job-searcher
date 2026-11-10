@@ -1,8 +1,30 @@
-import { and, count, eq, max } from "drizzle-orm";
+import { and, asc, count, eq, gte, isNull, max, ne, or } from "drizzle-orm";
 import { dedupeKey } from "@/core/dedupe";
 import type { Job, SourceId } from "@/core/job";
 import type { Db } from "./client";
 import { fetchRuns, jobs } from "./schema";
+
+const DUPLICATE_WINDOW_DAYS = 30;
+
+/** Oldest job from another source that looks like the same posting, or null. */
+function findOriginal(tx: Pick<Db, "select">, job: Job, key: string, nowIso: string): number | null {
+  const cutoff = new Date(Date.parse(nowIso) - DUPLICATE_WINDOW_DAYS * 86_400_000).toISOString();
+  const row = tx
+    .select({ id: jobs.id })
+    .from(jobs)
+    .where(
+      and(
+        ne(jobs.source, job.source),
+        isNull(jobs.duplicateOf),
+        gte(jobs.firstSeenAt, cutoff),
+        or(eq(jobs.dedupeKey, key), job.applyUrl ? eq(jobs.applyUrl, job.applyUrl) : undefined),
+      ),
+    )
+    .orderBy(asc(jobs.firstSeenAt), asc(jobs.id))
+    .limit(1)
+    .get();
+  return row?.id ?? null;
+}
 
 export function upsertJobs(db: Db, items: Job[], nowIso: string): { inserted: number; updated: number } {
   return db.transaction((tx) => {
@@ -23,7 +45,13 @@ export function upsertJobs(db: Db, items: Job[], nowIso: string): { inserted: nu
         updated++;
       } else {
         tx.insert(jobs)
-          .values({ ...job, firstSeenAt: nowIso, lastSeenAt: nowIso, dedupeKey: key })
+          .values({
+            ...job,
+            firstSeenAt: nowIso,
+            lastSeenAt: nowIso,
+            dedupeKey: key,
+            duplicateOf: findOriginal(tx, job, key, nowIso),
+          })
           .run();
         inserted++;
       }
