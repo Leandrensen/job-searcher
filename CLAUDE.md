@@ -3,8 +3,6 @@
 Personal, single-user tool that collects IT job postings from free public job APIs (job boards, HN "Who is hiring?", ATS job boards), stores them locally, and matches them against saved search descriptions.
 
 ## Commands
-> Target setup; the scaffold is built in Phase 1 of `PLAN.md`.
-
 - Install: `npm install`
 - Dev (web UI): `npm run dev`
 - Fetch jobs: `npm run fetch` (single source: `npm run fetch -- --source remoteok`)

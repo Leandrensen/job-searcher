@@ -668,7 +668,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `- <date>: M1 done; Remotive kept (12 jobs/day, 6h interval).`
   - The current Himalayas/Arbeitnow page caps, if you changed them. You may only change them after asking.
 - Verify: the milestone verification below passes.
-- [ ] Done
+- [x] Done
 
 ## Milestone verification
 1. `npm run lint && npm run typecheck && npm test` all exit 0.
