@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "slug": "senior-sales-engineer-ai-agents-western-europe-italy-431223",
+      "company_name": "nice",
+      "title": "Senior Sales Engineer - AI Agents (Western Europe, Italy)",
+      "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;At NiCE, we don’t limit our challenges. We challenge our limits. Always. We’re ambitious. We’re game changers. And we play to win. We set the highest standards and execute beyond them. And if you’re like us, we can offer you the ultimate career opportunity that will light a fire within you.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;Join the recognized leader in AI-first CX&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;",
+      "remote": false,
+      "url": "https://www.arbeitnow.com/jobs/companies/nice/senior-sales-engineer-ai-agents-western-europe-italy-431223",
+      "tags": [
+        "CX - Agentic Experience Automation"
+      ],
+      "job_types": [],
+      "location": "",
+      "created_at": 1794250528
+    },
+    {
+      "slug": "remote-rust-software-engineer-rust-c-gilching-217668",
+      "company_name": "Quantum-Systems GmbH",
+      "title": "Rust Software Engineer - Rust / C++ (m/f/d)",
+      "description": "<p>Quantum Systems develops autonomous, multi-domain systems that operate in the air, on the ground and on the water. Behind every platform is software that has to work reliably in the real world, with limited resources, unreliable connectivity and no second chances.</p><p>We are looking for software engineers who like to build exactly that kind of software in Rust and C++. You will join our engineering organization and work on production code that runs on real vehicles and sensors, across a bro",
+      "remote": true,
+      "url": "https://www.arbeitnow.com/jobs/companies/quantum-systems-gmbh/remote-rust-software-engineer-rust-c-gilching-217668",
+      "tags": [
+        "Software",
+        "Remote"
+      ],
+      "job_types": [
+        "Experienced",
+        "fulltime permanent"
+      ],
+      "location": "Remote job",
+      "created_at": 1794249078
+    },
+    {
+      "slug": "srenterprise-account-executive-munich-357355",
+      "company_name": "neo4j",
+      "title": "Sr.Enterprise Account Executive  - Munich",
+      "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;div&gt;&lt;span style=&quot;font-size: 18pt;&quot;&gt;&lt;strong&gt;About Neo4j:&lt;/strong&gt;&lt;/span&gt;&lt;/div&gt;\n&lt;div&gt;\n&lt;p&gt;",
+      "remote": false,
+      "url": "https://www.arbeitnow.com/jobs/companies/neo4j/srenterprise-account-executive-munich-357355",
+      "tags": [
+        "Direct Field Sales"
+      ],
+      "job_types": [],
+      "location": "",
+      "created_at": 1794250529
+    }
+  ],
+  "links": {
+    "first": "https://www.arbeitnow.com/api/job-board-api?page=1",
+    "last": null,
+    "prev": null,
+    "next": "https://www.arbeitnow.com/api/job-board-api?page=2"
+  },
+  "meta": {
+    "current_page": 1,
+    "per_page": 300
+  }
+}

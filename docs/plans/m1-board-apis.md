@@ -607,7 +607,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `tags = normalizeTags([...tags, ...job_types])`
   - `postedAt = toIsoUtc(created_at)`
 - Extra tests: `decodes escaped description html`, `stops paging when next is null`.
-- [ ] Done
+- [x] Done
 
 ### T18: HN "Who is hiring?" (`hn-hiring`)
 - Name `HN: Who is hiring?`, homepage `https://news.ycombinator.com`, `minIntervalMinutes: 360`, `techFilter: false`.
