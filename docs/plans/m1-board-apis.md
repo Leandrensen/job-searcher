@@ -548,7 +548,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - `tags = normalizeTags([...categories, ...seniority])`
   - `postedAt = toIsoUtc(pubDate)`
 - Extra tests: `stops when a page reaches older jobs than latestPostedAt`, `stops at 50 pages`, `maps hourly salary period`.
-- [ ] Done
+- [x] Done
 
 ### T15: Jobicy (`jobicy`)
 - Name `Jobicy`, homepage `https://jobicy.com`, `minIntervalMinutes: 60`, `techFilter: false`.
