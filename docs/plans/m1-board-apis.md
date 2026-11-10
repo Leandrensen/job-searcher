@@ -435,7 +435,7 @@
   - Running it again immediately shows `skipped`.
   - `npm run fetch -- --source remoteok --force` shows inserted 0 and updated > 0.
 - **Stop here and report to the user before T11.**
-- [ ] Done
+- [x] Done
 
 ### Board adapters T11–T18 (each depends on T10)
 Each one follows T9's pattern:
