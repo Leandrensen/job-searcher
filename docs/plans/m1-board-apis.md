@@ -569,7 +569,7 @@ Every adapter's tests must include `normalizes a typical item` (asserting every 
   - Salary values come from the fields when present, with `salaryPeriod = salaryPeriodFrom(salaryPeriod)` (their value is `yearly`)
   - `postedAt = toIsoUtc(pubDate)`
 - Extra tests: `decodes entities in title` (`R&amp;D` → `R&D`), `salary fields null when absent`.
-- [ ] Done
+- [x] Done
 
 ### T16: Working Nomads (`workingnomads`)
 - Name `Working Nomads`, homepage `https://www.workingnomads.com`, `minIntervalMinutes: 60`, `techFilter: true`.
