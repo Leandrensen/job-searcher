@@ -401,7 +401,7 @@
   - `sets salary null when zero`
   - `runAdapter filters the non-tech job` (filtered === 1)
 - Verify: `npm test -- src/sources` passes.
-- [ ] Done
+- [x] Done
 
 ### T10: Runner + `npm run fetch` CLI (first end-to-end slice; depends on T7, T9)
 - Files: `src/sources/runner.ts`, `src/sources/runner.test.ts`, `src/scripts/fetch.ts`
