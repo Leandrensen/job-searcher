@@ -333,7 +333,7 @@
   - `latestPostedAt returns max postedAt per source and null when empty`
   - `lastSuccessfulRunAt ignores error runs`
 - Verify: `npm test -- src/db` passes.
-- [ ] Done
+- [x] Done
 
 ### T8: Adapter pipeline (depends on T3, T5)
 - Files: `src/sources/run-adapter.ts`, `src/sources/run-adapter.test.ts`
