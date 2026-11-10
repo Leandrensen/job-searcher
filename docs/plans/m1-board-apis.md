@@ -359,7 +359,7 @@
   - `applies tech filter only when enabled`
   - `dedupes repeated externalIds`
 - Verify: `npm test -- src/sources/run-adapter.test.ts` passes.
-- [ ] Done
+- [x] Done
 
 ### T9: Remote OK adapter + registry (depends on T4, T8)
 - Files:
