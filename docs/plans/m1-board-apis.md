@@ -77,7 +77,7 @@
   - `npm run lint && npm run typecheck` exits 0.
   - `npm test` reports "No test files found". Accept exit code 1 here only; from T2 on it must be 0.
   - `npm run dev` serves "Job Searcher" at http://localhost:3000.
-- [ ] Done
+- [x] Done
 
 ### T2: Text and date helpers (depends on T1)
 - Files: `src/core/text.ts`, `src/core/text.test.ts`, `src/core/dates.ts`, `src/core/dates.test.ts`
