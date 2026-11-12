@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
+import { expectCleanText } from "@/test-utils/assertions";
 import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { remotive } from "./remotive";
 
-const fixture = loadFixture("remotive/api.json");
+const fixture = loadFixture("remotive/api.json") as { jobs: Array<{ description: string }> };
 
 function ctxWith(body: unknown) {
   const getJson = vi.fn(async () => body);
@@ -27,24 +28,28 @@ describe("remotive adapter", () => {
 
   it("normalizes a typical item", async () => {
     const [raw] = await remotive.fetch(ctxWith(fixture).ctx);
-    expect(remotive.normalize(remotive.itemSchema.parse(raw))).toEqual({
+    const { descriptionHtml, descriptionText, ...rest } = remotive.normalize(remotive.itemSchema.parse(raw))!;
+    expect(rest).toEqual({
       source: "remotive",
       externalId: "2091045",
-      url: expect.stringContaining("https://remotive.com/remote-jobs/"),
+      url: "https://remotive.com/remote-jobs/information-technology/tier-iii-service-desk-engineer-2091045",
       applyUrl: null,
       title: "Tier III Service Desk Engineer",
       company: "Unio Digital",
       location: "Worldwide",
       remote: true,
-      tags: expect.arrayContaining(["azure", "information technology"]),
+      tags: [
+        "azure", "cisco", "security", "video", "documentation", "hardware", "helpdesk",
+        "onboarding", "msp", "ticketing", "microsoft 365", "it systems", "information technology",
+      ],
       salaryMin: null,
       salaryMax: null,
       salaryCurrency: null,
       salaryPeriod: null,
-      descriptionHtml: expect.any(String),
-      descriptionText: expect.any(String),
       postedAt: "2026-11-07T01:10:55.000Z",
     });
+    expect(descriptionHtml).toBe(fixture.jobs[0]!.description);
+    expectCleanText(descriptionText, "Unió Digital is an Arizona-based managed service provider (MSP)");
   });
 
   it("naive publication_date is treated as UTC", async () => {

@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
+import { expectCleanText } from "@/test-utils/assertions";
 import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { jobicy } from "./jobicy";
 
-const fixture = loadFixture("jobicy/api.json") as { jobs: Array<Record<string, unknown>> };
+const fixture = loadFixture("jobicy/api.json") as { jobs: Array<Record<string, unknown> & { jobDescription: string }> };
 
 function ctxWith(body: unknown) {
   const getJson = vi.fn(async () => body);
@@ -27,13 +28,14 @@ describe("jobicy adapter", () => {
 
   it("normalizes a typical item", () => {
     const raw = jobicy.itemSchema.parse(fixture.jobs[0]);
-    expect(jobicy.normalize(raw)).toEqual({
+    const { descriptionHtml, descriptionText, ...rest } = jobicy.normalize(raw)!;
+    expect(rest).toEqual({
       source: "jobicy",
       externalId: "160308",
       url: "https://jobicy.com/jobs/160308-senior-ai-developer",
       applyUrl: null,
       title: "Senior AI Developer",
-      company: expect.any(String),
+      company: "ClickUp",
       location: "USA",
       remote: true,
       tags: ["software engineering", "full time", "senior"],
@@ -41,10 +43,10 @@ describe("jobicy adapter", () => {
       salaryMax: 250000,
       salaryCurrency: "USD",
       salaryPeriod: "year",
-      descriptionHtml: expect.any(String),
-      descriptionText: expect.any(String),
       postedAt: "2026-11-09T16:30:33.000Z",
     });
+    expect(descriptionHtml).toBe(fixture.jobs[0]!.jobDescription);
+    expectCleanText(descriptionText, "At ClickUp, we're building the future of work");
   });
 
   it("decodes entities in title", () => {
