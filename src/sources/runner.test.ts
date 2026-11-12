@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import type { Job } from "@/core/job";
@@ -118,5 +119,48 @@ describe("runSources", () => {
     const fast = fakeAdapter("jobicy");
     const results = await run([slow.adapter, fast.adapter]);
     expect(results.map((r) => r.source)).toEqual(["remoteok", "jobicy"]);
+  });
+  it("isolates a DB write failure to its own source", async () => {
+    const { db, run } = setup();
+    db.run(
+      sql`CREATE TRIGGER fail_remoteok_insert BEFORE INSERT ON jobs WHEN NEW.source = 'remoteok' BEGIN SELECT RAISE(ABORT, 'simulated write failure'); END;`,
+    );
+    const failing = fakeAdapter("remoteok");
+    const healthy = fakeAdapter("jobicy");
+
+    const results = await run([failing.adapter, healthy.adapter]);
+
+    expect(results.map((r) => [r.source, r.status])).toEqual([
+      ["remoteok", "error"],
+      ["jobicy", "success"],
+    ]);
+    expect(results[0]?.error).toBe("SqliteError: simulated write failure");
+    expect(results[0]).toMatchObject({ fetched: 2, inserted: 0, updated: 0 });
+    expect(countJobs(db, "remoteok")).toBe(0);
+    expect(countJobs(db, "jobicy")).toBe(2);
+    const row = db.select().from(fetchRuns).all().find((r) => r.source === "remoteok");
+    expect(row).toMatchObject({ status: "error", error: "SqliteError: simulated write failure" });
+  });
+
+  it("still resolves when recording the run fails", async () => {
+    const { db, clock } = setup();
+    db.run(
+      sql`CREATE TRIGGER fail_runs BEFORE INSERT ON fetch_runs BEGIN SELECT RAISE(ABORT, 'runs table locked'); END;`,
+    );
+    const log = vi.fn<(m: string) => void>();
+    const { adapter } = fakeAdapter("remoteok");
+
+    const results = await runSources({
+      db,
+      http: { getJson: vi.fn(), getText: vi.fn() },
+      adapters: [adapter],
+      now: clock.now,
+      log,
+    });
+
+    expect(results).toHaveLength(1);
+    expect(results[0]).toMatchObject({ status: "error", error: "SqliteError: runs table locked" });
+    expect(countJobs(db, "remoteok")).toBe(2);
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("could not record run: SqliteError: runs table locked"));
   });
 });

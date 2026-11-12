@@ -25,55 +25,87 @@ export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSumm
   const now = opts.now ?? (() => new Date());
   const log = opts.log ?? (() => {});
 
+  /** Runs one source. Never throws: unexpected failures (e.g. a DB error) become an `error` summary. */
   async function runOne(adapter: AnyAdapter): Promise<SourceRunSummary> {
     const startedAt = now();
-    const last = lastSuccessfulRunAt(db, adapter.id);
-    if (!force && last) {
-      const minutesAgo = (startedAt.getTime() - Date.parse(last)) / 60_000;
-      if (minutesAgo < adapter.minIntervalMinutes) {
-        log(`${adapter.id}: skipped (last run ${Math.round(minutesAgo)} min ago)`);
+    const startMs = Date.now();
+    let counts = { fetched: 0, invalid: 0, filtered: 0 };
+    try {
+      const last = lastSuccessfulRunAt(db, adapter.id);
+      if (!force && last) {
+        const minutesAgo = (startedAt.getTime() - Date.parse(last)) / 60_000;
+        if (minutesAgo < adapter.minIntervalMinutes) {
+          log(`${adapter.id}: skipped (last run ${Math.round(minutesAgo)} min ago)`);
+          recordRun(db, {
+            source: adapter.id,
+            startedAt: startedAt.toISOString(),
+            finishedAt: startedAt.toISOString(),
+            status: "skipped",
+          });
+          return {
+            source: adapter.id,
+            status: "skipped",
+            fetched: 0,
+            invalid: 0,
+            filtered: 0,
+            error: null,
+            durationMs: 0,
+            inserted: 0,
+            updated: 0,
+          };
+        }
+      }
+
+      const { jobs, ...result } = await runAdapter(adapter, {
+        http,
+        latestPostedAt: latestPostedAt(db, adapter.id),
+        log,
+      });
+      counts = { fetched: result.fetched, invalid: result.invalid, filtered: result.filtered };
+      const { inserted, updated } =
+        result.status === "success" ? upsertJobs(db, jobs, startedAt.toISOString()) : { inserted: 0, updated: 0 };
+      if (result.status === "error") log(`${adapter.id}: ${result.error}`);
+
+      recordRun(db, {
+        source: adapter.id,
+        startedAt: startedAt.toISOString(),
+        finishedAt: now().toISOString(),
+        status: result.status,
+        fetched: result.fetched,
+        inserted,
+        updated,
+        invalid: result.invalid,
+        filtered: result.filtered,
+        error: result.error,
+      });
+      return { ...result, inserted, updated };
+    } catch (err) {
+      const e = err instanceof Error ? err : new Error(String(err));
+      const message = `${e.name}: ${e.message}`;
+      log(`${adapter.id}: ${message}`);
+      try {
         recordRun(db, {
           source: adapter.id,
           startedAt: startedAt.toISOString(),
-          finishedAt: startedAt.toISOString(),
-          status: "skipped",
+          finishedAt: now().toISOString(),
+          status: "error",
+          ...counts,
+          error: message,
         });
-        return {
-          source: adapter.id,
-          status: "skipped",
-          fetched: 0,
-          invalid: 0,
-          filtered: 0,
-          error: null,
-          durationMs: 0,
-          inserted: 0,
-          updated: 0,
-        };
+      } catch (recordErr) {
+        const r = recordErr instanceof Error ? recordErr : new Error(String(recordErr));
+        log(`${adapter.id}: could not record run: ${r.name}: ${r.message}`);
       }
+      return {
+        source: adapter.id,
+        status: "error",
+        ...counts,
+        error: message,
+        durationMs: Date.now() - startMs,
+        inserted: 0,
+        updated: 0,
+      };
     }
-
-    const { jobs, ...result } = await runAdapter(adapter, {
-      http,
-      latestPostedAt: latestPostedAt(db, adapter.id),
-      log,
-    });
-    const { inserted, updated } =
-      result.status === "success" ? upsertJobs(db, jobs, startedAt.toISOString()) : { inserted: 0, updated: 0 };
-    if (result.status === "error") log(`${adapter.id}: ${result.error}`);
-
-    recordRun(db, {
-      source: adapter.id,
-      startedAt: startedAt.toISOString(),
-      finishedAt: now().toISOString(),
-      status: result.status,
-      fetched: result.fetched,
-      inserted,
-      updated,
-      invalid: result.invalid,
-      filtered: result.filtered,
-      error: result.error,
-    });
-    return { ...result, inserted, updated };
   }
 
   const results: SourceRunSummary[] = new Array(adapters.length);
