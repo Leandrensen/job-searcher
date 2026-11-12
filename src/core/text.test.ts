@@ -36,6 +36,22 @@ describe("htmlToText", () => {
     expect(htmlToText("&lt;p&gt;hi&lt;/p&gt;")).toBe("hi");
   });
 
+  it("drops style blocks", () => {
+    expect(htmlToText("<style>.a{color:red}</style><p>Hi</p>")).toBe("Hi");
+  });
+
+  it("drops script blocks with attributes and uppercase tags", () => {
+    expect(htmlToText('<SCRIPT type="text/javascript">\nvar x = 1;\n</SCRIPT><p>Hello</p>')).toBe("Hello");
+  });
+
+  it("drops html comments", () => {
+    expect(htmlToText("<p>A</p><!-- hidden\nnote --><p>B</p>")).toBe("A\nB");
+  });
+
+  it("drops double-encoded style blocks", () => {
+    expect(htmlToText("&lt;style&gt;p{}&lt;/style&gt;&lt;p&gt;Hi&lt;/p&gt;")).toBe("Hi");
+  });
+
   it("does not throw on invalid entities", () => {
     expect(htmlToText("<p>a &#99999999; b</p>")).toBe("a &#99999999; b");
   });

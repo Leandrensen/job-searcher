@@ -31,6 +31,8 @@ export function decodeEntities(s: string): string {
 
 export function htmlToText(html: string): string {
   const text = decodeEntities(html)
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<br\s*\/?>|<\/(?:p|li|div|h[1-6])>/gi, "\n")
     .replace(/<li[^>]*>/gi, "- ")
     .replace(/<[^>]+>/g, "");
