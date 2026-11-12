@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { expectCleanText } from "@/test-utils/assertions";
 import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
@@ -43,7 +44,8 @@ describe("hn-hiring adapter", () => {
   });
 
   it("parses pipe header and normalizes a typical item", () => {
-    expect(parse(0)).toEqual({
+    const { descriptionHtml, descriptionText, ...rest } = parse(0)!;
+    expect(rest).toEqual({
       source: "hn-hiring",
       externalId: "50338736",
       url: "https://news.ycombinator.com/item?id=50338736",
@@ -57,10 +59,10 @@ describe("hn-hiring adapter", () => {
       salaryMax: null,
       salaryCurrency: null,
       salaryPeriod: null,
-      descriptionHtml: expect.stringContaining("Synteq is a developer cloud"),
-      descriptionText: expect.stringContaining("Synteq is a developer cloud"),
-      postedAt: expect.stringMatching(/^2026-11-02T.*Z$/),
+      postedAt: "2026-11-02T16:01:53.000Z",
     });
+    expect(descriptionHtml).toBe(item.children[0]!.text as string);
+    expectCleanText(descriptionText, "Synteq | Growth Lead & Systems Administrator | Austin, TX | REMOTE (US) | Full-time");
   });
 
   it("detects remote, onsite and unknown", () => {
