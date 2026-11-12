@@ -50,7 +50,14 @@ Detailed spec: [docs/plans/m1-board-apis.md](docs/plans/m1-board-apis.md)
 
 Verify: `npm test`, lint, and typecheck pass. `npm run test:live` gets jobs from every source. Running `npm run fetch` twice adds only new jobs on the second run.
 
-### M2: ATS sources (current)
+### M1.1: Bug fixes and test hardening (current)
+Detailed spec: [docs/plans/m1.1-test-hardening.md](docs/plans/m1.1-test-hardening.md)
+
+- [ ] Fix 5 known bugs test-first, make adapter tests exact, extract the CLI and add an offline integration test, close small test gaps, and optionally add a coverage report.
+
+Verify: lint, typecheck and `npm test` pass; no loose matchers in adapter tests; no `vi.mock` in `src/`.
+
+### M2: ATS sources
 Find ATS companies automatically from job URLs and HN posts. Add adapters for Greenhouse, Lever, Ashby, Workable, Recruitee and SmartRecruiters. Poll each known company. Backfill companies from past HN threads once.
 
 ### M3: Saved searches + matching
