@@ -9,6 +9,45 @@ describe("decodeEntities", () => {
     expect(decodeEntities("&#123;x&#125; &#x2F; &#x41;")).toBe("{x} / A");
   });
 
+  it("decodes the real-world mdash case", () => {
+    expect(decodeEntities("£73,000&mdash;£95,000")).toBe("£73,000—£95,000");
+  });
+
+  it.each([
+    ["mdash", "—"],
+    ["ndash", "–"],
+    ["hellip", "…"],
+    ["rsquo", "’"],
+    ["ldquo", "“"],
+    ["euro", "€"],
+    ["eacute", "é"],
+    ["Ntilde", "Ñ"],
+    ["shy", ""],
+    ["copy", "©"],
+    ["trade", "™"],
+    ["pound", "£"],
+  ])("decodes &%s;", (name, expected) => {
+    expect(decodeEntities(`&${name};`)).toBe(expected);
+  });
+
+  it("named entities are case-sensitive", () => {
+    expect(decodeEntities("&Eacute;&eacute;")).toBe("Éé");
+  });
+
+  it("decodes uppercase basic aliases", () => {
+    expect(decodeEntities("&AMP;&LT;&GT;&QUOT;")).toBe('&<>"');
+  });
+
+  it("does not treat object prototype keys as entities", () => {
+    expect(decodeEntities("&constructor; &toString; &valueOf; &hasOwnProperty;")).toBe(
+      "&constructor; &toString; &valueOf; &hasOwnProperty;",
+    );
+  });
+
+  it("does not decode odd casing of other names", () => {
+    expect(decodeEntities("&Mdash;")).toBe("&Mdash;");
+  });
+
   it("decodes only one level", () => {
     expect(decodeEntities("&amp;lt;")).toBe("&lt;");
   });

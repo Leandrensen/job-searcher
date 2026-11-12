@@ -1,10 +1,23 @@
+/** Named HTML entities we decode. Lookup is case-sensitive, as in HTML (`&Eacute;` is not `&eacute;`). */
 const NAMED: Record<string, string> = {
-  amp: "&",
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-  nbsp: " ",
+  // basics
+  amp: "&", AMP: "&", lt: "<", LT: "<", gt: ">", GT: ">", quot: '"', QUOT: '"', apos: "'", nbsp: " ",
+  // punctuation
+  mdash: "—", ndash: "–", hellip: "…",
+  lsquo: "‘", rsquo: "’", sbquo: "‚",
+  ldquo: "“", rdquo: "”", bdquo: "„",
+  laquo: "«", raquo: "»", bull: "•", middot: "·", shy: "",
+  // symbols
+  copy: "©", reg: "®", trade: "™",
+  deg: "°", times: "×", divide: "÷", plusmn: "±",
+  euro: "€", pound: "£", yen: "¥", cent: "¢",
+  sect: "§", para: "¶", iexcl: "¡", iquest: "¿",
+  // letters
+  aacute: "á", Aacute: "Á", eacute: "é", Eacute: "É", iacute: "í", Iacute: "Í",
+  oacute: "ó", Oacute: "Ó", uacute: "ú", Uacute: "Ú", ntilde: "ñ", Ntilde: "Ñ",
+  uuml: "ü", Uuml: "Ü", ouml: "ö", Ouml: "Ö", auml: "ä", Auml: "Ä", szlig: "ß",
+  ccedil: "ç", Ccedil: "Ç", agrave: "à", egrave: "è", ograve: "ò",
+  acirc: "â", ecirc: "ê", ocirc: "ô", atilde: "ã", otilde: "õ",
 };
 
 /** The character for a numeric entity, or null when the code point is not a valid character. */
@@ -25,7 +38,7 @@ export function decodeEntities(s: string): string {
     if (body.startsWith("#")) {
       return fromCodePoint(parseInt(body.slice(1), 10)) ?? match;
     }
-    return NAMED[body.toLowerCase()] ?? match;
+    return Object.hasOwn(NAMED, body) ? NAMED[body]! : match;
   });
 }
 
