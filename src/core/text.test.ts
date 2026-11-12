@@ -16,6 +16,15 @@ describe("decodeEntities", () => {
   it("leaves unknown entities alone", () => {
     expect(decodeEntities("&foo; bar")).toBe("&foo; bar");
   });
+
+  it.each(["&#99999999;", "&#xFFFFFF;", "&#xD800;", "&#0;"])("leaves out-of-range numeric entity %s unchanged", (entity) => {
+    expect(decodeEntities(entity)).toBe(entity);
+  });
+
+  it("decodes astral code points", () => {
+    expect(decodeEntities("&#128512;")).toBe("😀");
+    expect(decodeEntities("&#x1F600;")).toBe("😀");
+  });
 });
 
 describe("htmlToText", () => {
@@ -25,6 +34,10 @@ describe("htmlToText", () => {
 
   it("handles double-encoded html", () => {
     expect(htmlToText("&lt;p&gt;hi&lt;/p&gt;")).toBe("hi");
+  });
+
+  it("does not throw on invalid entities", () => {
+    expect(htmlToText("<p>a &#99999999; b</p>")).toBe("a &#99999999; b");
   });
 
   it("collapses whitespace and blank lines", () => {
