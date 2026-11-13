@@ -19,6 +19,8 @@ export default defineConfig({
       ],
       reporter: ["text", "html", "json-summary"],
       reportsDirectory: "coverage",
+      // Measured 2026-11-12: lines 98.7, branches 89.07, functions 91.13, statements 96.79 (rounded down to 5).
+      thresholds: { lines: 95, branches: 85, functions: 90, statements: 95 },
     },
   },
 });
