@@ -3,8 +3,6 @@
 Personal, single-user tool that collects IT job postings from free public job APIs (job boards, HN "Who is hiring?", ATS job boards), stores them locally, and matches them against saved search descriptions.
 
 ## Commands
-> Target setup; the scaffold is built in Phase 1 of `PLAN.md`.
-
 - Install: `npm install`
 - Dev (web UI): `npm run dev`
 - Fetch jobs: `npm run fetch` (single source: `npm run fetch -- --source remoteok`)
@@ -14,7 +12,7 @@ Personal, single-user tool that collects IT job postings from free public job AP
 - DB: `npm run db:generate` (new migration), `npm run db:migrate` (apply)
 
 ## Architecture
-Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts.
+Node 22 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts.
 
 - `src/sources/` – one adapter per source: `boards/` (job boards, HN) and `ats/` (Greenhouse, Lever, ...). The interface lives in `types.ts`, enabled adapters in `registry.ts`.
 - `src/core/` – normalized `Job` schema, dedupe, keyword filter, shared HTTP helper

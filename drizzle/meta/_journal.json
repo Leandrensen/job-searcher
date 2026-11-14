@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1794288176210,
+      "tag": "0000_hard_secret_warriors",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "apiVersion": "2.2.19",
+  "jobCount": 3,
+  "success": true,
+  "jobs": [
+    {
+      "id": 160308,
+      "url": "https://jobicy.com/jobs/160308-senior-ai-developer",
+      "jobSlug": "160308-senior-ai-developer",
+      "jobTitle": "Senior AI Developer",
+      "companyName": "ClickUp",
+      "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2025/06/cd5be0ef-221.jpg",
+      "jobIndustry": [
+        "Software Engineering"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "USA",
+      "jobLevel": "Senior",
+      "jobExcerpt": "At ClickUp, we're building the future of work: the first truly converged AI workspace unifying tasks, docs, chat, calendar, and enterprise search, all supercharged by context-driven AI. We are an AI-n",
+      "jobDescription": "<p>At <a href=\"https://jobicy.com/company/clickup\" target=\"_blank\" rel=\"noopener\">ClickUp</a>, we're building the future of work: the first truly converged AI workspace unifying tasks, docs, chat, calendar, and enterprise search, all supercharged by context-driven AI. We are an AI-native company. Every team member is expected to leverage AI daily, and we evaluate AI fluency as part of our hiring p",
+      "pubDate": "2026-11-09T16:30:33+00:00",
+      "salaryMin": 200000,
+      "salaryMax": 250000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "yearly"
+    },
+    {
+      "id": 160705,
+      "url": "https://jobicy.com/jobs/160705-integrations-engineer",
+      "jobSlug": "160705-integrations-engineer",
+      "jobTitle": "Integrations Engineer",
+      "companyName": "Cloudbeds",
+      "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2025/06/3aef1a38-221.png",
+      "jobIndustry": [
+        "Software Engineering"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "Thailand",
+      "jobLevel": "Senior",
+      "jobExcerpt": "What Makes Cloudbeds Unique At Cloudbeds, we're not just building software, we're transforming hospitality. Our platform powers hotels across 150 countries, processing billions in bookings annually. F",
+      "jobDescription": "<p><strong>What Makes <a href=\"https://jobicy.com/company/cloudbeds\" target=\"_blank\" rel=\"noopener\">Cloudbeds</a> Unique</strong></p>\n<p>At <a href=\"https://www.cloudbeds.com/\" rel=\"nofollow ugc noopener\" target=\"_blank\">Cloudbeds</a>, we're not just building software, we're transforming hospitality. Our platform powers hotels across 150 countries, processing billions in bookings annually. From bo",
+      "pubDate": "2026-11-09T19:39:31+00:00"
+    },
+    {
+      "id": 160701,
+      "url": "https://jobicy.com/jobs/160701-staff-backend-software-engineer",
+      "jobSlug": "160701-staff-backend-software-engineer",
+      "jobTitle": "Staff Backend Software Engineer",
+      "companyName": "Notabene",
+      "companyLogo": "https://jobicy.com/data/server-nyc0409/galaxy/mercury/2026/11/4a566d51800a-221.webp",
+      "jobIndustry": [
+        "Software Engineering"
+      ],
+      "jobType": [
+        "Full-Time"
+      ],
+      "jobGeo": "EMEA",
+      "jobLevel": "Senior",
+      "jobExcerpt": "About Notabene Notabene is on a mission to make crypto a part of the everyday economy. Leading crypto organizations use our tools to reduce transaction risk and make crypto transfers safe. Working acr",
+      "jobDescription": "<p><strong>About <a href=\"https://jobicy.com/company/notabene\" target=\"_blank\" rel=\"noopener\">Notabene</a></strong></p>\n<p>Notabene is on a mission to make crypto a part of the everyday economy. Leading crypto organizations use our tools to reduce transaction risk and make crypto transfers safe. Working across three continents in eight countries, the Notabene team serves our fantastic community of",
+      "pubDate": "2026-11-09T19:31:58+00:00"
+    }
+  ]
+}

@@ -28,27 +28,29 @@ A personal tool that collects IT jobs from free public job APIs and shows me the
 - Hosting: none. It runs locally.
 
 ## Milestones
-### M1: Direct job board APIs (current)
-- [ ] Scaffold: Next.js + TS strict, ESLint, Vitest, tsx, and the npm scripts listed in CLAUDE.md. The DB file goes in `data/` (gitignored).
-- [ ] `Job` Zod schema + `SourceAdapter` interface
-- [ ] Shared HTTP helper (timeout, retry, User-Agent)
-- [ ] DB: `jobs` and `fetch_runs` tables; upsert on (source, externalId)
-- [ ] Fetch runner + `npm run fetch` CLI: errors isolated per source, summary per source
-- [ ] Remote OK adapter + fixture tests (first end-to-end slice)
-- [ ] We Work Remotely adapter (RSS)
-- [ ] Get on Board adapter
-- [ ] Remotive adapter
-- [ ] Himalayas adapter (incremental: stop at the first known job)
-- [ ] Jobicy adapter
-- [ ] Working Nomads adapter
-- [ ] Arbeitnow adapter (keep IT roles only)
-- [ ] HN "Who is hiring?" adapter (latest thread; free-text posts)
-- [ ] Dedupe across sources (URL + company/title/location)
-- [ ] One live check per adapter (`npm run test:live`)
+### M1: Direct job board APIs (done)
+Detailed spec: [docs/plans/m1-board-apis.md](docs/plans/m1-board-apis.md)
+
+- [x] Scaffold: Next.js + TS strict, ESLint, Vitest, tsx, and the npm scripts listed in CLAUDE.md. The DB file goes in `data/` (gitignored).
+- [x] `Job` Zod schema + `SourceAdapter` interface
+- [x] Shared HTTP helper (timeout, retry, User-Agent)
+- [x] DB: `jobs` and `fetch_runs` tables; upsert on (source, externalId)
+- [x] Fetch runner + `npm run fetch` CLI: errors isolated per source, summary per source
+- [x] Remote OK adapter + fixture tests (first end-to-end slice)
+- [x] We Work Remotely adapter (RSS)
+- [x] Get on Board adapter
+- [x] Remotive adapter
+- [x] Himalayas adapter (incremental: stop at the newest stored posting date)
+- [x] Jobicy adapter
+- [x] Working Nomads adapter
+- [x] Arbeitnow adapter (keep IT roles only)
+- [x] HN "Who is hiring?" adapter (latest thread; free-text posts)
+- [x] Dedupe across sources (same apply URL, or same company + title; marked, not deleted)
+- [x] One live check per adapter (`npm run test:live`)
 
 Verify: `npm test`, lint, and typecheck pass. `npm run test:live` gets jobs from every source. Running `npm run fetch` twice adds only new jobs on the second run.
 
-### M2: ATS sources
+### M2: ATS sources (current)
 Find ATS companies automatically from job URLs and HN posts. Add adapters for Greenhouse, Lever, Ashby, Workable, Recruitee and SmartRecruiters. Poll each known company. Backfill companies from past HN threads once.
 
 ### M3: Saved searches + matching
@@ -74,3 +76,4 @@ Fetch on a local schedule, send a daily digest of new matches, and optionally ad
 - 2026-11-09: Fetch broadly, filter locally. A keyword filter runs before Claude to keep AI costs low.
 - 2026-11-09: ATS companies are found automatically from job URLs; no manual company list.
 - 2026-11-09: The Muse excluded: its API is blocked by Cloudflare (403).
+- 2026-11-10: M1 done; Remotive kept (12 jobs, 6h minimum interval). Pinned Node 22 (`.nvmrc`). TypeScript held at 6.0 until typescript-eslint supports 7. About 0.7% of jobs are cross-source duplicates (marked, not deleted).
