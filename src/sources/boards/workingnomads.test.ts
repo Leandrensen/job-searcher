@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
+import { expectCleanText } from "@/test-utils/assertions";
 import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { workingnomads } from "./workingnomads";
 
-const fixture = loadFixture("workingnomads/api.json") as Array<Record<string, unknown>>;
+const fixture = loadFixture("workingnomads/api.json") as Array<Record<string, unknown> & { description: string }>;
 
 function ctxWith(body: unknown) {
   const getJson = vi.fn(async () => body);
@@ -26,7 +27,8 @@ describe("workingnomads adapter", () => {
 
   it("normalizes a typical item", () => {
     const raw = workingnomads.itemSchema.parse(fixture[0]);
-    expect(workingnomads.normalize(raw)).toEqual({
+    const { descriptionHtml, descriptionText, ...rest } = workingnomads.normalize(raw)!;
+    expect(rest).toEqual({
       source: "workingnomads",
       externalId: "2007977",
       url: "https://www.workingnomads.com/job/go/2007977/",
@@ -40,10 +42,10 @@ describe("workingnomads adapter", () => {
       salaryMax: null,
       salaryCurrency: null,
       salaryPeriod: null,
-      descriptionHtml: expect.any(String),
-      descriptionText: expect.any(String),
       postedAt: "2026-11-09T13:52:38.000Z",
     });
+    expect(descriptionHtml).toBe(fixture[0]!.description);
+    expectCleanText(descriptionText, "About us:");
   });
 
   it("extracts numeric id from url", () => {

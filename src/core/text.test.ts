@@ -9,12 +9,60 @@ describe("decodeEntities", () => {
     expect(decodeEntities("&#123;x&#125; &#x2F; &#x41;")).toBe("{x} / A");
   });
 
+  it("decodes the real-world mdash case", () => {
+    expect(decodeEntities("£73,000&mdash;£95,000")).toBe("£73,000—£95,000");
+  });
+
+  it.each([
+    ["mdash", "—"],
+    ["ndash", "–"],
+    ["hellip", "…"],
+    ["rsquo", "’"],
+    ["ldquo", "“"],
+    ["euro", "€"],
+    ["eacute", "é"],
+    ["Ntilde", "Ñ"],
+    ["shy", ""],
+    ["copy", "©"],
+    ["trade", "™"],
+    ["pound", "£"],
+  ])("decodes &%s;", (name, expected) => {
+    expect(decodeEntities(`&${name};`)).toBe(expected);
+  });
+
+  it("named entities are case-sensitive", () => {
+    expect(decodeEntities("&Eacute;&eacute;")).toBe("Éé");
+  });
+
+  it("decodes uppercase basic aliases", () => {
+    expect(decodeEntities("&AMP;&LT;&GT;&QUOT;")).toBe('&<>"');
+  });
+
+  it("does not treat object prototype keys as entities", () => {
+    expect(decodeEntities("&constructor; &toString; &valueOf; &hasOwnProperty;")).toBe(
+      "&constructor; &toString; &valueOf; &hasOwnProperty;",
+    );
+  });
+
+  it("does not decode odd casing of other names", () => {
+    expect(decodeEntities("&Mdash;")).toBe("&Mdash;");
+  });
+
   it("decodes only one level", () => {
     expect(decodeEntities("&amp;lt;")).toBe("&lt;");
   });
 
   it("leaves unknown entities alone", () => {
     expect(decodeEntities("&foo; bar")).toBe("&foo; bar");
+  });
+
+  it.each(["&#99999999;", "&#xFFFFFF;", "&#xD800;", "&#0;"])("leaves out-of-range numeric entity %s unchanged", (entity) => {
+    expect(decodeEntities(entity)).toBe(entity);
+  });
+
+  it("decodes astral code points", () => {
+    expect(decodeEntities("&#128512;")).toBe("😀");
+    expect(decodeEntities("&#x1F600;")).toBe("😀");
   });
 });
 
@@ -25,6 +73,26 @@ describe("htmlToText", () => {
 
   it("handles double-encoded html", () => {
     expect(htmlToText("&lt;p&gt;hi&lt;/p&gt;")).toBe("hi");
+  });
+
+  it("drops style blocks", () => {
+    expect(htmlToText("<style>.a{color:red}</style><p>Hi</p>")).toBe("Hi");
+  });
+
+  it("drops script blocks with attributes and uppercase tags", () => {
+    expect(htmlToText('<SCRIPT type="text/javascript">\nvar x = 1;\n</SCRIPT><p>Hello</p>')).toBe("Hello");
+  });
+
+  it("drops html comments", () => {
+    expect(htmlToText("<p>A</p><!-- hidden\nnote --><p>B</p>")).toBe("A\nB");
+  });
+
+  it("drops double-encoded style blocks", () => {
+    expect(htmlToText("&lt;style&gt;p{}&lt;/style&gt;&lt;p&gt;Hi&lt;/p&gt;")).toBe("Hi");
+  });
+
+  it("does not throw on invalid entities", () => {
+    expect(htmlToText("<p>a &#99999999; b</p>")).toBe("a &#99999999; b");
   });
 
   it("collapses whitespace and blank lines", () => {

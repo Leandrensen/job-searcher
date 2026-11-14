@@ -1,21 +1,56 @@
 import { describe, expect, it } from "vitest";
 import { dedupeKey, normalizeCompany, normalizeTitle } from "./dedupe";
 
-describe("dedupe", () => {
-  it("normalizeCompany strips suffix and punctuation", () => {
-    expect(normalizeCompany("Acme, Inc.")).toBe("acme");
-    expect(normalizeCompany("Foo Bar GmbH")).toBe("foobar");
-    expect(normalizeCompany("Costa")).toBe("costa");
+describe("normalizeCompany", () => {
+  it.each([
+    ["Acme Corp.", "acme"],
+    ["Acme Corp", "acme"],
+    ["Acme Corporation", "acme"],
+    ["Acme Incorporated", "acme"],
+    ["Acme, Inc.", "acme"],
+    ["Acme Ltd.", "acme"],
+    ["Acme Limited", "acme"],
+    ["Acme L.L.C.", "acme"],
+    ["Acme GmbH", "acme"],
+    ["Acme AG", "acme"],
+    ["Acme S.A.", "acme"],
+    ["Acme PLC", "acme"],
+    ["Acme B.V.", "acme"],
+    ["Acme Co., Ltd.", "acme"],
+    ["Quantum-Systems GmbH", "quantumsystems"],
+    ["Foo Bar GmbH", "foobar"],
+    ["Costa", "costa"],
+    ["Corpay", "corpay"],
+    ["Visa", "visa"],
+    ["Inc", "inc"],
+    ["Ácme", "ácme"],
+  ])("normalizes %j to %j", (input, expected) => {
+    expect(normalizeCompany(input)).toBe(expected);
+  });
+});
+
+describe("normalizeTitle", () => {
+  it("lowercases and collapses punctuation and spaces", () => {
+    expect(normalizeTitle("Senior  React Dev!")).toBe("senior react dev");
   });
 
-  it("normalizeTitle keeps seniority words", () => {
-    expect(normalizeTitle("Senior  React Dev!")).toBe("senior react dev");
+  it("keeps seniority words", () => {
     expect(normalizeTitle("Junior React Dev")).not.toBe(normalizeTitle("Senior React Dev"));
   });
+});
 
-  it("dedupeKey is stable across formatting", () => {
+describe("dedupeKey", () => {
+  it("is stable across formatting", () => {
     expect(dedupeKey({ company: "ACME Inc", title: "Senior React Dev!" })).toBe(
       dedupeKey({ company: "acme", title: "senior react dev" }),
     );
+  });
+
+  it('treats "ACME CORP." and "Acme Corp" the same', () => {
+    expect(dedupeKey({ company: "ACME CORP.", title: "Dev" })).toBe(dedupeKey({ company: "Acme Corp", title: "Dev" }));
+  });
+
+  it("joins company and title with a pipe", () => {
+    expect(dedupeKey({ company: "Acme Inc", title: "Senior Dev" })).toBe("acme|senior dev");
   });
 });

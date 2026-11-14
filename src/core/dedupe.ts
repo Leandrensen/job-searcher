@@ -1,9 +1,23 @@
 import type { Job } from "./job";
 
-const LEGAL_SUFFIX = /(?:,|\s)\s*(?:inc\.?|llc|ltd\.?|gmbh|s\.a\.|sa|corp|corporation|co\.?)\s*$/;
+const LEGAL_SUFFIXES = [
+  "inc", "inc.", "incorporated", "llc", "l.l.c.", "ltd", "ltd.", "limited", "gmbh", "ag",
+  "s.a.", "sa", "s.l.", "plc", "bv", "b.v.", "corp", "corp.", "corporation", "co", "co.",
+];
+const MAX_SUFFIX_PASSES = 3;
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// A suffix only counts when it follows a comma or whitespace and ends the name.
+const LEGAL_SUFFIX = new RegExp(`(?:,|\\s)\\s*(?:${LEGAL_SUFFIXES.map(escapeRegExp).join("|")})\\s*$`);
 
 export function normalizeCompany(name: string): string {
-  return name.toLowerCase().trim().replace(LEGAL_SUFFIX, "").replace(/[^\p{L}\p{N}]/gu, "");
+  let current = name.toLowerCase().trim();
+  for (let pass = 0; pass < MAX_SUFFIX_PASSES; pass++) {
+    const stripped = current.replace(LEGAL_SUFFIX, "").replace(/[,\s]+$/, "");
+    if (stripped === current || stripped === "") break;
+    current = stripped;
+  }
+  return current.replace(/[^\p{L}\p{N}]/gu, "");
 }
 
 export function normalizeTitle(title: string): string {

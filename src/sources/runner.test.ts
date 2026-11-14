@@ -1,6 +1,7 @@
+import { sql } from "drizzle-orm";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import type { Job } from "@/core/job";
+import type { Job, SourceId } from "@/core/job";
 import { openDb } from "@/db/client";
 import { fetchRuns } from "@/db/schema";
 import { countJobs } from "@/db/queries";
@@ -10,7 +11,7 @@ import { defineAdapter, type AnyAdapter } from "./types";
 const RawSchema = z.object({ id: z.string() });
 
 function fakeAdapter(
-  id: "remoteok" | "jobicy",
+  id: SourceId,
   over: { fetch?: () => Promise<unknown[]>; minIntervalMinutes?: number } = {},
 ) {
   const fetchSpy = vi.fn(over.fetch ?? (async () => [{ id: "1" }, { id: "2" }]));
@@ -118,5 +119,99 @@ describe("runSources", () => {
     const fast = fakeAdapter("jobicy");
     const results = await run([slow.adapter, fast.adapter]);
     expect(results.map((r) => r.source)).toEqual(["remoteok", "jobicy"]);
+  });
+  it("isolates a DB write failure to its own source", async () => {
+    const { db, run } = setup();
+    db.run(
+      sql`CREATE TRIGGER fail_remoteok_insert BEFORE INSERT ON jobs WHEN NEW.source = 'remoteok' BEGIN SELECT RAISE(ABORT, 'simulated write failure'); END;`,
+    );
+    const failing = fakeAdapter("remoteok");
+    const healthy = fakeAdapter("jobicy");
+
+    const results = await run([failing.adapter, healthy.adapter]);
+
+    expect(results.map((r) => [r.source, r.status])).toEqual([
+      ["remoteok", "error"],
+      ["jobicy", "success"],
+    ]);
+    expect(results[0]?.error).toBe("SqliteError: simulated write failure");
+    expect(results[0]).toMatchObject({ fetched: 2, inserted: 0, updated: 0 });
+    expect(countJobs(db, "remoteok")).toBe(0);
+    expect(countJobs(db, "jobicy")).toBe(2);
+    const row = db.select().from(fetchRuns).all().find((r) => r.source === "remoteok");
+    expect(row).toMatchObject({ status: "error", error: "SqliteError: simulated write failure" });
+  });
+
+  it("still resolves when recording the run fails", async () => {
+    const { db, clock } = setup();
+    db.run(
+      sql`CREATE TRIGGER fail_runs BEFORE INSERT ON fetch_runs BEGIN SELECT RAISE(ABORT, 'runs table locked'); END;`,
+    );
+    const log = vi.fn<(m: string) => void>();
+    const { adapter } = fakeAdapter("remoteok");
+
+    const results = await runSources({
+      db,
+      http: { getJson: vi.fn(), getText: vi.fn() },
+      adapters: [adapter],
+      now: clock.now,
+      log,
+    });
+
+    expect(results).toHaveLength(1);
+    expect(results[0]).toMatchObject({ status: "error", error: "SqliteError: runs table locked" });
+    expect(countJobs(db, "remoteok")).toBe(2);
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("could not record run: SqliteError: runs table locked"));
+  });
+  it("runs at most 4 sources at once", async () => {
+    const { run } = setup();
+    let active = 0;
+    let max = 0;
+    const tracked = async () => {
+      active++;
+      max = Math.max(max, active);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      active--;
+      return [];
+    };
+    const ids: SourceId[] = ["remoteok", "weworkremotely", "getonboard", "remotive", "himalayas", "jobicy"];
+
+    const results = await run(ids.map((id) => fakeAdapter(id, { fetch: tracked }).adapter));
+
+    expect(max).toBe(4);
+    expect(results.map((r) => r.source)).toEqual(ids);
+    expect(results.every((r) => r.status === "success")).toBe(true);
+  });
+
+  it("runs a single source alone", async () => {
+    const { run } = setup();
+    let active = 0;
+    let max = 0;
+    const { adapter } = fakeAdapter("remoteok", {
+      fetch: async () => {
+        active++;
+        max = Math.max(max, active);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        active--;
+        return [];
+      },
+    });
+    await run([adapter]);
+    expect(max).toBe(1);
+  });
+
+  it("rate guard boundary: skipped at 59 minutes, runs at exactly 60", async () => {
+    const { clock, run } = setup();
+    const { adapter, fetchSpy } = fakeAdapter("remoteok", { minIntervalMinutes: 60 });
+
+    expect((await run([adapter]))[0]?.status).toBe("success");
+
+    clock.advanceMinutes(59);
+    expect((await run([adapter]))[0]?.status).toBe("skipped");
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+    clock.advanceMinutes(1);
+    expect((await run([adapter]))[0]?.status).toBe("success");
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 });

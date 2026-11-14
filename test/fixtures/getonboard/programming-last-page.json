@@ -1,0 +1,502 @@
+{
+  "data": [
+    {
+      "id": "semi-senior-full-stack-java-developer-qa-ai-bilingue-23people-santiago",
+      "type": "job",
+      "attributes": {
+        "title": "Semi Senior Full-Stack Java Developer (QA & AI) Bilingüe",
+        "description_headline": "Skills excluyentes",
+        "description": "<ul><li>Experiencia comprobable con Java y Spring Boot en proyectos reales.</li><li>Experiencia práctica trabajando con Angular.</li><li>Capacidad para realizar pruebas unitarias, de integración y de API en aplicaciones Java.</li><li>Uso diario de asistentes de programación basados en IA, como GitHu",
+        "projects": "<div>Equifax es mucho más que una empresa de informes; es una compañía global líder en datos, analítica y tecnología con presencia en 24 países. En Chile, operan desde 1979 entregando soluciones críticas de ciberseguridad, identidad y riesgo a más de 14.000 empresas.</div><div>El Hub Tecnológico (SD",
+        "functions_headline": "Funciones del cargo",
+        "functions": "<p>El Semi Senior Full Stack Developer se integrará al equipo \"Credit Health\", participando en todo el ciclo de vida del desarrollo, desde el diseño hasta la puesta en producción. Construirá soluciones end-to-end utilizando Java, Spring Boot y Angular, apoyándose en IA y siendo guiado por su líder. ",
+        "benefits_headline": "Beneficios",
+        "benefits": "<ul><li><strong>Seguro complementario</strong>: Seguro de salud, vida y dental, para que estés protegido.</li><li><strong>Curso de inglés</strong>: En nuestro programa de formación en el idioma, ofrecemos dos modalidades para adaptarnos a tus necesidades y objetivos, con profesores nativos.</li><li>",
+        "desirable_headline": "Skills deseables",
+        "desirable": "<ul><li>Automatización de pruebas de interfaz de usuario (UI) con Playwright, Selenium o Cypress.</li><li>Experiencia ejecutando pruebas de regresión y pruebas de humo (\"smoke testing\").</li><li>Experiencia aportando valor de principio a fin (end-to-end) mediante el uso de IA en áreas Dev, QE y SRE.",
+        "remote": false,
+        "remote_modality": "hybrid",
+        "remote_zone": null,
+        "countries": [
+          "Chile"
+        ],
+        "lang": "lang_not_specified",
+        "category_name": "Programming",
+        "perks": [],
+        "min_salary": 2800,
+        "max_salary": 3000,
+        "published_at": 1794227297,
+        "response_time_in_days": {
+          "min": null,
+          "max": null
+        },
+        "applications_count": 48,
+        "location_regions": {
+          "data": []
+        },
+        "location_tenants": {
+          "data": []
+        },
+        "location_cities": {
+          "data": [
+            {
+              "id": 1,
+              "type": "location_city"
+            }
+          ]
+        },
+        "modality": {
+          "data": {
+            "id": 1,
+            "type": "modality"
+          }
+        },
+        "seniority": {
+          "data": {
+            "id": 3,
+            "type": "seniority"
+          }
+        },
+        "tags": {
+          "data": [
+            {
+              "id": 2,
+              "type": "tag"
+            },
+            {
+              "id": 587,
+              "type": "tag"
+            },
+            {
+              "id": 104,
+              "type": "tag"
+            },
+            {
+              "id": 888,
+              "type": "tag"
+            },
+            {
+              "id": 863,
+              "type": "tag"
+            },
+            {
+              "id": 2754,
+              "type": "tag"
+            },
+            {
+              "id": 1589,
+              "type": "tag"
+            },
+            {
+              "id": 8508,
+              "type": "tag"
+            }
+          ]
+        },
+        "company": {
+          "data": {
+            "id": "23people-cl",
+            "type": "company",
+            "attributes": {
+              "name": "23people",
+              "description": "Básicamente, somos un grupo de geeks apasionados por lo que hacemos: programar y resolver problemas usando tecnología. 🤟",
+              "long_description": "<div><strong> En 23people ayudamos a nuestros clientes a digitalizar sus servicios, siempre con las personas en el centro. <br></strong><br></div><div>¿<strong>Cómo lo hacemos?<br></strong><br></div><ul><li><strong>Trabajo sustentable: </strong>cuidamos cómo trabajamos y a quienes lo hacen con nosot",
+              "projects": "<div>Equifax es mucho más que una empresa de informes; es una compañía global líder en datos, analítica y tecnología con presencia en 24 países. En Chile, operan desde 1979 entregando soluciones críticas de ciberseguridad, identidad y riesgo a más de 14.000 empresas.</div><div>El Hub Tecnológico (SD",
+              "benefits": "<ul><li><strong>Seguro complementario</strong>: Seguro de salud, vida y dental, para que estés protegido.</li><li><strong>Curso de inglés</strong>: En nuestro programa de formación en el idioma, ofrecemos dos modalidades para adaptarnos a tus necesidades y objetivos, con profesores nativos.</li><li>",
+              "web": "https://www.23people.io",
+              "twitter": "",
+              "github": "",
+              "facebook": "23people",
+              "angellist": "",
+              "country": "CL",
+              "response_time_in_days": {
+                "min": 0,
+                "max": 12
+              },
+              "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/4457/Foto_perfil_Tiktok.png"
+            }
+          }
+        }
+      },
+      "links": {
+        "public_url": "https://www.getonbrd.com/jobs/semi-senior-full-stack-java-developer-qa-ai-bilingue-23people-santiago"
+      }
+    },
+    {
+      "id": "founding-gtm-engineer-hostop-remote",
+      "type": "job",
+      "attributes": {
+        "title": "Founding GTM Engineer",
+        "description_headline": "Qualifications and requirements",
+        "description": "<ul><li>5+ years in outbound, SDR/BDR, growth or GTM roles at early-stage B2B SaaS (seed to Series B), with booked-meeting results you can show in numbers.</li><li>You’ve built outbound from zero at least once: lists, sending infrastructure, copy, sequences and reporting.</li><li>Hands-on with moder",
+        "projects": "<p>HostOp is the AI operating system for short-term rental operators with 10 to 500 listings. One platform replaces the pile of disconnected tools they run on: guest check-in, ID verification, damage waivers, upsells, payments and financials, with AI guest messaging next.</p><p>We’re founder-led and",
+        "functions_headline": "Job functions",
+        "functions": "<p>Full-time, all-day role. There’s always another list to build, message to test, automation to ship or lead to book. <strong>You own one number: qualified demos booked and held for the founder every week.</strong></p><p><strong>What you’ll do</strong></p><ul><li>Define and sharpen our ideal custom",
+        "benefits_headline": "Conditions",
+        "benefits": "<ul><li>Full-time, 100% remote from Latin America</li><li><strong>$4,500–$6,000 USD per month base</strong>, plus uncapped bonuses for every qualified demo held and every demo that becomes a paying customer</li><li>Report directly to the Founder &amp; CEO, with real ownership from day one</li><li>St",
+        "desirable_headline": "Desirable skills",
+        "desirable": "<ul><li>Experience selling to short-term rental, vacation rental, hospitality or proptech companies</li><li>Familiarity with property management systems such as Guesty, Hostaway, Hospitable or OwnerRez</li><li>Ghostwriting founder content on LinkedIn that grew an audience</li><li>Video or Loom-based",
+        "remote": true,
+        "remote_modality": "fully_remote",
+        "remote_zone": null,
+        "countries": [
+          "Remote"
+        ],
+        "lang": "en",
+        "category_name": "Programming",
+        "perks": [
+          "remote_full",
+          "flexible_hours"
+        ],
+        "min_salary": 4500,
+        "max_salary": 6000,
+        "published_at": 1793720805,
+        "response_time_in_days": {
+          "min": null,
+          "max": null
+        },
+        "applications_count": 43,
+        "location_regions": {
+          "data": []
+        },
+        "location_tenants": {
+          "data": []
+        },
+        "location_cities": {
+          "data": []
+        },
+        "modality": {
+          "data": {
+            "id": 1,
+            "type": "modality"
+          }
+        },
+        "seniority": {
+          "data": {
+            "id": 4,
+            "type": "seniority"
+          }
+        },
+        "tags": {
+          "data": [
+            {
+              "id": 38031,
+              "type": "tag"
+            },
+            {
+              "id": 6939,
+              "type": "tag"
+            },
+            {
+              "id": 84927,
+              "type": "tag"
+            },
+            {
+              "id": 5915,
+              "type": "tag"
+            },
+            {
+              "id": 1711,
+              "type": "tag"
+            },
+            {
+              "id": 1658,
+              "type": "tag"
+            }
+          ]
+        },
+        "company": {
+          "data": {
+            "id": "hostop",
+            "type": "company",
+            "attributes": {
+              "name": "Hostop",
+              "description": "HostOp is the AI operating system for short-term rental operators. One platform runs guest check-in, ID verification, damage waivers, upsells and payments, plus revenue, expenses and profit for every unit. Founder-led and bootstrapped by operator ",
+              "long_description": "",
+              "projects": null,
+              "benefits": "<ul><li>Full-time, 100% remote from Latin America</li><li><strong>$4,500–$6,000 USD per month base</strong>, plus uncapped bonuses for every qualified demo held and every demo that becomes a paying customer</li><li>Report directly to the Founder &amp; CEO, with real ownership from day one</li><li>St",
+              "web": "http://hostop.ai",
+              "twitter": "",
+              "github": "",
+              "facebook": "",
+              "angellist": null,
+              "country": "CA",
+              "response_time_in_days": {
+                "min": null,
+                "max": null
+              },
+              "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/20908/hostop-logo-512.png"
+            }
+          }
+        }
+      },
+      "links": {
+        "public_url": "https://www.getonbrd.com/jobs/founding-gtm-engineer-hostop-remote"
+      }
+    },
+    {
+      "id": "desarrollador-a-full-stack-financia-capital-santiago",
+      "type": "job",
+      "attributes": {
+        "title": "Desarrollador/a Full-Stack",
+        "description_headline": "Requerimientos del cargo",
+        "description": "<ul><li>Al menos 3 años de experiencia profesional con PHP y Laravel.</li><li>Experiencia desarrollando frontends con Vue.js.</li><li>Buen manejo de SQL y modelamiento de bases de datos relacionales (MySQL o SQL Server).</li><li>Experiencia construyendo y consumiendo APIs REST.</li><li>Manejo de Git",
+        "projects": "<p>Somos una empresa financiera que busca democratizar el acceso a financiamiento para pequeñas y medianas empresas. En Financia Capital estamos digitalizando nuestros procesos para que nuestros clientes gestionen sus operaciones financieras de forma simple, rápida y segura.</p><p>Te integrarás al e",
+        "functions_headline": "Funciones del cargo",
+        "functions": "<p>Dentro de tus principales funciones estarán:</p><ul><li>Desarrollar nuevos módulos y funcionalidades en nuestras plataformas Laravel + Vue, de punta a punta: modelo de datos, API, interfaz y despliegue.</li><li>Desarrollar y mantener servicios de datos en Python (FastAPI) desplegados en API Gatew",
+        "benefits_headline": "",
+        "benefits": "",
+        "desirable_headline": "Opcionales",
+        "desirable": "<p>Suma puntos si tienes:</p><ul><li>Experiencia con Python (FastAPI, pandas o SQLAlchemy) y despliegues serverless en AWS Lambda.</li><li>Experiencia con Inertia.js o Vue 3.</li><li>Experiencia con Node.js / TypeScript, idealmente AdonisJS.</li><li>Experiencia con otros servicios de AWS (S3, RDS, S",
+        "remote": false,
+        "remote_modality": "no_remote",
+        "remote_zone": null,
+        "countries": [
+          "Chile"
+        ],
+        "lang": "lang_not_specified",
+        "category_name": "Programming",
+        "perks": [
+          "health_coverage",
+          "computer_provided",
+          "informal_dresscode"
+        ],
+        "min_salary": 1700,
+        "max_salary": 2000,
+        "published_at": 1793133968,
+        "response_time_in_days": {
+          "min": null,
+          "max": null
+        },
+        "applications_count": 109,
+        "location_regions": {
+          "data": []
+        },
+        "location_tenants": {
+          "data": []
+        },
+        "location_cities": {
+          "data": [
+            {
+              "id": 1,
+              "type": "location_city"
+            }
+          ]
+        },
+        "modality": {
+          "data": {
+            "id": 1,
+            "type": "modality"
+          }
+        },
+        "seniority": {
+          "data": {
+            "id": 3,
+            "type": "seniority"
+          }
+        },
+        "tags": {
+          "data": [
+            {
+              "id": 22,
+              "type": "tag"
+            },
+            {
+              "id": 102,
+              "type": "tag"
+            },
+            {
+              "id": 135,
+              "type": "tag"
+            },
+            {
+              "id": 64,
+              "type": "tag"
+            },
+            {
+              "id": 53,
+              "type": "tag"
+            },
+            {
+              "id": 76103,
+              "type": "tag"
+            }
+          ]
+        },
+        "company": {
+          "data": {
+            "id": "financia-capital-cl",
+            "type": "company",
+            "attributes": {
+              "name": "Financia Capital",
+              "description": "La forma más simple y efectiva de obtener liquidez para su empresa",
+              "long_description": "",
+              "projects": "<p>&nbsp;En <strong>Financia Capital</strong> trabajamos para fortalecer el factoring y las soluciones financieras a través de procesos tecnológicos seguros y eficientes.<br> Nuestro equipo de <strong>TI</strong> integra desarrollo, datos, soporte e infraestructura, colaborando estrechamente para ma",
+              "benefits": "<ul><li>&nbsp;Contrato indefinido.</li><li>Modalidad Presencial.</li><li>Acceso a proyectos desafiantes y de alto impacto real en el negocio.</li><li>Participación activa en decisiones técnicas de productos en crecimiento.</li><li>Espacio para aprender y crecer junto al equipo.&nbsp;</li></ul>",
+              "web": "https://www.financiacapital.cl",
+              "twitter": "",
+              "github": "",
+              "facebook": "",
+              "angellist": "",
+              "country": "CL",
+              "response_time_in_days": {
+                "min": 8,
+                "max": 20
+              },
+              "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/12324/Recurso_1_300x-100.jpg"
+            }
+          }
+        }
+      },
+      "links": {
+        "public_url": "https://www.getonbrd.com/jobs/desarrollador-a-full-stack-financia-capital-santiago"
+      }
+    },
+    {
+      "id": "aws-iot-backend-engineer-improving-remote",
+      "type": "job",
+      "attributes": {
+        "title": "AWS IoT Back-end Engineer",
+        "description_headline": "Required:",
+        "description": "<ul><li>4+ years in backend, integration or solutions engineering, with strong C# / .NET (ASP.NET Core).</li><li>Solid PostgreSQL experience: schema design, migrations, query tuning.</li><li>EF Core is a plus.</li><li>Hands-on AWS experience in production: S3, IAM, Secrets Manager, App Runner or ECS",
+        "projects": "<p>The product is an IoT platform for monitoring and managing industrial waste compactors deployed at customer locations. Each compactor has a connected hardware board that sends operational data to the cloud. The platform uses AWS services to collect and process this data, monitor device status, su",
+        "functions_headline": "Key responsibilities :",
+        "functions": "<ul><li>Rework and configure the existing AWS IoT Core infrastructure for new hardware/firmware.</li><li>Configure and manage MQTT communication between devices and AWS.</li><li>Build monitoring capabilities and dashboards for device connectivity, health, and status.</li><li>Enable secure remote act",
+        "benefits_headline": "Benefits ",
+        "benefits": "<p>Contrato a largo plazo.</p><ul><li>100% Remoto.</li><li>Vacaciones y PTOs.</li><li>Posibilidad de recibir 2 bonos al año.</li><li>2 revisiones salariales al año.</li><li>Clases de inglés.</li><li>Equipamiento Apple.</li><li>Plataforma de cursos en linea.</li><li>Budget para compra de libros.</li>",
+        "desirable_headline": "Nice to have :",
+        "desirable": "<ul><li>Experience with IoT device fleets, telemetry or OTA update systems (MCUboot, firmware signing, rollback and rollout strategies).</li><li>Python (FastAPI, boto3, pytest) and AWS CDK in Python.</li><li>Experience with AWS Lambda and Step Functions, or ML pipelines.</li><li>Observability: alarm",
+        "remote": true,
+        "remote_modality": "remote_local",
+        "remote_zone": null,
+        "countries": [
+          "Remote"
+        ],
+        "lang": "en",
+        "category_name": "Programming",
+        "perks": [
+          "computer_provided",
+          "vacation_over_legal"
+        ],
+        "min_salary": null,
+        "max_salary": null,
+        "published_at": 1794279747,
+        "response_time_in_days": {
+          "min": null,
+          "max": null
+        },
+        "applications_count": 58,
+        "location_regions": {
+          "data": []
+        },
+        "location_tenants": {
+          "data": [
+            {
+              "id": 6,
+              "type": "location_tenant"
+            },
+            {
+              "id": 3,
+              "type": "location_tenant"
+            },
+            {
+              "id": 2,
+              "type": "location_tenant"
+            },
+            {
+              "id": 24,
+              "type": "location_tenant"
+            },
+            {
+              "id": 7,
+              "type": "location_tenant"
+            },
+            {
+              "id": 1,
+              "type": "location_tenant"
+            }
+          ]
+        },
+        "location_cities": {
+          "data": []
+        },
+        "modality": {
+          "data": {
+            "id": 1,
+            "type": "modality"
+          }
+        },
+        "seniority": {
+          "data": {
+            "id": 4,
+            "type": "seniority"
+          }
+        },
+        "tags": {
+          "data": [
+            {
+              "id": 91,
+              "type": "tag"
+            },
+            {
+              "id": 5,
+              "type": "tag"
+            },
+            {
+              "id": 51,
+              "type": "tag"
+            },
+            {
+              "id": 6931,
+              "type": "tag"
+            },
+            {
+              "id": 628,
+              "type": "tag"
+            },
+            {
+              "id": 888,
+              "type": "tag"
+            },
+            {
+              "id": 863,
+              "type": "tag"
+            }
+          ]
+        },
+        "company": {
+          "data": {
+            "id": "improving",
+            "type": "company",
+            "attributes": {
+              "name": "Improving",
+              "description": "Improving is an IT services firm focused on AI, Data, and Applications. We modernize legacy systems, build cloud-native platforms, and deliver future-ready solutions through collaborative, long-term partnerships that drive measurable outcomes.",
+              "long_description": "<p>Improving is dedicated to creating and fostering a great work culture that exemplifies teamwork, excellence, and fun. We believe this inspires and motivates everyone while building lifelong relationships. Improving has long supported the Conscious Capitalism movement. We work to serve the interes",
+              "projects": "<div>En Improving South America, brindamos servicios de TI para transformar la percepción del profesional de TI. Nos enfocamos en consultoría de TI, desarrollo de software y formación ágil.&nbsp;</div><div>La empresa promueve una cultura de trabajo excepcional basada en el trabajo en equipo, la exce",
+              "benefits": "<ul><li>Contrato a largo plazo.</li><li>100% Remoto.</li><li>Vacaciones y PTOs</li><li>Posibilidad de recibir 2 bonos al año.</li><li>2 revisiones salariales al año.</li><li>Clases de inglés.</li><li>Equipamiento Apple.</li><li>Plataforma de cursos en linea</li><li>Budget para compra de libros.</li>",
+              "web": "https://www.improving.com/",
+              "twitter": "ImprovingSAM",
+              "github": "improving",
+              "facebook": "improvingdallas",
+              "angellist": "",
+              "country": "US",
+              "response_time_in_days": {
+                "min": 12,
+                "max": 26
+              },
+              "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/4161/improving-splash-200px.png"
+            }
+          }
+        }
+      },
+      "links": {
+        "public_url": "https://www.getonbrd.com/jobs/aws-iot-backend-engineer-improving-remote"
+      }
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "per_page": 100,
+    "total_pages": 1
+  }
+}

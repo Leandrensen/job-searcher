@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { expectCleanText } from "@/test-utils/assertions";
 import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
@@ -56,25 +57,29 @@ describe("himalayas adapter", () => {
 
   it("normalizes a typical item", () => {
     const { adapter } = setup(() => fixture);
-    const raw = adapter.itemSchema.parse(fixture.jobs[0]);
-    expect(adapter.normalize(raw)).toEqual({
+    const { descriptionHtml, descriptionText, ...rest } = adapter.normalize(adapter.itemSchema.parse(fixture.jobs[0]))!;
+    expect(rest).toEqual({
       source: "himalayas",
-      externalId: expect.stringContaining("https://himalayas.app/companies/"),
-      url: expect.stringContaining("https://himalayas.app/companies/"),
-      applyUrl: expect.stringContaining("https://himalayas.app/"),
+      externalId: "https://himalayas.app/companies/blackbird-collective/jobs/java-developer-germany-4169807923",
+      url: "https://himalayas.app/companies/blackbird-collective/jobs/java-developer-germany-4169807923",
+      applyUrl: "https://himalayas.app/companies/blackbird-collective/jobs/java-developer-germany-4169807923?utm_source=api",
       title: "Java developer - Germany",
-      company: expect.any(String),
-      location: expect.any(String),
+      company: "Blackbird Collective",
+      location: "Germany",
       remote: true,
-      tags: expect.any(Array),
+      tags: [
+        "java development", "backend engineering", "software engineer", "kotlin", "backend development",
+        "java developer", "java developer jobs", "java application developer", "java software engineer", "senior",
+      ],
+      // The raw salaryPeriod is "annual", but there is no salary amount, so all salary fields are null.
       salaryMin: null,
       salaryMax: null,
       salaryCurrency: null,
       salaryPeriod: null,
-      descriptionHtml: expect.any(String),
-      descriptionText: expect.any(String),
       postedAt: "2026-11-09T18:15:40.000Z",
     });
+    expect(descriptionHtml).toBe((fixture.jobs[0] as { description: string }).description);
+    expectCleanText(descriptionText, "At the moment, we are collaborating with a few innovative startups");
   });
 
   it("maps salary and currency", () => {

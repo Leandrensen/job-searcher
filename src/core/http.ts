@@ -27,12 +27,11 @@ export interface HttpOptions {
 
 const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+/** Backoff before the next attempt. `Retry-After` is honored only as a whole number of seconds (capped at 30). */
 function retryDelayMs(res: Response, attempt: number): number {
-  if (res.status === 429) {
-    const seconds = Number(res.headers.get("Retry-After"));
-    if (res.headers.get("Retry-After") !== null && Number.isFinite(seconds) && seconds >= 0) {
-      return Math.min(seconds, 30) * 1000;
-    }
+  const retryAfter = res.headers.get("Retry-After")?.trim();
+  if (res.status === 429 && retryAfter && /^\d+$/.test(retryAfter)) {
+    return Math.min(Number(retryAfter), 30) * 1000;
   }
   return 1000 * attempt;
 }

@@ -1,0 +1,139 @@
+{
+  "updatedAt": 1794248140,
+  "offset": 0,
+  "limit": 20,
+  "totalCount": 120623,
+  "nextCursor": null,
+  "jobs": [
+    {
+      "title": "Java developer - Germany",
+      "excerpt": "At the moment, we are collaborating with a few innovative startups searching for Backend Engineers who could support their existing teams.",
+      "companyName": "Blackbird Collective",
+      "companySlug": "blackbird-collective",
+      "companyLogo": "https://cdn-images.himalayas.app/jpph32m0aayas7epl6l204yck4xr",
+      "employmentType": "Full Time",
+      "minSalary": null,
+      "maxSalary": null,
+      "salaryPeriod": "annual",
+      "seniority": [
+        "Senior"
+      ],
+      "currency": null,
+      "locationRestrictions": [
+        "Germany"
+      ],
+      "timezoneRestrictions": [
+        1
+      ],
+      "categories": [
+        "Java-Development",
+        "Backend-Engineering",
+        "Software-Engineer",
+        "Kotlin",
+        "Backend-Development",
+        "Java-Developer",
+        "Java-Developer-Jobs",
+        "Java-Application-Developer",
+        "Java-Software-Engineer"
+      ],
+      "parentCategories": [
+        "Developer"
+      ],
+      "description": "<p>At the moment, we are collaborating with a few innovative startups searching for Backend Engineers who could support their existing teams. We continue to gain the majority of our work through recommendations so we are confident that our clients are great employers and offer work on exciting projects in international teams. </p><ul>\n<li>Minimum 5 years of professional experience in writing backe",
+      "pubDate": 1794248140,
+      "expiryDate": 1799432140,
+      "applicationLink": "https://himalayas.app/companies/blackbird-collective/jobs/java-developer-germany-4169807923?utm_source=api",
+      "guid": "https://himalayas.app/companies/blackbird-collective/jobs/java-developer-germany-4169807923"
+    },
+    {
+      "title": "Online Coding Educator",
+      "excerpt": "About the work from home job: Selected candidates day-to-day responsibilities include teaching kids how to code (languages like Python, C, C++, Javascript, HTML, etc).",
+      "companyName": "Hello English",
+      "companySlug": "hello-english",
+      "companyLogo": "",
+      "employmentType": "Full Time",
+      "minSalary": null,
+      "maxSalary": null,
+      "salaryPeriod": "annual",
+      "seniority": [
+        "Entry-level",
+        "Mid-level"
+      ],
+      "currency": null,
+      "locationRestrictions": [
+        "India"
+      ],
+      "timezoneRestrictions": [
+        5.5
+      ],
+      "categories": [
+        "Online-Coding-Educator",
+        "online-tutoring",
+        "Coding-Instructor",
+        "Computer-Science-Education",
+        "Education",
+        "Online-Coding-Instructor",
+        "Online-Programming-Instructor",
+        "Coding-Educator",
+        "Online-Computer-Science-Instructor",
+        "Coding-Tutor",
+        "Programming-Educator",
+        "Coding-Coach",
+        "Online-Educator"
+      ],
+      "parentCategories": [],
+      "description": "<p>About the work from home job:</p><p>Selected candidates day-to-day responsibilities include teaching kids how to code (languages like Python, C, C++, Javascript, HTML, etc).</p><p>You'd be able to teach from the comfort of your home via our award-winning live teaching platform.</p><p>We will provide the curriculum and will train you to be a Coding Expert Educator.</p><p><strong>Job Location:</s",
+      "pubDate": 1794248140,
+      "expiryDate": 1799432140,
+      "applicationLink": "https://himalayas.app/companies/hello-english/jobs/online-coding-educator-2319640536?utm_source=api",
+      "guid": "https://himalayas.app/companies/hello-english/jobs/online-coding-educator-2319640536"
+    },
+    {
+      "title": "Senior Medical Director, Product Safety Physician Lead",
+      "excerpt": "Job Title: Senior Medical Director, Product Safety Physician Lead Job Location: Remote (US) Job Location Type: Remote Job Contract Type: Full-time Job Seniority Level: BeOne continues to grow at a rap",
+      "companyName": "Lifelancer",
+      "companySlug": "lifelancer",
+      "companyLogo": "https://cdn-images.himalayas.app/ztdsyzatuliky237a5zq922sir0k",
+      "employmentType": "Full Time",
+      "minSalary": 298200,
+      "maxSalary": 368200,
+      "salaryPeriod": "annual",
+      "seniority": [
+        "Director",
+        "Executive"
+      ],
+      "currency": "USD",
+      "locationRestrictions": [
+        "United States"
+      ],
+      "timezoneRestrictions": [
+        -10,
+        -9,
+        -8,
+        -7,
+        -6,
+        -5,
+        14
+      ],
+      "categories": [
+        "Medical-Affairs",
+        "Pharmacovigilance",
+        "Drug-Safety",
+        "Medical-Director",
+        "Product-Safety",
+        "Clinical-Development",
+        "Regulatory-Affairs",
+        "Oncology",
+        "Senior-Medical-Director",
+        "Global-Product-Safety-Lead",
+        "Senior-Director-Of-Global-Patient-Safety"
+      ],
+      "parentCategories": [],
+      "description": "<p><b>Job Title: </b>Senior Medical Director, Product Safety Physician Lead</p><p><b>Job Location: </b>Remote (US)</p><p><b>Job Location Type: </b>Remote</p><p><b>Job Contract Type: </b>Full-time</p><h3>Job Seniority Level: </h3><p>BeOne continues to grow at a rapid pace with challenging and exciting opportunities for experienced professionals. When considering candidates, we look for scientific a",
+      "pubDate": 1794248140,
+      "expiryDate": 1799432140,
+      "applicationLink": "https://himalayas.app/companies/lifelancer/jobs/senior-medical-director-product-safety-physician-lead?utm_source=api",
+      "guid": "https://himalayas.app/companies/lifelancer/jobs/senior-medical-director-product-safety-physician-lead"
+    }
+  ]
+}
