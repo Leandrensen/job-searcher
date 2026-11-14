@@ -1,0 +1,29 @@
+name: Claude Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --model claude-sonnet-5-5
+            --max-turns 10
+          prompt: |
+            Review this PR. Focus on correctness bugs, missing tests,
+            and violations of the rules in CLAUDE.md.
+            Only report issues you are confident about. Comment inline on the diff.
+            End with one summary comment listing the files you reviewed.
