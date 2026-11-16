@@ -79,3 +79,21 @@ export function slugGuesses(name: string, website: string | null): string[] {
   const guesses = [compact, dashed, domainLabel.length >= 2 ? domainLabel : ""].filter(Boolean);
   return [...new Set(guesses)].slice(0, 3);
 }
+
+/** The public job-board page of a company on its ATS. */
+export function boardUrl(ref: AtsRef): string {
+  switch (ref.ats) {
+    case "greenhouse":
+      return `https://boards.greenhouse.io/${ref.slug}`;
+    case "lever":
+      return `https://jobs.lever.co/${ref.slug}`;
+    case "ashby":
+      return `https://jobs.ashbyhq.com/${ref.slug}`;
+    case "workable":
+      return `https://apply.workable.com/${ref.slug}`;
+    case "recruitee":
+      return `https://${ref.slug}.recruitee.com`;
+    case "smartrecruiters":
+      return `https://jobs.smartrecruiters.com/${ref.slug}`;
+  }
+}

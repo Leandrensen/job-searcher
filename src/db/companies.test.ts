@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { openDb, type Db } from "./client";
 import {
+  addManualCompany,
   companyCounts,
+  findCandidateByName,
+  getCandidate,
+  listActiveCompanies,
   insertOrGetCompany,
   listAmbiguousCandidates,
   listDueCandidates,
@@ -194,5 +198,38 @@ describe("companies", () => {
     for (let i = 0; i < 3; i++) recordCompanyFetch(db, dead, { kind: "not_found", error: "404" }, T0);
     add("d", "lever");
     expect(companyCounts(db)).toEqual({ active: 3, inactive: 1, byAts: { greenhouse: 2, lever: 1 } });
+  });
+});
+
+describe("manual companies and lookups", () => {
+  it("addManualCompany creates an active manual company", () => {
+    const r = addManualCompany(db, { ats: "greenhouse", slug: "acme", name: "Acme", homeCountry: "US" }, T0);
+    expect(r.created).toBe(true);
+    expect(allCompanies()).toMatchObject([{ id: r.companyId, ats: "greenhouse", slug: "acme", name: "Acme", homeCountry: "US", origin: "manual", status: "active" }]);
+  });
+
+  it("addManualCompany reactivates an existing company and updates only what is given", () => {
+    const id = insertOrGetCompany(db, { ats: "greenhouse", slug: "acme", name: "Old Name", website: "https://acme.io", homeCountry: "CA", origin: "seed:yc" }, T0);
+    for (let i = 0; i < 3; i++) recordCompanyFetch(db, id, { kind: "not_found", error: "404" }, T0);
+    expect(allCompanies()[0]).toMatchObject({ status: "inactive" });
+    const r = addManualCompany(db, { ats: "greenhouse", slug: "acme", name: "New Name", homeCountry: null }, T0);
+    expect(r).toEqual({ companyId: id, created: false, name: "New Name" });
+    expect(allCompanies()[0]).toMatchObject({ name: "New Name", homeCountry: "CA", origin: "seed:yc", status: "active", consecutiveFailures: 0 });
+  });
+
+  it("getCandidate and findCandidateByName", () => {
+    upsertCandidate(db, { name: "Acme Inc", origin: "seed:yc" }, T0);
+    const id = candidates()[0]!.id;
+    expect(getCandidate(db, id)?.name).toBe("Acme Inc");
+    expect(getCandidate(db, 999)).toBeUndefined();
+    expect(findCandidateByName(db, "ACME, Inc.")?.id).toBe(id);
+    expect(findCandidateByName(db, "Other")).toBeUndefined();
+  });
+
+  it("listActiveCompanies excludes inactive companies", () => {
+    const a = insertOrGetCompany(db, { ats: "lever", slug: "a", name: "A", website: null, homeCountry: null, origin: "manual" }, T0);
+    const b = insertOrGetCompany(db, { ats: "lever", slug: "b", name: "B", website: null, homeCountry: null, origin: "manual" }, T0);
+    for (let i = 0; i < 3; i++) recordCompanyFetch(db, b, { kind: "not_found", error: "404" }, T0);
+    expect(listActiveCompanies(db).map((c) => c.id)).toEqual([a]);
   });
 });

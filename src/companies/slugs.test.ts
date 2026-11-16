@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { extractAtsRefs, parseAtsUrl, slugGuesses, websiteDomain, type AtsRef } from "./slugs";
+import { boardUrl, extractAtsRefs, parseAtsUrl, slugGuesses, websiteDomain, type AtsRef } from "./slugs";
 
 describe("parseAtsUrl", () => {
   it.each<[string, AtsRef | null]>([
@@ -64,5 +64,24 @@ describe("slugGuesses", () => {
 
   it("returns at most 3 guesses", () => {
     expect(slugGuesses("Foo Bar", "https://foobarapp.com").length).toBeLessThanOrEqual(3);
+  });
+});
+
+describe("boardUrl", () => {
+  it.each<[AtsRef, string]>([
+    [{ ats: "greenhouse", slug: "acme" }, "https://boards.greenhouse.io/acme"],
+    [{ ats: "lever", slug: "acme" }, "https://jobs.lever.co/acme"],
+    [{ ats: "ashby", slug: "acme" }, "https://jobs.ashbyhq.com/acme"],
+    [{ ats: "workable", slug: "acme" }, "https://apply.workable.com/acme"],
+    [{ ats: "recruitee", slug: "acme" }, "https://acme.recruitee.com"],
+    [{ ats: "smartrecruiters", slug: "BoschGroup" }, "https://jobs.smartrecruiters.com/BoschGroup"],
+  ])("%j → %s", (ref, url) => {
+    expect(boardUrl(ref)).toBe(url);
+  });
+
+  it("round-trips through parseAtsUrl", () => {
+    for (const ats of ["greenhouse", "lever", "ashby", "workable", "recruitee", "smartrecruiters"] as const) {
+      expect(parseAtsUrl(boardUrl({ ats, slug: "Acme" }))).toEqual({ ats, slug: ats === "smartrecruiters" ? "Acme" : "acme" });
+    }
   });
 });

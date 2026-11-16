@@ -960,7 +960,7 @@
   - `sample prints n rows with board urls`
   - `usage error → 1`
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ---
 

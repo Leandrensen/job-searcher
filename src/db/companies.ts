@@ -206,3 +206,46 @@ export function companyCounts(db: Db): { active: number; inactive: number; byAts
   }
   return { active, inactive, byAts };
 }
+
+export function getCandidate(db: Db, id: number): CandidateRow | undefined {
+  return db.select().from(companyCandidates).where(eq(companyCandidates.id, id)).get();
+}
+
+export function findCandidateByName(db: Db, name: string): CandidateRow | undefined {
+  return db.select().from(companyCandidates).where(eq(companyCandidates.normalizedName, normalizeCompany(name))).get();
+}
+
+export function listActiveCompanies(db: Db): CompanyRow[] {
+  return db.select().from(companies).where(eq(companies.status, "active")).orderBy(asc(companies.id)).all();
+}
+
+/**
+ * Add a company by hand (confirmed by definition). If it already exists it is reactivated, and its name and
+ * home country are updated only when given.
+ */
+export function addManualCompany(
+  db: Db,
+  c: { ats: AtsId; slug: string; name: string | null; homeCountry: string | null; website?: string | null },
+  nowIso: string,
+): { companyId: number; created: boolean; name: string } {
+  const existing = db
+    .select()
+    .from(companies)
+    .where(and(eq(companies.ats, c.ats), eq(companies.slug, c.slug)))
+    .get();
+  if (!existing) {
+    const name = c.name ?? c.slug;
+    const companyId = insertOrGetCompany(
+      db,
+      { ats: c.ats, slug: c.slug, name, website: c.website ?? null, homeCountry: c.homeCountry, origin: "manual" },
+      nowIso,
+    );
+    return { companyId, created: true, name };
+  }
+  const name = c.name ?? existing.name;
+  db.update(companies)
+    .set({ name, homeCountry: c.homeCountry ?? existing.homeCountry, status: "active", consecutiveFailures: 0 })
+    .where(eq(companies.id, existing.id))
+    .run();
+  return { companyId: existing.id, created: false, name };
+}
