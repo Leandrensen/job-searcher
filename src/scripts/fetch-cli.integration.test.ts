@@ -14,15 +14,13 @@ type ComparableRow = Omit<SummaryRow, "ms">;
 const EXPECTED_FIRST_RUN: ComparableRow[] = [
   { source: "remoteok", status: "success", fetched: 4, inserted: 3, updated: 0, invalid: 0, filtered: 1, error: "" },
   { source: "weworkremotely", status: "success", fetched: 15, inserted: 3, updated: 0, invalid: 0, filtered: 0, error: "" },
-  { source: "getonboard", status: "success", fetched: 24, inserted: 4, updated: 0, invalid: 0, filtered: 0, error: "" },
   { source: "remotive", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
   { source: "himalayas", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
   { source: "jobicy", status: "success", fetched: 3, inserted: 3, updated: 0, invalid: 0, filtered: 0, error: "" },
   { source: "workingnomads", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
   { source: "arbeitnow", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
-  { source: "hn-hiring", status: "success", fetched: 4, inserted: 3, updated: 0, invalid: 1, filtered: 0, error: "" },
 ];
-const TOTAL_JOBS = 24;
+const TOTAL_JOBS = 17;
 
 const withoutMs = (r: SummaryRow): ComparableRow => ({
   source: r.source,
@@ -69,7 +67,7 @@ describe("fetch CLI, offline end to end", () => {
     expect(logs).toContain(`Total jobs in DB: ${TOTAL_JOBS}`);
 
     const runs = db.select().from(fetchRuns).all();
-    expect(runs).toHaveLength(9);
+    expect(runs).toHaveLength(7);
     expect(runs.every((r) => r.status === "success")).toBe(true);
     expect(db.select().from(jobs).all().filter((j) => j.duplicateOf !== null)).toHaveLength(0);
   });
@@ -85,7 +83,7 @@ describe("fetch CLI, offline end to end", () => {
     await run([]);
     const { code, rows, logs } = await run([]);
     expect(code).toBe(0);
-    expect(rows.map((r) => r.status)).toEqual(Array(9).fill("skipped"));
+    expect(rows.map((r) => r.status)).toEqual(Array(7).fill("skipped"));
     expect(logs).toContain(`Total jobs in DB: ${TOTAL_JOBS}`);
   });
 
@@ -93,7 +91,7 @@ describe("fetch CLI, offline end to end", () => {
     const first = await run([]);
     const { code, rows, logs } = await run(["--force"]);
     expect(code).toBe(0);
-    expect(rows.map((r) => r.inserted)).toEqual(Array(9).fill(0));
+    expect(rows.map((r) => r.inserted)).toEqual(Array(7).fill(0));
     expect(rows.map((r) => r.updated)).toEqual(first.rows.map((r) => r.inserted));
     expect(logs).toContain(`Total jobs in DB: ${TOTAL_JOBS}`);
   });

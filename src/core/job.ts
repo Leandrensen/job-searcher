@@ -3,13 +3,11 @@ import { z } from "zod";
 export const SOURCE_IDS = [
   "remoteok",
   "weworkremotely",
-  "getonboard",
   "remotive",
   "himalayas",
   "jobicy",
   "workingnomads",
   "arbeitnow",
-  "hn-hiring",
 ] as const;
 export type SourceId = (typeof SOURCE_IDS)[number];
 

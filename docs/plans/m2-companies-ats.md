@@ -87,7 +87,7 @@
   - `src/scripts/fetch-cli.test.ts`: the exact unknown-source message becomes `Unknown source: nope. Valid: remoteok, weworkremotely, remotive, himalayas, jobicy, workingnomads, arbeitnow`.
 - Verify: `npm run lint && npm run typecheck && npm test` all pass; `grep -rn "getonboard\|hn-hiring\|hnHiring" src test` prints nothing.
 - Commit type: `refactor`.
-- [ ] Done
+- [x] Done
 
 ### T2: `Job` schema v2 and a fresh first migration (depends on T1)
 - **Files:**

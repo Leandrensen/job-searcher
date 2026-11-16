@@ -19,13 +19,11 @@ describe("source registry", () => {
     expect(ids).toEqual([
       "remoteok",
       "weworkremotely",
-      "getonboard",
       "remotive",
       "himalayas",
       "jobicy",
       "workingnomads",
       "arbeitnow",
-      "hn-hiring",
     ]);
   });
 
@@ -40,9 +38,8 @@ describe("source registry", () => {
     expect(typeof adapter.techFilter).toBe("boolean");
   });
 
-  it("keeps the 6 hour minimum interval for rate-limited sources", () => {
+  it("keeps the 6 hour minimum interval for the rate-limited source", () => {
     const interval = (id: string) => adapters.find((a) => a.id === id)?.minIntervalMinutes;
     expect(interval("remotive")).toBe(360);
-    expect(interval("hn-hiring")).toBe(360);
   });
 });

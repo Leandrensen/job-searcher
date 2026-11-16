@@ -87,7 +87,7 @@ describe("runCli argument validation", () => {
     await runCli(["--source", "nope"], d);
     expect(d.out.error).toHaveBeenCalledTimes(1);
     expect(d.out.error).toHaveBeenCalledWith(
-      "Unknown source: nope. Valid: remoteok, weworkremotely, getonboard, remotive, himalayas, jobicy, workingnomads, arbeitnow, hn-hiring",
+      "Unknown source: nope. Valid: remoteok, weworkremotely, remotive, himalayas, jobicy, workingnomads, arbeitnow",
     );
   });
 

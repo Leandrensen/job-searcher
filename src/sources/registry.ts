@@ -1,7 +1,5 @@
 import { arbeitnow } from "./boards/arbeitnow";
-import { getonboard } from "./boards/getonboard";
 import { himalayas } from "./boards/himalayas";
-import { hnHiring } from "./boards/hn-hiring";
 import { jobicy } from "./boards/jobicy";
 import { remoteok } from "./boards/remoteok";
 import { remotive } from "./boards/remotive";
@@ -13,11 +11,9 @@ import type { AnyAdapter } from "./types";
 export const adapters: AnyAdapter[] = [
   remoteok,
   weworkremotely,
-  getonboard,
   remotive,
   himalayas,
   jobicy,
   workingnomads,
   arbeitnow,
-  hnHiring,
 ];

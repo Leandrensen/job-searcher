@@ -174,7 +174,7 @@ describe("runSources", () => {
       active--;
       return [];
     };
-    const ids: SourceId[] = ["remoteok", "weworkremotely", "getonboard", "remotive", "himalayas", "jobicy"];
+    const ids: SourceId[] = ["remoteok", "weworkremotely", "workingnomads", "remotive", "himalayas", "jobicy"];
 
     const results = await run(ids.map((id) => fakeAdapter(id, { fetch: tracked }).adapter));
 
