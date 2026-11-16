@@ -898,7 +898,7 @@
     | Massive Dynamic | Active | true | (none) | kept, null |
 - Verify: `npm test -- src/companies/seeds.test.ts` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T20: `npm run seed` (`src/scripts/seed-cli.ts` + `src/scripts/seed.ts`, depends on T8, T18, T19)
 - **Pattern:** the same as `fetch-cli.ts`/`fetch.ts`. A testable `runSeedCli(argv, deps)` returns an exit code; `seed.ts` is thin process wiring. Add `"seed": "tsx src/scripts/seed.ts"` to `package.json`, and add `src/scripts/seed.ts` to `coverage.exclude` in `vitest.config.mts` (wiring only, like `fetch.ts`).

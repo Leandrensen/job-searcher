@@ -1,0 +1,8 @@
+[
+  { "name": "Initech", "website": "https://initech.example", "status": "Active", "isHiring": true, "all_locations": "San Francisco, CA, USA" },
+  { "name": "Hooli", "website": "https://hooli.example", "status": "Active", "isHiring": false, "all_locations": "Palo Alto, CA, USA" },
+  { "name": "Vandelay", "website": "https://vandelay.example", "status": "Active", "isHiring": true, "all_locations": "Buenos Aires, Argentina" },
+  { "name": "Globodyne", "website": "https://globodyne.example", "status": "Inactive", "isHiring": true, "all_locations": "New York, NY, USA" },
+  { "name": "Umbrella", "website": "https://umbrella.example", "status": "Active", "isHiring": true, "all_locations": "London, England, United Kingdom; Paris, France" },
+  { "name": "Massive Dynamic", "website": "https://massive.example", "status": "Active", "isHiring": true }
+]
