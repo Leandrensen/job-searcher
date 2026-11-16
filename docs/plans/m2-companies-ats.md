@@ -577,7 +577,7 @@
   - `countJobs openOnly excludes closed jobs`
 - Verify: `npm test -- src/db` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ---
 
