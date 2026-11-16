@@ -50,6 +50,13 @@ Detailed spec: [docs/plans/m1-board-apis.md](docs/plans/m1-board-apis.md)
 
 Verify: `npm test`, lint, and typecheck pass. `npm run test:live` gets jobs from every source. Running `npm run fetch` twice adds only new jobs on the second run.
 
+### M1.1: Bug fixes and test hardening (done)
+Detailed spec: [docs/plans/m1.1-test-hardening.md](docs/plans/m1.1-test-hardening.md)
+
+- [x] Fix 5 known bugs test-first, make adapter tests exact, extract the CLI and add an offline integration test, close small test gaps, and optionally add a coverage report.
+
+Verify: lint, typecheck and `npm test` pass; no loose matchers in adapter tests; no `vi.mock` in `src/`.
+
 ### M2: ATS sources (current)
 Find ATS companies automatically from job URLs and HN posts. Add adapters for Greenhouse, Lever, Ashby, Workable, Recruitee and SmartRecruiters. Poll each known company. Backfill companies from past HN threads once.
 
@@ -77,3 +84,4 @@ Fetch on a local schedule, send a daily digest of new matches, and optionally ad
 - 2026-11-09: ATS companies are found automatically from job URLs; no manual company list.
 - 2026-11-09: The Muse excluded: its API is blocked by Cloudflare (403).
 - 2026-11-10: M1 done; Remotive kept (12 jobs, 6h minimum interval). Pinned Node 22 (`.nvmrc`). TypeScript held at 6.0 until typescript-eslint supports 7. About 0.7% of jobs are cross-source duplicates (marked, not deleted).
+- 2026-11-12: M1.1 test hardening done: 5 bugs fixed test-first (plus prototype-key entity decoding and Retry-After parsing), exact adapter assertions, offline CLI integration test over all adapters. Coverage 98.7% lines / 89.07% branches (thresholds 95/85/90/95 set). `@vitest/coverage-v8` added.

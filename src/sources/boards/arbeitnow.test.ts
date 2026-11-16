@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { expectCleanText } from "@/test-utils/assertions";
 import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
@@ -52,13 +53,14 @@ describe("arbeitnow adapter", () => {
 
   it("normalizes a typical item", () => {
     const raw = arbeitnow.itemSchema.parse(fixture.data[1]);
-    expect(arbeitnow.normalize(raw)).toEqual({
+    const { descriptionHtml, descriptionText, ...rest } = arbeitnow.normalize(raw)!;
+    expect(rest).toEqual({
       source: "arbeitnow",
       externalId: "remote-rust-software-engineer-rust-c-gilching-217668",
-      url: expect.stringContaining("https://www.arbeitnow.com/jobs/companies/"),
+      url: "https://www.arbeitnow.com/jobs/companies/quantum-systems-gmbh/remote-rust-software-engineer-rust-c-gilching-217668",
       applyUrl: null,
       title: "Rust Software Engineer - Rust / C++ (m/f/d)",
-      company: expect.any(String),
+      company: "Quantum-Systems GmbH",
       location: "Remote job",
       remote: true,
       tags: ["software", "remote", "experienced", "fulltime permanent"],
@@ -66,10 +68,11 @@ describe("arbeitnow adapter", () => {
       salaryMax: null,
       salaryCurrency: null,
       salaryPeriod: null,
-      descriptionHtml: expect.stringMatching(/^</),
-      descriptionText: expect.any(String),
       postedAt: "2026-11-09T18:31:18.000Z",
     });
+    expect(descriptionHtml).toContain("Quantum Systems develops autonomous, multi-domain systems");
+    expect(descriptionHtml).not.toContain("&lt;");
+    expectCleanText(descriptionText, "Quantum Systems develops autonomous, multi-domain systems that operate in the air");
   });
 
   it("decodes escaped description html", () => {

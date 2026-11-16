@@ -1,28 +1,47 @@
 import { describe, expect, it, vi } from "vitest";
 import type { HttpClient } from "@/core/http";
+import { expectCleanText } from "@/test-utils/assertions";
+import { createFixtureHttp } from "@/test-utils/fixture-http";
 import { loadFixtureText } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { weworkremotely } from "./weworkremotely";
 
+const BASE = "https://weworkremotely.com/categories/";
+const FEED_URLS = [
+  `${BASE}remote-programming-jobs.rss`,
+  `${BASE}remote-full-stack-programming-jobs.rss`,
+  `${BASE}remote-back-end-programming-jobs.rss`,
+  `${BASE}remote-front-end-programming-jobs.rss`,
+  `${BASE}remote-devops-sysadmin-jobs.rss`,
+];
+const routes = Object.fromEntries(FEED_URLS.map((u) => [u, "weworkremotely/programming.rss"]));
 const rss = loadFixtureText("weworkremotely/programming.rss");
 
-function ctxWith(getText: HttpClient["getText"]): FetchContext & { log: ReturnType<typeof vi.fn> } {
-  const log = vi.fn();
-  return { http: { getJson: vi.fn(), getText }, latestPostedAt: null, log };
+function ctx() {
+  const http = createFixtureHttp(routes);
+  const context: FetchContext = { http, latestPostedAt: null, log: () => {} };
+  return { context, http };
+}
+
+function ctxWithGetText(getText: HttpClient["getText"]) {
+  const log = vi.fn<(msg: string) => void>();
+  const context: FetchContext = { http: { getJson: vi.fn(), getText }, latestPostedAt: null, log };
+  return { context, log };
 }
 
 describe("weworkremotely adapter", () => {
-  it("fetches every feed one after another", async () => {
-    const getText = vi.fn(async () => rss);
-    const items = await weworkremotely.fetch(ctxWith(getText));
-    expect(getText).toHaveBeenCalledTimes(5);
+  it("fetches the five category feeds one after another, in order", async () => {
+    const { context, http } = ctx();
+    const items = await weworkremotely.fetch(context);
+    expect(http.calls).toEqual(FEED_URLS);
     expect(items).toHaveLength(15);
   });
 
   it("normalizes a typical item", async () => {
-    const [raw] = await weworkremotely.fetch(ctxWith(async () => rss));
-    expect(weworkremotely.normalize(weworkremotely.itemSchema.parse(raw))).toEqual({
+    const [raw] = await weworkremotely.fetch(ctx().context);
+    const { descriptionHtml, descriptionText, ...rest } = weworkremotely.normalize(weworkremotely.itemSchema.parse(raw))!;
+    expect(rest).toEqual({
       source: "weworkremotely",
       externalId: "https://weworkremotely.com/remote-jobs/alloy-founding-forward-deployed-engineer",
       url: "https://weworkremotely.com/remote-jobs/alloy-founding-forward-deployed-engineer",
@@ -36,10 +55,10 @@ describe("weworkremotely adapter", () => {
       salaryMax: null,
       salaryCurrency: null,
       salaryPeriod: null,
-      descriptionHtml: expect.stringContaining("<strong>Headquarters:</strong>"),
-      descriptionText: expect.stringContaining("Headquarters: New York City, Remote"),
       postedAt: "2026-10-18T07:31:05.000Z",
     });
+    expect(descriptionHtml).toContain("<strong>Headquarters:</strong> New York City, Remote");
+    expectCleanText(descriptionText, "Headquarters: New York City, Remote");
   });
 
   it("returns null when title has no company separator", () => {
@@ -62,31 +81,29 @@ describe("weworkremotely adapter", () => {
     expect(weworkremotely.normalize(raw)).toMatchObject({ company: "Acme", title: "Engineer: Platform" });
   });
 
-  it("dedupes the same guid from two feeds", async () => {
-    const r = await runAdapter(weworkremotely, ctxWith(async () => rss));
+  it("dedupes the same guid from several feeds", async () => {
+    const r = await runAdapter(weworkremotely, ctx().context);
     expect(r).toMatchObject({ status: "success", fetched: 15, invalid: 0, filtered: 0 });
     expect(r.jobs).toHaveLength(3);
   });
 
   it("continues when one feed fails", async () => {
     let n = 0;
-    const getText = vi.fn(async () => {
-      if (n++ === 0) throw new Error("feed down");
-      return rss;
-    });
-    const ctx = ctxWith(getText);
-    const items = await weworkremotely.fetch(ctx);
+    const { context, log } = ctxWithGetText(
+      vi.fn(async () => {
+        if (n++ === 0) throw new Error("feed down");
+        return rss;
+      }),
+    );
+    const items = await weworkremotely.fetch(context);
     expect(items).toHaveLength(12);
-    expect(ctx.log).toHaveBeenCalledWith(expect.stringContaining("feed down"));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("feed down"));
   });
 
   it("throws when all feeds fail", async () => {
-    await expect(
-      weworkremotely.fetch(
-        ctxWith(async () => {
-          throw new Error("down");
-        }),
-      ),
-    ).rejects.toThrow(/All 5 feeds failed/);
+    const { context } = ctxWithGetText(async () => {
+      throw new Error("down");
+    });
+    await expect(weworkremotely.fetch(context)).rejects.toThrow(/All 5 feeds failed/);
   });
 });

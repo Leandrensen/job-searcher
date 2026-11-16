@@ -8,6 +8,7 @@ Personal, single-user tool that collects IT job postings from free public job AP
 - Fetch jobs: `npm run fetch` (single source: `npm run fetch -- --source remoteok`)
 - Test: `npm test` (single file: `npm test -- path/to/file.test.ts`)
 - Live API checks (real network, run manually): `npm run test:live`
+- Coverage: `npm run test:coverage` (text summary; HTML report in `coverage/`; thresholds enforced)
 - Lint/typecheck: `npm run lint && npm run typecheck`
 - DB: `npm run db:generate` (new migration), `npm run db:migrate` (apply)
 

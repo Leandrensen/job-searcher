@@ -1,27 +1,51 @@
+/** Named HTML entities we decode. Lookup is case-sensitive, as in HTML (`&Eacute;` is not `&eacute;`). */
 const NAMED: Record<string, string> = {
-  amp: "&",
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-  nbsp: " ",
+  // basics
+  amp: "&", AMP: "&", lt: "<", LT: "<", gt: ">", GT: ">", quot: '"', QUOT: '"', apos: "'", nbsp: " ",
+  // punctuation
+  mdash: "—", ndash: "–", hellip: "…",
+  lsquo: "‘", rsquo: "’", sbquo: "‚",
+  ldquo: "“", rdquo: "”", bdquo: "„",
+  laquo: "«", raquo: "»", bull: "•", middot: "·", shy: "",
+  // symbols
+  copy: "©", reg: "®", trade: "™",
+  deg: "°", times: "×", divide: "÷", plusmn: "±",
+  euro: "€", pound: "£", yen: "¥", cent: "¢",
+  sect: "§", para: "¶", iexcl: "¡", iquest: "¿",
+  // letters
+  aacute: "á", Aacute: "Á", eacute: "é", Eacute: "É", iacute: "í", Iacute: "Í",
+  oacute: "ó", Oacute: "Ó", uacute: "ú", Uacute: "Ú", ntilde: "ñ", Ntilde: "Ñ",
+  uuml: "ü", Uuml: "Ü", ouml: "ö", Ouml: "Ö", auml: "ä", Auml: "Ä", szlig: "ß",
+  ccedil: "ç", Ccedil: "Ç", agrave: "à", egrave: "è", ograve: "ò",
+  acirc: "â", ecirc: "ê", ocirc: "ô", atilde: "ã", otilde: "õ",
 };
 
-/** Decodes HTML entities in a single pass (`&amp;lt;` becomes `&lt;`). Unknown entities stay as they are. */
+/** The character for a numeric entity, or null when the code point is not a valid character. */
+function fromCodePoint(n: number): string | null {
+  const isSurrogate = n >= 0xd800 && n <= 0xdfff;
+  return Number.isInteger(n) && n >= 1 && n <= 0x10ffff && !isSurrogate ? String.fromCodePoint(n) : null;
+}
+
+/**
+ * Decodes HTML entities in a single pass (`&amp;lt;` becomes `&lt;`).
+ * Unknown names and invalid numeric entities stay as they are; never throws.
+ */
 export function decodeEntities(s: string): string {
   return s.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, body: string) => {
     if (body.startsWith("#x") || body.startsWith("#X")) {
-      return String.fromCodePoint(parseInt(body.slice(2), 16));
+      return fromCodePoint(parseInt(body.slice(2), 16)) ?? match;
     }
     if (body.startsWith("#")) {
-      return String.fromCodePoint(parseInt(body.slice(1), 10));
+      return fromCodePoint(parseInt(body.slice(1), 10)) ?? match;
     }
-    return NAMED[body.toLowerCase()] ?? match;
+    return Object.hasOwn(NAMED, body) ? NAMED[body]! : match;
   });
 }
 
 export function htmlToText(html: string): string {
   const text = decodeEntities(html)
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<br\s*\/?>|<\/(?:p|li|div|h[1-6])>/gi, "\n")
     .replace(/<li[^>]*>/gi, "- ")
     .replace(/<[^>]+>/g, "");

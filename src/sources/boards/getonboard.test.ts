@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { HttpClient } from "@/core/http";
+import { expectCleanText } from "@/test-utils/assertions";
 import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
@@ -43,10 +44,11 @@ describe("getonboard adapter", () => {
 
   it("normalizes a typical item", () => {
     const raw = getonboard.itemSchema.parse(fixture.data[0]);
-    expect(getonboard.normalize(raw)).toEqual({
+    const { descriptionHtml, descriptionText, ...rest } = getonboard.normalize(raw)!;
+    expect(rest).toEqual({
       source: "getonboard",
       externalId: "semi-senior-full-stack-java-developer-qa-ai-bilingue-23people-santiago",
-      url: expect.stringContaining("https://www.getonbrd.com/jobs/"),
+      url: "https://www.getonbrd.com/jobs/semi-senior-full-stack-java-developer-qa-ai-bilingue-23people-santiago",
       applyUrl: null,
       title: "Semi Senior Full-Stack Java Developer (QA & AI) Bilingüe",
       company: "23people",
@@ -57,10 +59,10 @@ describe("getonboard adapter", () => {
       salaryMax: 3000,
       salaryCurrency: "USD",
       salaryPeriod: "month",
-      descriptionHtml: expect.stringContaining("Java y Spring Boot"),
-      descriptionText: expect.stringContaining("Java y Spring Boot"),
       postedAt: "2026-11-09T12:28:17.000Z",
     });
+    expect(descriptionHtml).toContain("<ul><li>Experiencia comprobable con Java y Spring Boot");
+    expectCleanText(descriptionText, "- Experiencia comprobable con Java y Spring Boot en proyectos reales.");
   });
 
   it("maps remote modalities", () => {
