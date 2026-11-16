@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JobSchema, salaryPeriodFrom, type Job } from "./job";
+import { ATS_IDS, BOARD_IDS, JobSchema, SOURCE_IDS, salaryPeriodFrom, type Job } from "./job";
 
 const valid: Job = {
   source: "remoteok",
@@ -9,7 +9,10 @@ const valid: Job = {
   title: "Senior React Developer",
   company: "Acme",
   location: "Worldwide",
-  remote: true,
+  workplaceType: "remote",
+  departments: [],
+  regions: [],
+  employmentType: null,
   tags: ["react"],
   salaryMin: 100000,
   salaryMax: 150000,
@@ -31,6 +34,17 @@ describe("JobSchema", () => {
 
   it("rejects non-url url", () => {
     expect(JobSchema.safeParse({ ...valid, url: "not a url" }).success).toBe(false);
+  });
+
+  it("rejects an unknown workplaceType", () => {
+    expect(JobSchema.safeParse({ ...valid, workplaceType: "office" }).success).toBe(false);
+    expect(JobSchema.safeParse({ ...valid, workplaceType: null }).success).toBe(true);
+  });
+
+  it("accepts every ATS source id", () => {
+    for (const source of ATS_IDS) expect(JobSchema.safeParse({ ...valid, source }).success).toBe(true);
+    expect([...SOURCE_IDS]).toEqual([...BOARD_IDS, ...ATS_IDS]);
+    expect([...ATS_IDS]).toEqual(["greenhouse", "lever", "ashby", "workable", "recruitee", "smartrecruiters"]);
   });
 
   it("rejects lowercase or 2-letter currency", () => {

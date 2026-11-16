@@ -18,14 +18,17 @@ const baseJob = {
 describe("openDb", () => {
   it("creates both tables when migrate is true", () => {
     const db = openDb({ url: ":memory:", migrate: true });
-    db.insert(jobs).values({ ...baseJob, tags: ["a"], remote: true }).run();
+    db.insert(jobs).values({ ...baseJob, tags: ["a"], workplaceType: "remote", departments: ["Eng"], regions: ["latam"], employmentType: "full-time" }).run();
     db.insert(fetchRuns)
       .values({ source: "remoteok", startedAt: "s", finishedAt: "f", status: "success" })
       .run();
     const job = db.select().from(jobs).get();
     expect(job?.title).toBe("Dev");
     expect(job?.tags).toEqual(["a"]);
-    expect(job?.remote).toBe(true);
+    expect(job?.workplaceType).toBe("remote");
+    expect(job?.departments).toEqual(["Eng"]);
+    expect(job?.regions).toEqual(["latam"]);
+    expect(job?.employmentType).toBe("full-time");
     expect(db.select().from(fetchRuns).get()?.fetched).toBe(0);
   });
 

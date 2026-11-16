@@ -66,7 +66,10 @@ describe("himalayas adapter", () => {
       title: "Java developer - Germany",
       company: "Blackbird Collective",
       location: "Germany",
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: [
         "java development", "backend engineering", "software engineer", "kotlin", "backend development",
         "java developer", "java developer jobs", "java application developer", "java software engineer", "senior",

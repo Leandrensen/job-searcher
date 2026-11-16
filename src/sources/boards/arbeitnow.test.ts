@@ -62,7 +62,10 @@ describe("arbeitnow adapter", () => {
       title: "Rust Software Engineer - Rust / C++ (m/f/d)",
       company: "Quantum-Systems GmbH",
       location: "Remote job",
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: ["software", "remote", "experienced", "fulltime permanent"],
       salaryMin: null,
       salaryMax: null,
@@ -87,7 +90,7 @@ describe("arbeitnow adapter", () => {
 
   it("maps an empty location to null", () => {
     const raw = arbeitnow.itemSchema.parse(fixture.data[2]);
-    expect(arbeitnow.normalize(raw)).toMatchObject({ location: null, remote: false });
+    expect(arbeitnow.normalize(raw)).toMatchObject({ location: null, workplaceType: null });
   });
 
   it("applies the tech filter via runAdapter", async () => {

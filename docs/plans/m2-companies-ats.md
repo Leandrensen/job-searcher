@@ -127,7 +127,7 @@
 - **Tests first** (`job.test.ts`): `rejects an unknown workplaceType` and `accepts every ATS source id`.
 - Verify: `npm run lint && npm run typecheck && npm test` pass; `ls drizzle` shows exactly one `0000_*.sql`.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T3: `companies` and `company_candidates` tables, plus job links (depends on T2)
 - **Files:** `src/db/schema.ts`, `src/db/client.test.ts`, `drizzle/` (new migration via `npm run db:generate`; do **not** delete the T2 migration).

@@ -37,7 +37,10 @@ describe("remotive adapter", () => {
       title: "Tier III Service Desk Engineer",
       company: "Unio Digital",
       location: "Worldwide",
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: [
         "azure", "cisco", "security", "video", "documentation", "hardware", "helpdesk",
         "onboarding", "msp", "ticketing", "microsoft 365", "it systems", "information technology",
