@@ -30,7 +30,7 @@ describe("source registry", () => {
       "arbeitnow",
     ]);
     // Each task of M2 Part D appends one ATS here.
-    expect(atsIds).toEqual(["greenhouse", "lever"]);
+    expect(atsIds).toEqual(["greenhouse", "lever", "ashby"]);
   });
 
   it.each(ids)("adapter %s has a file with the same name", (id) => {

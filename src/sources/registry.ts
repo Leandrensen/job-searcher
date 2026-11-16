@@ -1,5 +1,6 @@
 import type { AtsId } from "@/core/job";
 import type { ProbeFn } from "@/companies/types";
+import { ashby, probeAshby } from "./ats/ashby";
 import { greenhouse, probeGreenhouse } from "./ats/greenhouse";
 import { lever, probeLever } from "./ats/lever";
 import { arbeitnow } from "./boards/arbeitnow";
@@ -23,7 +24,7 @@ export const boardAdapters: AnyAdapter[] = [
 ];
 
 /** ATSs: the only source of stored jobs. Each task of M2 Part D adds one. */
-export const atsAdapters: AnyAdapter[] = [greenhouse, lever];
+export const atsAdapters: AnyAdapter[] = [greenhouse, lever, ashby];
 
 /** Enabled sources, in the order they run and appear in summaries. */
 export const adapters: AnyAdapter[] = [...boardAdapters, ...atsAdapters];
@@ -32,4 +33,5 @@ export const adapters: AnyAdapter[] = [...boardAdapters, ...atsAdapters];
 export const atsProbes: Partial<Record<AtsId, ProbeFn>> = {
   greenhouse: probeGreenhouse,
   lever: probeLever,
+  ashby: probeAshby,
 };

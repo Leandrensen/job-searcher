@@ -30,6 +30,7 @@ describe("live adapters", () => {
   const atsCompanies: Record<string, CompanyRef> = {
     greenhouse: { id: 1, ats: "greenhouse", slug: "mozilla", name: "Mozilla", homeCountry: "US" },
     lever: { id: 2, ats: "lever", slug: "curai", name: "Curai", homeCountry: "US" },
+    ashby: { id: 3, ats: "ashby", slug: "livekit", name: "LiveKit", homeCountry: "US" },
   };
   for (const adapter of atsAdapters) {
     it(

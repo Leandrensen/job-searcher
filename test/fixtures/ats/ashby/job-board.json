@@ -1,0 +1,239 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {
+      "id": "1757f49e-7e19-4c45-85f7-e4637dff66fb",
+      "title": "Software Engineer, Agents",
+      "department": "R&D",
+      "team": "Engineering",
+      "employmentType": "FullTime",
+      "location": "North America",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "secondaryLocations": [
+        {
+          "location": "EMEA",
+          "address": {
+            "postalAddress": {
+              "addressCountry": "EMEA"
+            }
+          }
+        }
+      ],
+      "publishedAt": "2026-08-11T00:18:10.574+00:00",
+      "isListed": true,
+      "isRemote": true,
+      "workplaceType": "Remote",
+      "address": {
+        "postalAddress": {
+          "addressCountry": "NAMER"
+        }
+      },
+      "jobUrl": "https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb",
+      "applyUrl": "https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb/application",
+      "descriptionHtml": "<h2><strong>About LiveKit</strong></h2><p style=\"min-height:1.5em\">LiveKit is building the infrastructure layer for the agentic era of computing. Our platform gives developers everything they need to build, test, deploy, scale, and observe AI agents in production. Founded in 2021, LiveKit powers voice and agentic AI applications for OpenAI, Salesforce, Spotify, Meta, and tens of thousands of other developers, collectively facilitating billions of calls each year.</p><p style=\"min-height:1.5em\"></p><h2><strong>About This Role</strong></h2><p style=\"min-height:1.5em\">We are looking for an exceptional engineer to join the <strong>Agents team</strong> and help shape the future of agentic computing. You'll work on the core abstractions and infrastructure that developers use to build sophisticated AI agents; from real-time voice and text interactions to durable workflows and agent-to-agent communication.</p><p style=\"min-height:1.5em\"></p><h2><strong>What You'll Do</strong></h2><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Design and develop core functionality for the LiveKit Agents framework</p></li><li><p style=\"min-height:1.5em\"><strong>Help define the text modality of the framework</strong>, enabling agents to interact with users across channels such as SMS</p></li><li><p style=\"min-height:1.5em\"><strong>Design abstractions for stateful and durable agentic workflows</strong>, allowing agents to maintain state and coordinate work across interactions that may span minutes, hours, or longer</p></li><li><p style=\"min-height:1.5em\"><strong>Shape agent-to-agent communication and delegation patterns</strong>, enabling voice agents to hand off tasks, collaborate, and compose into more sophisticated systems</p></li><li><p style=\"min-height:1.5em\">Build simple, powerful developer APIs over complex distributed and real-time systems</p></li><li><p style=\"min-height:1.5em\">Iterate quickly based on feedback from our developer community</p></li><li><p style=\"min-height:1.5em\">Write clear documentation, examples, and reference implementations</p></li><li><p style=\"min-height:1.5em\">Work primarily with Python and TypeScript</p></li></ul><p style=\"min-height:1.5em\"></p><h2><strong>Who You Are</strong></h2><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Experienced building LLM-based applications and agentic systems</p></li><li><p style=\"min-height:1.5em\">Skilled at navigating complex systems and turning complexity into clean abstractions</p></li><li><p style=\"min-height:1.5em\">Comfortable reasoning about state, concurrency and asynchronous workflows</p></li><li><p style=\"min-height:1.5em\">Product-minded and excited about designing APIs and developer experiences</p></li><li><p style=\"min-height:1.5em\">Experience building developer tools, frameworks, or SDKs is a plus</p></li><li><p style=\"min-height:1.5em\">Interested in exploring emerging patterns in agent architecture rather than simply applying established ones</p></li><li><p style=\"min-height:1.5em\">Comfortable working collaboratively in a remote environment</p></li></ul><h2></h2><h2><strong>Our Commitment to You</strong></h2><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">An opportunity to build something truly impactful to the world</p></li><li><p style=\"min-height:1.5em\">Contribute to open source alongside world-class engineers</p></li><li><p style=\"min-height:1.5em\">Competitive salary and equity package</p></li><li><p style=\"min-height:1.5em\">Health, dental, and vision benefits</p></li><li><p style=\"min-height:1.5em\">Flexible vacation policy</p></li></ul><p style=\"min-height:1.5em\"></p><p style=\"min-height:1.5em\">LiveKit is an equal opportunity employer and does not discriminate on the basis of any characteristic protected by applicable law. If you require a reasonable accommodation during the application or interview process, please contact recruiting@livekit.io.</p><p style=\"min-height:1.5em\"></p>",
+      "descriptionPlain": "ABOUT LIVEKIT\n\nLiveKit is building the infrastructure layer for the agentic era of computing. Our platform gives developers everything they need to build, test, deploy, scale, and observe AI agents in production. Founded in 2021, LiveKit powers voice and agentic AI applications for OpenAI, Salesforce, Spotify, Meta, and tens of thousands of other developers, collectively facilitating billions of calls each year.\n\n\n\n\nABOUT THIS ROLE\n\nWe are looking for an exceptional engineer to join the Agents team and help shape the future of agentic computing. You'll work on the core abstractions and infrastructure that developers use to build sophisticated AI agents; from real-time voice and text interactions to durable workflows and agent-to-agent communication.\n\n\n\n\nWHAT YOU'LL DO\n\n - Design and develop core functionality for the LiveKit Agents framework\n\n - Help define the text modality of the framework, enabling agents to interact with users across channels such as SMS\n\n - Design abstractions for stateful and durable agentic workflows, allowing agents to maintain state and coordinate work across interactions that may span minutes, hours, or longer\n\n - Shape agent-to-agent communication and delegation patterns, enabling voice agents to hand off tasks, collaborate, and compose into more sophisticated systems\n\n - Build simple, powerful developer APIs over complex distributed and real-time systems\n\n - Iterate quickly based on feedback from our developer community\n\n - Write clear documentation, examples, and reference implementations\n\n - Work primarily with Python and TypeScript\n\n\n\n\nWHO YOU ARE\n\n - Experienced building LLM-based applications and agentic systems\n\n - Skilled at navigating complex systems and turning complexity into clean abstractions\n\n - Comfortable reasoning about state, concurrency and asynchronous workflows\n\n - Product-minded and excited about designing APIs and developer experiences\n\n - Experience building developer tools, frameworks, or SDKs is a plus\n\n - Interested in exploring emerging patterns in agent architecture rather than simply applying established ones\n\n - Comfortable working collaboratively in a remote environment\n\n\n\n\n\nOUR COMMITMENT TO YOU\n\n - An opportunity to build something truly impactful to the world\n\n - Contribute to open source alongside world-class engineers\n\n - Competitive salary and equity package\n\n - Health, dental, and vision benefits\n\n - Flexible vacation policy\n\n\n\nLiveKit is an equal opportunity employer and does not discriminate on the basis of any characteristic protected by applicable law. If you require a reasonable accommodation during the application or interview process, please contact recruiting@livekit.io.\n\n",
+      "compensation": {
+        "compensationTierSummary": "$135K – $300K • Offers Equity",
+        "scrapeableCompensationSalarySummary": "$135K - $300K",
+        "compensationTiers": [
+          {
+            "id": "03c75459-456a-45a7-b4f6-8a3caa329275",
+            "tierSummary": "$135K – $300K • Offers Equity",
+            "title": null,
+            "additionalInformation": null,
+            "components": [
+              {
+                "id": "75275700-f138-46e6-a659-eba0736561ab",
+                "summary": "Offers Equity",
+                "compensationType": "EquityPercentage",
+                "interval": "NONE",
+                "currencyCode": null,
+                "minValue": null,
+                "maxValue": null
+              },
+              {
+                "id": "6c6e8015-f828-44e4-8fc6-73bc8413f300",
+                "summary": "$135K – $300K",
+                "compensationType": "Salary",
+                "interval": "1 YEAR",
+                "currencyCode": "USD",
+                "minValue": 135000,
+                "maxValue": 300000
+              }
+            ]
+          }
+        ],
+        "summaryComponents": [
+          {
+            "compensationType": "EquityPercentage",
+            "interval": "NONE",
+            "currencyCode": null,
+            "minValue": null,
+            "maxValue": null
+          },
+          {
+            "compensationType": "Salary",
+            "interval": "1 YEAR",
+            "currencyCode": "USD",
+            "minValue": 135000,
+            "maxValue": 300000
+          }
+        ]
+      }
+    },
+    {
+      "id": "8ce9b064-e20b-4c71-8c53-385ea89299ae",
+      "title": "Staff Developer Advocate, Community & Events",
+      "department": "S&M",
+      "team": "Marketing",
+      "employmentType": "FullTime",
+      "location": "San Francisco, CA (Hybrid)",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "secondaryLocations": [],
+      "publishedAt": "2026-07-03T14:09:43.635+00:00",
+      "isListed": true,
+      "isRemote": true,
+      "workplaceType": "Hybrid",
+      "address": {
+        "postalAddress": {
+          "addressRegion": "California",
+          "addressCountry": "United States",
+          "addressLocality": "San Francisco"
+        }
+      },
+      "jobUrl": "https://jobs.ashbyhq.com/livekit/8ce9b064-e20b-4c71-8c53-385ea89299ae",
+      "applyUrl": "https://jobs.ashbyhq.com/livekit/8ce9b064-e20b-4c71-8c53-385ea89299ae/application",
+      "descriptionHtml": "<h1><strong>About LiveKit </strong></h1><p style=\"min-height:1.5em\">LiveKit is building the infrastructure layer for the voice-driven era of computing. Our platform gives developers everything they need to build, test, deploy, scale, and observe agents in production. Founded in 2021, LiveKit powers voice AI applications for OpenAI, xAI, Salesforce, Coursera, Spotify, and thousands of others, collectively facilitating billions of calls each year.</p><p style=\"min-height:1.5em\"></p><h1>About You</h1><p style=\"min-height:1.5em\">LiveKit is seeking a <strong>Staff</strong> <strong>Developer Advocate</strong> to help grow our presence and deepen engagement with developers, with a strong focus on <strong>events and community building</strong>. You’ll be the face of LiveKit in the Bay Area and beyond, driving awareness with developers who may not yet know us, and creating experiences that inspire them to build with real-time audio and video.</p><p style=\"min-height:1.5em\">This role is a hybrid of <strong>content creation and event execution</strong>: you’ll organize and host events, speak at meetups and conferences, and also create supporting content that extends the reach of those activities. You’ll bring back insights from the community—trends, patterns, and narratives that are top of mind for developers—and use them to inform our product, messaging, and broader DevRel strategy.</p><h3><strong>What You’ll Do</strong></h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\"><strong>Drive awareness of LiveKit</strong> with new developer audiences, especially in the Bay Area where there is a significant opportunity to grow our presence.</p></li><li><p style=\"min-height:1.5em\"><strong>Plan, host, and participate in events</strong> including meetups, hackathons, developer workshops, and conferences.</p></li><li><p style=\"min-height:1.5em\">Partner with Marketing to <strong>amplify events through digital channels</strong>, ensuring broader reach and sustained impact.</p></li><li><p style=\"min-height:1.5em\">Create <strong>content from events</strong> (recaps, demos, tutorials, blogs, social posts) to expand engagement beyond the room.</p></li><li><p style=\"min-height:1.5em\">Serve as a <strong>feedback loop for the company</strong>, bringing back developer perspectives, industry trends, and emerging patterns to inform our product and community strategy.</p></li><li><p style=\"min-height:1.5em\"><strong>Represent LiveKit on stage and in community forums</strong>, speaking authentically to developer audiences about our technology.</p></li><li><p style=\"min-height:1.5em\">Help experiment with <strong>new event formats and engagement tactics</strong>, testing what resonates most with our audience.</p></li><li><p style=\"min-height:1.5em\">Collaborate cross-functionally with DevRel, PMM, and Product to ensure developer narratives are <strong>consistent, compelling, and authentic</strong>.</p></li></ul><p style=\"min-height:1.5em\"></p><h1><strong>Who You Are</strong></h1><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">2+ years of experience in <strong>Developer Advocacy, Developer Relations, or Technical Evangelism</strong>, with a strong emphasis on events and community engagement.</p></li><li><p style=\"min-height:1.5em\">Comfortable being <strong>outward-facing</strong>—you enjoy speaking to groups, hosting sessions, and building relationships in developer communities.</p></li><li><p style=\"min-height:1.5em\">Strong <strong>technical communication skills</strong>; you can explain complex concepts in clear, engaging ways across presentations and written content.</p></li><li><p style=\"min-height:1.5em\">Hands-on technical background (comfortable writing code samples, running demos, or building prototypes).  Python and/or TypeScript experience is required.</p></li><li><p style=\"min-height:1.5em\">Experience planning and executing <strong>developer events</strong> (e.g., meetups, hackathons, workshops, or conference tracks).</p></li><li><p style=\"min-height:1.5em\">Based in the <strong>San Francisco Bay Area</strong>, with willingness to travel for conferences and events.</p></li><li><p style=\"min-height:1.5em\">Strong collaborator who can work cross-functionally with Marketing, Product, and Engineering.</p></li><li><p style=\"min-height:1.5em\">Curious and empathetic—you love learning what matters most to developers and bringing those insights back to the team.</p></li></ul><p style=\"min-height:1.5em\"></p><h1>Our Commitments to You</h1><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">An opportunity to build something truly impactful to the world</p></li><li><p style=\"min-height:1.5em\">Competitive salary and equity package</p></li><li><p style=\"min-height:1.5em\">Work anywhere in the world</p></li><li><p style=\"min-height:1.5em\">Health, dental, and vision benefits</p></li><li><p style=\"min-height:1.5em\">Flexible vacation policy</p></li></ul><p style=\"min-height:1.5em\"></p><h1>Ready to Apply?</h1><p style=\"min-height:1.5em\">If you're passionate about championing developers in the realm of real-time communications and want to make a significant impact at a high-growth company, we'd love to hear from you. At LiveKit, your work as a Developer Advocate will be instrumental in our growth and success, bridging the gap between our technology and the developers who use it.</p><p style=\"min-height:1.5em\"></p><p style=\"min-height:1.5em\">LiveKit is an equal opportunity employer and does not discriminate on the basis of any characteristic protected by applicable law. If you require a reasonable accommodation during the application or interview process, please contact recruiting@livekit.io.</p>",
+      "descriptionPlain": "ABOUT LIVEKIT \n\nLiveKit is building the infrastructure layer for the voice-driven era of computing. Our platform gives developers everything they need to build, test, deploy, scale, and observe agents in production. Founded in 2021, LiveKit powers voice AI applications for OpenAI, xAI, Salesforce, Coursera, Spotify, and thousands of others, collectively facilitating billions of calls each year.\n\n\n\n\nABOUT YOU\n\nLiveKit is seeking a Staff Developer Advocate to help grow our presence and deepen engagement with developers, with a strong focus on events and community building. You’ll be the face of LiveKit in the Bay Area and beyond, driving awareness with developers who may not yet know us, and creating experiences that inspire them to build with real-time audio and video.\n\nThis role is a hybrid of content creation and event execution: you’ll organize and host events, speak at meetups and conferences, and also create supporting content that extends the reach of those activities. You’ll bring back insights from the community—trends, patterns, and narratives that are top of mind for developers—and use them to inform our product, messaging, and broader DevRel strategy.\n\n\nWHAT YOU’LL DO\n\n - Drive awareness of LiveKit with new developer audiences, especially in the Bay Area where there is a significant opportunity to grow our presence.\n\n - Plan, host, and participate in events including meetups, hackathons, developer workshops, and conferences.\n\n - Partner with Marketing to amplify events through digital channels, ensuring broader reach and sustained impact.\n\n - Create content from events (recaps, demos, tutorials, blogs, social posts) to expand engagement beyond the room.\n\n - Serve as a feedback loop for the company, bringing back developer perspectives, industry trends, and emerging patterns to inform our product and community strategy.\n\n - Represent LiveKit on stage and in community forums, speaking authentically to developer audiences about our technology.\n\n - Help experiment with new event formats and engagement tactics, testing what resonates most with our audience.\n\n - Collaborate cross-functionally with DevRel, PMM, and Product to ensure developer narratives are consistent, compelling, and authentic.\n\n\n\n\nWHO YOU ARE\n\n - 2+ years of experience in Developer Advocacy, Developer Relations, or Technical Evangelism, with a strong emphasis on events and community engagement.\n\n - Comfortable being outward-facing—you enjoy speaking to groups, hosting sessions, and building relationships in developer communities.\n\n - Strong technical communication skills; you can explain complex concepts in clear, engaging ways across presentations and written content.\n\n - Hands-on technical background (comfortable writing code samples, running demos, or building prototypes).  Python and/or TypeScript experience is required.\n\n - Experience planning and executing developer events (e.g., meetups, hackathons, workshops, or conference tracks).\n\n - Based in the San Francisco Bay Area, with willingness to travel for conferences and events.\n\n - Strong collaborator who can work cross-functionally with Marketing, Product, and Engineering.\n\n - Curious and empathetic—you love learning what matters most to developers and bringing those insights back to the team.\n\n\n\n\nOUR COMMITMENTS TO YOU\n\n - An opportunity to build something truly impactful to the world\n\n - Competitive salary and equity package\n\n - Work anywhere in the world\n\n - Health, dental, and vision benefits\n\n - Flexible vacation policy\n\n\n\n\nREADY TO APPLY?\n\nIf you're passionate about championing developers in the realm of real-time communications and want to make a significant impact at a high-growth company, we'd love to hear from you. At LiveKit, your work as a Developer Advocate will be instrumental in our growth and success, bridging the gap between our technology and the developers who use it.\n\n\n\nLiveKit is an equal opportunity employer and does not discriminate on the basis of any characteristic protected by applicable law. If you require a reasonable accommodation during the application or interview process, please contact recruiting@livekit.io.",
+      "compensation": {
+        "compensationTierSummary": "$210K – $284K • Offers Equity",
+        "scrapeableCompensationSalarySummary": "$210K - $284K",
+        "compensationTiers": [
+          {
+            "id": "a2484fef-c2e9-4c7d-b60c-e6099c391ca8",
+            "tierSummary": "$210K – $284K • Offers Equity",
+            "title": null,
+            "additionalInformation": null,
+            "components": [
+              {
+                "id": "644b8ee7-9169-45cd-b308-3d4712f6e464",
+                "summary": "$210K – $284K",
+                "compensationType": "Salary",
+                "interval": "1 YEAR",
+                "currencyCode": "USD",
+                "minValue": 210000,
+                "maxValue": 284000
+              },
+              {
+                "id": "025a1efc-d87c-4a27-82d0-c986e994f5ad",
+                "summary": "Offers Equity",
+                "compensationType": "EquityPercentage",
+                "interval": "NONE",
+                "currencyCode": null,
+                "minValue": null,
+                "maxValue": null
+              }
+            ]
+          }
+        ],
+        "summaryComponents": [
+          {
+            "compensationType": "Salary",
+            "interval": "1 YEAR",
+            "currencyCode": "USD",
+            "minValue": 210000,
+            "maxValue": 284000
+          },
+          {
+            "compensationType": "EquityPercentage",
+            "interval": "NONE",
+            "currencyCode": null,
+            "minValue": null,
+            "maxValue": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "03f4997e-8c86-4067-b929-8b3f16a9de35",
+      "title": "Security Engineer, Infrastructure Security",
+      "department": "R&D",
+      "team": "Trust",
+      "employmentType": "FullTime",
+      "location": "United States (Remote)",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "secondaryLocations": [
+        {
+          "location": "Canada (Remote)",
+          "address": {
+            "postalAddress": {
+              "addressCountry": "Canada",
+              "addressLocality": ""
+            }
+          }
+        }
+      ],
+      "publishedAt": "2026-10-22T23:40:10.908+00:00",
+      "isListed": true,
+      "isRemote": true,
+      "workplaceType": "Remote",
+      "address": {
+        "postalAddress": {
+          "addressCountry": "United States"
+        }
+      },
+      "jobUrl": "https://jobs.ashbyhq.com/livekit/03f4997e-8c86-4067-b929-8b3f16a9de35",
+      "applyUrl": "https://jobs.ashbyhq.com/livekit/03f4997e-8c86-4067-b929-8b3f16a9de35/application",
+      "descriptionHtml": "<h2>About LiveKit</h2><p style=\"min-height:1.5em\">LiveKit is building the infrastructure layer for the voice-driven era of computing. Our platform gives developers everything they need to build, test, deploy, scale, and observe agents in production. Founded in 2021, LiveKit powers voice AI applications for OpenAI, xAI, Salesforce, Coursera, Spotify, and thousands of others, collectively facilitating billions of calls each year.</p><p style=\"min-height:1.5em\"></p><h2>About This Role</h2><p style=\"min-height:1.5em\">Our customers trust us with audio, video and data belonging to their own end users, so a security failure on our side puts their data and their business at risk. We are hiring an Infrastructure Security Engineer to improve the security posture of the production platform that carries that data. You will join a small Trust team that covers security, IT and compliance, and you will own real parts of the program from your first week. You will build our understanding of infrastructure security posture, then prioritize and drive remediation by business impact. Where the same class of problem keeps coming back, you will build the guardrails and security building blocks that let our security scale with the business.</p><p style=\"min-height:1.5em\"></p><h3>You'll thrive at LiveKit if you</h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">think like both a builder and a breaker, and understand security from first principles</p></li><li><p style=\"min-height:1.5em\">take an automation-first and pragmatic approach to risk mitigation</p></li><li><p style=\"min-height:1.5em\">translate security concerns into engineering action</p></li><li><p style=\"min-height:1.5em\">can clearly explain complex technical concepts to others</p></li><li><p style=\"min-height:1.5em\">are a fast learner and thrive in ambiguity</p></li></ul><p style=\"min-height:1.5em\"></p><h2>What You’ll Do</h2><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Map the security posture of our cloud and production infrastructure and turn it into a documented baseline.</p></li><li><p style=\"min-height:1.5em\">Find the gaps that could lead to customer data loss or infrastructure compromise, agree a prioritized security debt backlog with engineering, and close the highest-risk items first.</p></li><li><p style=\"min-height:1.5em\">Harden identity, secrets and network boundaries, including cloud IAM, environment separation and credential hygiene.</p></li><li><p style=\"min-height:1.5em\">Secure the infrastructure that runs customer-deployed voice AI agents: tenant isolation, secrets for third-party model providers, and media and recording storage.</p></li><li><p style=\"min-height:1.5em\">Build guardrails and secure defaults into our infrastructure as code so the secure path is the easy one for engineers.</p></li><li><p style=\"min-height:1.5em\">Partner with our Compliance team to map infrastructure controls to PCI-DSS and ISO 27001 and automate the technical evidence those audits depend on.</p></li></ul><p style=\"min-height:1.5em\"></p><h2>Who You Are</h2><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">5+ years in security engineering, infrastructure engineering or SRE, with a significant share of that focused on infrastructure security.</p></li><li><p style=\"min-height:1.5em\">Hands-on experience securing a major cloud provider (AWS, GCP or Azure) and containerized workloads including Kubernetes.</p></li><li><p style=\"min-height:1.5em\">A track record of owning infrastructure security for a production platform.</p></li><li><p style=\"min-height:1.5em\">Fluency with infrastructure as code such as Terraform, and strong scripting and automation skills in a language such as Go or Python.</p></li><li><p style=\"min-height:1.5em\">A pragmatic approach to risk: you can explain why a finding matters to the business and how fast it needs to be fixed.</p></li></ul><p style=\"min-height:1.5em\"></p><h2>Nice to Have</h2><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Experience with real-time media, networking or WebRTC systems.</p></li><li><p style=\"min-height:1.5em\">Experience in AI security, such as securing LLM applications or agent infrastructure.</p></li><li><p style=\"min-height:1.5em\">Incident response or application security experience.</p></li><li><p style=\"min-height:1.5em\">Experience supporting compliance audits such as PCI-DSS, ISO 27001, SOC 2 or HIPAA.</p></li></ul><p style=\"min-height:1.5em\"></p><h2>Our Commitment to You</h2><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">An opportunity to build something truly impactful to the world</p></li><li><p style=\"min-height:1.5em\">Contribute to open source alongside world-class engineers</p></li><li><p style=\"min-height:1.5em\">Competitive salary and equity package</p></li><li><p style=\"min-height:1.5em\">Health, dental, and vision benefits</p></li><li><p style=\"min-height:1.5em\">Flexible vacation policy</p></li></ul><p style=\"min-height:1.5em\"></p><p style=\"min-height:1.5em\">LiveKit is an equal opportunity employer and does not discriminate on the basis of any characteristic protected by applicable law. If you require a reasonable accommodation during the application or interview process, please contact recruiting@livekit.io.</p>",
+      "descriptionPlain": "ABOUT LIVEKIT\n\nLiveKit is building the infrastructure layer for the voice-driven era of computing. Our platform gives developers everything they need to build, test, deploy, scale, and observe agents in production. Founded in 2021, LiveKit powers voice AI applications for OpenAI, xAI, Salesforce, Coursera, Spotify, and thousands of others, collectively facilitating billions of calls each year.\n\n\n\n\nABOUT THIS ROLE\n\nOur customers trust us with audio, video and data belonging to their own end users, so a security failure on our side puts their data and their business at risk. We are hiring an Infrastructure Security Engineer to improve the security posture of the production platform that carries that data. You will join a small Trust team that covers security, IT and compliance, and you will own real parts of the program from your first week. You will build our understanding of infrastructure security posture, then prioritize and drive remediation by business impact. Where the same class of problem keeps coming back, you will build the guardrails and security building blocks that let our security scale with the business.\n\n\n\n\nYOU'LL THRIVE AT LIVEKIT IF YOU\n\n - think like both a builder and a breaker, and understand security from first principles\n\n - take an automation-first and pragmatic approach to risk mitigation\n\n - translate security concerns into engineering action\n\n - can clearly explain complex technical concepts to others\n\n - are a fast learner and thrive in ambiguity\n\n\n\n\nWHAT YOU’LL DO\n\n - Map the security posture of our cloud and production infrastructure and turn it into a documented baseline.\n\n - Find the gaps that could lead to customer data loss or infrastructure compromise, agree a prioritized security debt backlog with engineering, and close the highest-risk items first.\n\n - Harden identity, secrets and network boundaries, including cloud IAM, environment separation and credential hygiene.\n\n - Secure the infrastructure that runs customer-deployed voice AI agents: tenant isolation, secrets for third-party model providers, and media and recording storage.\n\n - Build guardrails and secure defaults into our infrastructure as code so the secure path is the easy one for engineers.\n\n - Partner with our Compliance team to map infrastructure controls to PCI-DSS and ISO 27001 and automate the technical evidence those audits depend on.\n\n\n\n\nWHO YOU ARE\n\n - 5+ years in security engineering, infrastructure engineering or SRE, with a significant share of that focused on infrastructure security.\n\n - Hands-on experience securing a major cloud provider (AWS, GCP or Azure) and containerized workloads including Kubernetes.\n\n - A track record of owning infrastructure security for a production platform.\n\n - Fluency with infrastructure as code such as Terraform, and strong scripting and automation skills in a language such as Go or Python.\n\n - A pragmatic approach to risk: you can explain why a finding matters to the business and how fast it needs to be fixed.\n\n\n\n\nNICE TO HAVE\n\n - Experience with real-time media, networking or WebRTC systems.\n\n - Experience in AI security, such as securing LLM applications or agent infrastructure.\n\n - Incident response or application security experience.\n\n - Experience supporting compliance audits such as PCI-DSS, ISO 27001, SOC 2 or HIPAA.\n\n\n\n\nOUR COMMITMENT TO YOU\n\n - An opportunity to build something truly impactful to the world\n\n - Contribute to open source alongside world-class engineers\n\n - Competitive salary and equity package\n\n - Health, dental, and vision benefits\n\n - Flexible vacation policy\n\n\n\nLiveKit is an equal opportunity employer and does not discriminate on the basis of any characteristic protected by applicable law. If you require a reasonable accommodation during the application or interview process, please contact recruiting@livekit.io.",
+      "compensation": {
+        "compensationTierSummary": "$200K – $300K • Offers Equity",
+        "scrapeableCompensationSalarySummary": "$200K - $300K",
+        "compensationTiers": [
+          {
+            "id": "1d6d78cf-8505-4f69-ad6d-e4254520f14f",
+            "tierSummary": "$200K – $300K • Offers Equity",
+            "title": null,
+            "additionalInformation": null,
+            "components": [
+              {
+                "id": "16bd9a9f-4a48-4019-970d-f2c4264590ae",
+                "summary": "Offers Equity",
+                "compensationType": "EquityPercentage",
+                "interval": "NONE",
+                "currencyCode": null,
+                "minValue": null,
+                "maxValue": null
+              },
+              {
+                "id": "681bf5af-4c7e-47f3-87b4-5690a5e55286",
+                "summary": "$200K – $300K",
+                "compensationType": "Salary",
+                "interval": "1 YEAR",
+                "currencyCode": "USD",
+                "minValue": 200000,
+                "maxValue": 300000
+              }
+            ]
+          }
+        ],
+        "summaryComponents": [
+          {
+            "compensationType": "EquityPercentage",
+            "interval": "NONE",
+            "currencyCode": null,
+            "minValue": null,
+            "maxValue": null
+          },
+          {
+            "compensationType": "Salary",
+            "interval": "1 YEAR",
+            "currencyCode": "USD",
+            "minValue": 200000,
+            "maxValue": 300000
+          }
+        ]
+      }
+    }
+  ]
+}

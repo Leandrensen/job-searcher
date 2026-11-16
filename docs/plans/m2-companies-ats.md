@@ -701,7 +701,7 @@
 - **Fixtures:** `job-board.json`: 3 `livekit` jobs: one Remote with a salary component, one Hybrid, one with `secondaryLocations`.
 - **Extra tests:** `salary component → salary fields`; `"North America" + secondary "EMEA" → regions ["emea","north-america"]`; `Hybrid → hybrid`; `isListed false is skipped`.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T14: Workable (depends on T11)
 - **Fetch:** `GET https://apply.workable.com/api/v1/widget/accounts/<slug>?details=true`. Envelope `{ name: string, jobs: unknown[] }`.
