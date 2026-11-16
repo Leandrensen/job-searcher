@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { HttpClient } from "@/core/http";
 import { openDb, type Db } from "@/db/client";
 import { fetchRuns, jobs } from "@/db/schema";
-import { adapters } from "@/sources/registry";
+import { boardAdapters as adapters } from "@/sources/registry";
 import { createFixtureHttp, type FixtureHttp } from "@/test-utils/fixture-http";
 import { ALL_SOURCE_ROUTES } from "@/test-utils/fixture-routes";
 import { runCli, type SummaryRow } from "./fetch-cli";

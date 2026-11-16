@@ -1,9 +1,20 @@
 import type { z } from "zod";
 import type { HttpClient } from "@/core/http";
-import type { Job, SourceId } from "@/core/job";
+import type { AtsId, Job, SourceId } from "@/core/job";
+
+/** A company whose ATS board an ATS adapter should fetch. */
+export interface CompanyRef {
+  id: number;
+  ats: AtsId;
+  slug: string;
+  name: string;
+  homeCountry: string | null;
+}
 
 export interface FetchContext {
   http: HttpClient;
+  /** ATS adapters only: the companies to fetch. */
+  companies?: CompanyRef[];
   /** Max postedAt already stored for this source, or null. */
   latestPostedAt: string | null;
   log: (msg: string) => void;

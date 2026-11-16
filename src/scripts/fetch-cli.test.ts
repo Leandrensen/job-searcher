@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { adapters } from "@/sources/registry";
+import { boardAdapters as adapters } from "@/sources/registry";
 import { CliUsageError, parseFetchArgs, runCli, type SummaryRow } from "./fetch-cli";
 
 describe("parseFetchArgs", () => {

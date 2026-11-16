@@ -650,7 +650,7 @@
 - **Also in this task:** the fixture HTTP status routes (shared rules above).
 - Verify: `npm test -- src/sources/ats src/test-utils` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T12: Lever (depends on T11)
 - **Fetch:** `GET https://api.lever.co/v0/postings/<slug>?mode=json`. The envelope is an array.
