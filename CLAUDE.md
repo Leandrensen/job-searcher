@@ -1,51 +1,73 @@
 # Job Searcher
 
-Personal, single-user tool that collects IT job postings from free public job APIs (job boards, HN "Who is hiring?", ATS job boards), stores them locally, and matches them against saved search descriptions.
+Personal, single-user tool that fetches IT jobs from companies' ATS job boards (Greenhouse, Lever, Ashby, Workable, Recruitee, SmartRecruiters), filters and ranks them against one search description with local embeddings, and has Claude score only the top matches, once per job. Companies come from seed lists, job-board discovery and manual adds. See the Pipeline section of `PLAN.md`.
 
 ## Commands
 - Install: `npm install`
 - Dev (web UI): `npm run dev`
-- Fetch jobs: `npm run fetch` (single source: `npm run fetch -- --source remoteok`)
+- Fetch jobs: `npm run fetch` (single source: `npm run fetch -- --source remoteok`). From M2 it discovers companies from boards and refreshes ATS jobs.
 - Test: `npm test` (single file: `npm test -- path/to/file.test.ts`)
 - Live API checks (real network, run manually): `npm run test:live`
 - Coverage: `npm run test:coverage` (text summary; HTML report in `coverage/`; thresholds enforced)
 - Lint/typecheck: `npm run lint && npm run typecheck`
 - DB: `npm run db:generate` (new migration), `npm run db:migrate` (apply)
+- Planned:
+  - `npm run seed` (M2, monthly)
+  - `npm run company -- add <ats> <slug>` and `npm run company -- review` (M2)
+  - `npm run rank` (M3)
+  - `npm run score` and `npm run score -- --next` (M4)
+
+## Configuration and secrets
+- `config/search.md`: the one search description (M3). `config/preferences.json`: hard rules (M3). Both are gitignored; their `*.example.*` files are committed and kept in sync.
+- `ANTHROPIC_API_KEY` lives in `.env.local` (gitignored), loaded by npm scripts with Node's `--env-file-if-exists=.env.local` (M4).
 
 ## Architecture
-Node 22 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts.
+Node 22 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts, Transformers.js for local embeddings (M3), Anthropic SDK (M4).
 
-- `src/sources/` – one adapter per source: `boards/` (job boards, HN) and `ats/` (Greenhouse, Lever, ...). The interface lives in `types.ts`, enabled adapters in `registry.ts`.
-- `src/core/` – normalized `Job` schema, dedupe, keyword filter, shared HTTP helper
+- `src/sources/` – one adapter per source. The interface lives in `types.ts`, enabled adapters in `registry.ts`.
+  - `ats/` (M2) – Greenhouse, Lever, ...: the only source of stored jobs
+  - `boards/` – job boards from M1; from M2 they only discover companies, and their jobs are never stored
+- `src/companies/` (M2) – seeding, candidate discovery and precise ATS slug resolution
+- `src/ranking/` (M3) – hard-rule filters and embedding ranking
+- `src/ai/` (M4) – Claude scoring
+- `src/core/` – normalized `Job` schema, dedupe, storage filters (tech filter + location filter), text helpers, shared HTTP helper
 - `src/db/` – Drizzle schema, client, queries
-- `src/ai/` – Claude calls (later phase)
 - `src/scripts/` – CLI entry points
-- `src/app/` – UI
+- `src/app/` – UI (M5)
+- `config/` – search description and hard rules (M3)
 - `test/fixtures/<source>/` – recorded real API responses
 
 Key patterns:
 - Every source implements `SourceAdapter` and outputs the shared `Job` shape. A new source is one file plus a registry entry.
 - Validate every external response with Zod before normalizing.
 - All DB access goes through `src/db/`; all HTTP goes through `src/core/http.ts`.
+- Cheap before expensive: storage filters (tech filter + location filter), then hard rules, then embeddings, then Claude on the top N. Each job is embedded once (again only if its text changes) and scored once, ever.
 
 ## Conventions
 - kebab-case file names. An adapter's `id` equals its file name.
 - Named exports and pure functions. Network and DB calls stay at the edges.
-- One failing source never breaks a run: adapters return `{ source, jobs, error }`, and the runner logs the error and continues.
+- One failing source never breaks a run: `runAdapter` and the runner turn any failure (network, validation or DB) into an `error` result for that source, record it, and continue.
 - Timestamps are UTC ISO strings.
-- Every job keeps `source` and the original `url`. The UI shows "via <Source>" with a link, because some sources require it.
-- TDD for core logic. Adapters are tested against fixtures. Unit tests never hit the network; live checks go in `*.live.test.ts`.
-- Testing stack: Vitest for unit, adapter, and DB tests (DB tests use in-memory SQLite). React Testing Library + Playwright are added for the UI in M4. No Jest or Enzyme.
+- Every job keeps `source` and the original posting `url`; the UI links to it.
+- TDD for core logic. Adapters are tested against fixtures.
+- Testing stack: Vitest for unit, adapter, and DB tests (DB tests use in-memory SQLite). React Testing Library + Playwright are added for the UI in M5. No Jest or Enzyme.
+- Unit tests never hit the network, call Claude or download embedding models; use recorded responses or small fixed vectors. Manual live checks (`*.live.test.ts`, `npm run test:live`) may make small real calls to confirm an external service still matches the fixtures.
 
 ## Workflow
 - Plan: see `PLAN.md`. Tick off checkboxes when a milestone's tasks are done.
 - Run tests, lint, and typecheck before declaring a task finished.
-- Commit in small steps on `feat/<topic>` / `fix/<topic>` branches. Never commit to `main` directly.
+- Commits follow Conventional Commits: `<type>(<scope>): <summary>`, where type is one of `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+- Branches are `<type>/<topic>` using the same types. Commit in small steps; never commit to `main` directly.
+- PRs target `main`. `.github/workflows/claude-review.yml` reviews every PR against this file; there is no test CI yet, so run the checks locally. Merge with a merge commit and delete the branch. Stacked PRs: retarget the next PR to `main` before merging it.
 
 ## Rules (don'ts)
 - Ask before adding dependencies.
-- Never edit generated files (`drizzle/`, `.next/`), and never read or commit `.env*`.
-- Don't change the `Job` schema or the `SourceAdapter` interface without asking.
-- Free public APIs and feeds only. No scraping, no paid APIs, no LinkedIn/Wellfound.
-- Respect each source's rate limits. Use the generic User-Agent `job-searcher-mvp/0.1` and never send personal data.
+- Never edit generated files (`drizzle/`, `.next/`, `coverage/`).
+- Never read or commit `.env*`.
+- Never commit `config/search.md` or `config/preferences.json` (personal). Reading or editing them is fine when asked.
+- Don't change the `Job` schema or the `SourceAdapter` interface without asking (the M2 changes listed in `PLAN.md` are approved).
+- Data sources must be free and public. No scraping, and never fetch company websites or careers pages; only parse URLs we already have. No LinkedIn/Wellfound.
+- The Anthropic API (Claude) is the only paid service. Embeddings run locally.
+- Respect rate limits. ATS polling is paced per host, and each company is fetched at most about once a day. Use the generic User-Agent `job-searcher-mvp/0.1` and never send personal data to job sources or seed lists. The search description and my location go only to the Anthropic API, for scoring.
+- Only open jobs that passed the filters and embedding ranking go to Claude, and a job that already has a score is never sent again.
 - Single user: no auth or multi-tenant code.

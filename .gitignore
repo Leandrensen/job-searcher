@@ -43,3 +43,7 @@ next-env.d.ts
 # job-searcher
 /data/
 /coverage/
+
+# personal search config (commit the *.example.* files instead)
+/config/search.md
+/config/preferences.json
