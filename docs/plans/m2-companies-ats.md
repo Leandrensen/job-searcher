@@ -333,7 +333,7 @@
     - `(null, ["Remoto - Argentina"])` → `"remote"`
 - Verify: `npm test -- src/core/locations.test.ts` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T5: Location filter (`src/core/location-filter.ts`, depends on T4)
 - **Interfaces:**
