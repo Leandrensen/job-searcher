@@ -31,6 +31,7 @@ describe("live adapters", () => {
     greenhouse: { id: 1, ats: "greenhouse", slug: "mozilla", name: "Mozilla", homeCountry: "US" },
     lever: { id: 2, ats: "lever", slug: "curai", name: "Curai", homeCountry: "US" },
     ashby: { id: 3, ats: "ashby", slug: "livekit", name: "LiveKit", homeCountry: "US" },
+    workable: { id: 4, ats: "workable", slug: "modash", name: "Modash", homeCountry: "EE" },
   };
   for (const adapter of atsAdapters) {
     it(

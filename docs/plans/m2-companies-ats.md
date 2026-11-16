@@ -723,7 +723,7 @@
 - **Fixtures:** `account.json`: 3 `modash` jobs (`?details=true`): at least one `telecommuting: true` and one `false`.
 - **Extra tests:** `telecommuting true → remote`; `title "(remote, Europe)" with city Tallinn → regions ["europe"]`. That second one is a real case from the verified data: an EU-only remote job that the location filter will drop.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T15: Recruitee (depends on T11)
 - **Fetch:** `GET https://<slug>.recruitee.com/api/offers/`. Envelope `{ offers: unknown[] }`.
