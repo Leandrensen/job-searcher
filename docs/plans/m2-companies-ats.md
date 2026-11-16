@@ -370,7 +370,7 @@
   - `isAllowedHomeCountry`: `US`, `CA`, `GB`, `DE`, `CH`, `NO`, `AU`, `NZ` and `null` → true; `AR`, `BR`, `IN`, `IL`, `SG` → false.
 - Verify: `npm test -- src/core/location-filter.test.ts` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T6: Replace the tech filter keywords (`src/core/tech-filter.ts`, depends on T2)
 - **Interface:** `export const TECH_KEYWORDS: readonly string[]` and `export function isTechJob(job: Pick<Job, "title" | "departments" | "tags">): boolean`.
