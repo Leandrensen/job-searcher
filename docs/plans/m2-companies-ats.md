@@ -491,7 +491,7 @@
   - `preserves call order per host`.
 - Verify: `npm test -- src/core/paced-http.test.ts` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ---
 
