@@ -75,6 +75,8 @@ Detailed spec: [docs/plans/m1.1-test-hardening.md](docs/plans/m1.1-test-hardenin
 Verify: lint, typecheck and `npm test` pass; no loose matchers in adapter tests; no `vi.mock` in `src/`.
 
 ### M2: Companies + ATS sources (current)
+Detailed spec: [docs/plans/m2-companies-ats.md](docs/plans/m2-companies-ats.md)
+
 Build the company list, resolve each company to its ATS precisely, and fetch jobs only from ATSs.
 
 - **Schema update** (approved 2026-11-16). Since M2 starts from a fresh DB, the migration is rewritten rather than layered on M1's board-shaped data.
