@@ -1,4 +1,57 @@
 import { index, integer, real, sqliteTable, text, uniqueIndex, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
+import { ATS_IDS } from "../core/job";
+
+export const companies = sqliteTable(
+  "companies",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    ats: text("ats", { enum: ATS_IDS }).notNull(),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    website: text("website"),
+    /** ISO 3166-1 alpha-2, uppercase. */
+    homeCountry: text("home_country"),
+    /** `seed:remoteintech` | `seed:yc` | `board:<boardId>` | `manual`. */
+    origin: text("origin").notNull(),
+    status: text("status", { enum: ["active", "inactive"] }).notNull().default("active"),
+    /** Counts consecutive 404s only. */
+    consecutiveFailures: integer("consecutive_failures").notNull().default(0),
+    /** Last successful fetch. */
+    lastFetchedAt: text("last_fetched_at"),
+    lastError: text("last_error"),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [uniqueIndex("companies_ats_slug_uq").on(t.ats, t.slug)],
+);
+
+export const companyCandidates = sqliteTable(
+  "company_candidates",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    normalizedName: text("normalized_name").notNull().unique(),
+    name: text("name").notNull(),
+    website: text("website"),
+    careersUrl: text("careers_url"),
+    /** ATS URLs seen in board postings. */
+    atsHints: text("ats_hints", { mode: "json" }).$type<string[]>().notNull().default([]),
+    homeCountry: text("home_country"),
+    origin: text("origin").notNull(),
+    status: text("status", { enum: ["pending", "confirmed", "ambiguous", "not_found", "error"] })
+      .notNull()
+      .default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    lastCheckedAt: text("last_checked_at"),
+    /** null means due now. */
+    nextCheckAt: text("next_check_at"),
+    companyId: integer("company_id").references(() => companies.id),
+    ambiguousMatches: text("ambiguous_matches", { mode: "json" })
+      .$type<{ ats: string; slug: string }[]>()
+      .notNull()
+      .default([]),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [index("company_candidates_status_next_check_idx").on(t.status, t.nextCheckAt)],
+);
 
 export const jobs = sqliteTable(
   "jobs",
@@ -27,11 +80,15 @@ export const jobs = sqliteTable(
     lastSeenAt: text("last_seen_at").notNull(),
     dedupeKey: text("dedupe_key").notNull(),
     duplicateOf: integer("duplicate_of").references((): AnySQLiteColumn => jobs.id),
+    companyId: integer("company_id").references(() => companies.id, { onDelete: "set null" }),
+    closedAt: text("closed_at"),
   },
   (t) => [
     uniqueIndex("jobs_source_external_id_uq").on(t.source, t.externalId),
     index("jobs_dedupe_key_idx").on(t.dedupeKey),
     index("jobs_posted_at_idx").on(t.postedAt),
+    index("jobs_company_idx").on(t.companyId),
+    index("jobs_closed_at_idx").on(t.closedAt),
   ],
 );
 

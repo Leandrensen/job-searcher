@@ -179,7 +179,7 @@
   - `jobs accept company_id and closed_at`
 - Verify: `npm test -- src/db` passes; `ls drizzle` shows `0000_*` and `0001_*`.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ---
 
