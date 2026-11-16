@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dedupeKey, normalizeCompany, normalizeTitle } from "./dedupe";
+import { dedupeKey, normalizeCompany, normalizeTitle, stripLegalSuffixes } from "./dedupe";
 
 describe("normalizeCompany", () => {
   it.each([
@@ -26,6 +26,18 @@ describe("normalizeCompany", () => {
     ["Ácme", "ácme"],
   ])("normalizes %j to %j", (input, expected) => {
     expect(normalizeCompany(input)).toBe(expected);
+  });
+});
+
+describe("stripLegalSuffixes", () => {
+  it.each([
+    ["Acme Labs, Inc.", "acme labs"],
+    ["Acme Co., Ltd.", "acme"],
+    ["Quantum-Systems GmbH", "quantum-systems"],
+    ["Corpay", "corpay"],
+    ["Inc", "inc"],
+  ])("%j → %j", (input, expected) => {
+    expect(stripLegalSuffixes(input)).toBe(expected);
   });
 });
 

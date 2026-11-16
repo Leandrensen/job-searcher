@@ -465,7 +465,7 @@
     - `("Quantum-Systems GmbH", "https://quantum-systems.com")` → `["quantumsystems","quantum-systems"]`
 - Verify: `npm test -- src/companies/slugs.test.ts` and `npm test -- src/core/dedupe.test.ts` pass.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T8: Per-host paced HTTP client (`src/core/paced-http.ts`, depends on T2)
 - **Interface:**
