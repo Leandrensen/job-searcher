@@ -29,6 +29,7 @@ describe("live adapters", () => {
   // Real companies with open jobs, verified on 2026-11-16.
   const atsCompanies: Record<string, CompanyRef> = {
     greenhouse: { id: 1, ats: "greenhouse", slug: "mozilla", name: "Mozilla", homeCountry: "US" },
+    lever: { id: 2, ats: "lever", slug: "curai", name: "Curai", homeCountry: "US" },
   };
   for (const adapter of atsAdapters) {
     it(

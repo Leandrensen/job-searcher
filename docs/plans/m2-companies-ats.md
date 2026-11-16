@@ -676,7 +676,7 @@
 - **Fixtures:** `postings.json`: all 4 `curai` postings (one has `salaryRange`).
 - **Extra tests:** `createdAt in ms → correct ISO`; `salaryRange → salary fields`; `"unspecified" falls back to text`.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T13: Ashby (depends on T11)
 - **Fetch:** `GET https://api.ashbyhq.com/posting-api/job-board/<slug>?includeCompensation=true`. Envelope `{ jobs: unknown[] }`.
