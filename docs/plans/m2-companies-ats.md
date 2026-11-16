@@ -550,7 +550,7 @@
   - `a non-404 error keeps lastFetchedAt`
 - Verify: `npm test -- src/db/companies.test.ts` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T10: Job storage for ATS jobs (`src/db/queries.ts`, depends on T3)
 - **Changes:**

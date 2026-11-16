@@ -1,0 +1,208 @@
+import { and, asc, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
+import { normalizeCompany } from "@/core/dedupe";
+import type { AtsId } from "@/core/job";
+import type { Resolution } from "@/companies/types";
+import type { Db } from "./client";
+import { companies, companyCandidates } from "./schema";
+
+export type CandidateRow = typeof companyCandidates.$inferSelect;
+export type CompanyRow = typeof companies.$inferSelect;
+
+export interface CandidateInput {
+  name: string;
+  website?: string | null;
+  careersUrl?: string | null;
+  atsHints?: string[];
+  homeCountry?: string | null;
+  origin: string;
+}
+
+const addDays = (iso: string, days: number) => new Date(Date.parse(iso) + days * 86_400_000).toISOString();
+const addHours = (iso: string, hours: number) => new Date(Date.parse(iso) + hours * 3_600_000).toISOString();
+const clean = (v: string | null | undefined) => (v && v.trim() !== "" ? v.trim() : null);
+
+/** Insert a candidate, or merge into the existing one with the same normalized name. */
+export function upsertCandidate(db: Db, input: CandidateInput, nowIso: string): "inserted" | "updated" | "unchanged" {
+  const normalizedName = normalizeCompany(input.name);
+  if (normalizedName === "") return "unchanged";
+  const existing = db.select().from(companyCandidates).where(eq(companyCandidates.normalizedName, normalizedName)).get();
+
+  if (!existing) {
+    db.insert(companyCandidates)
+      .values({
+        normalizedName,
+        name: input.name.trim(),
+        website: clean(input.website),
+        careersUrl: clean(input.careersUrl),
+        atsHints: [...new Set(input.atsHints ?? [])],
+        homeCountry: clean(input.homeCountry),
+        origin: input.origin,
+        createdAt: nowIso,
+      })
+      .run();
+    return "inserted";
+  }
+
+  const patch: Partial<typeof companyCandidates.$inferInsert> = {};
+  if (existing.website === null && clean(input.website)) patch.website = clean(input.website);
+  if (existing.careersUrl === null && clean(input.careersUrl)) patch.careersUrl = clean(input.careersUrl);
+  if (existing.homeCountry === null && clean(input.homeCountry)) patch.homeCountry = clean(input.homeCountry);
+  const merged = [...new Set([...existing.atsHints, ...(input.atsHints ?? [])])];
+  const addedHint = merged.length > existing.atsHints.length;
+  if (addedHint) {
+    patch.atsHints = merged;
+    if (existing.status === "not_found" || existing.status === "error") {
+      patch.status = "pending";
+      patch.nextCheckAt = null;
+    }
+  }
+  if (Object.keys(patch).length === 0) return "unchanged";
+  db.update(companyCandidates).set(patch).where(eq(companyCandidates.id, existing.id)).run();
+  return "updated";
+}
+
+/** Candidates that need a resolution attempt: pending, or not_found/error whose next check has arrived. */
+export function listDueCandidates(db: Db, nowIso: string, limit?: number): CandidateRow[] {
+  const q = db
+    .select()
+    .from(companyCandidates)
+    .where(
+      or(
+        eq(companyCandidates.status, "pending"),
+        and(inArray(companyCandidates.status, ["not_found", "error"]), lte(companyCandidates.nextCheckAt, nowIso)),
+      ),
+    )
+    .orderBy(asc(companyCandidates.createdAt), asc(companyCandidates.id));
+  return limit === undefined ? q.all() : q.limit(limit).all();
+}
+
+export function insertOrGetCompany(
+  db: Db,
+  c: { ats: AtsId; slug: string; name: string; website: string | null; homeCountry: string | null; origin: string },
+  nowIso: string,
+): number {
+  const existing = db
+    .select({ id: companies.id })
+    .from(companies)
+    .where(and(eq(companies.ats, c.ats), eq(companies.slug, c.slug)))
+    .get();
+  if (existing) return existing.id;
+  return db
+    .insert(companies)
+    .values({ ...c, status: "active", createdAt: nowIso })
+    .returning({ id: companies.id })
+    .get().id;
+}
+
+export function recordResolution(db: Db, candidateId: number, result: Resolution, nowIso: string): { companyId: number | null } {
+  return db.transaction((tx) => {
+    const cand = tx.select().from(companyCandidates).where(eq(companyCandidates.id, candidateId)).get();
+    if (!cand) throw new Error(`Unknown candidate ${candidateId}`);
+    const base = { attempts: cand.attempts + 1, lastCheckedAt: nowIso };
+
+    switch (result.status) {
+      case "confirmed": {
+        const companyId = insertOrGetCompany(
+          tx,
+          { ats: result.ats, slug: result.slug, name: cand.name, website: cand.website, homeCountry: cand.homeCountry, origin: cand.origin },
+          nowIso,
+        );
+        tx.update(companyCandidates)
+          .set({ ...base, status: "confirmed", companyId, ambiguousMatches: [], nextCheckAt: null })
+          .where(eq(companyCandidates.id, candidateId))
+          .run();
+        return { companyId };
+      }
+      case "ambiguous":
+        tx.update(companyCandidates)
+          .set({ ...base, status: "ambiguous", ambiguousMatches: result.matches, nextCheckAt: null })
+          .where(eq(companyCandidates.id, candidateId))
+          .run();
+        return { companyId: null };
+      case "not_found":
+        tx.update(companyCandidates)
+          .set({ ...base, status: "not_found", ambiguousMatches: [], nextCheckAt: addDays(nowIso, 30) })
+          .where(eq(companyCandidates.id, candidateId))
+          .run();
+        return { companyId: null };
+      case "error":
+        tx.update(companyCandidates)
+          .set({ ...base, status: "error", nextCheckAt: addDays(nowIso, 1) })
+          .where(eq(companyCandidates.id, candidateId))
+          .run();
+        return { companyId: null };
+    }
+  });
+}
+
+/** Active companies of one ATS that haven't been fetched in the last `minHours` (default 20). */
+export function listDueCompanies(
+  db: Db,
+  ats: AtsId,
+  nowIso: string,
+  opts: { force?: boolean; minHours?: number } = {},
+): CompanyRow[] {
+  const cutoff = addHours(nowIso, -(opts.minHours ?? 20));
+  const due = opts.force ? undefined : or(isNull(companies.lastFetchedAt), lte(companies.lastFetchedAt, cutoff));
+  return db
+    .select()
+    .from(companies)
+    .where(and(eq(companies.ats, ats), eq(companies.status, "active"), due))
+    .orderBy(asc(companies.id))
+    .all();
+}
+
+const MAX_CONSECUTIVE_404S = 3;
+
+export function recordCompanyFetch(
+  db: Db,
+  companyId: number,
+  outcome: { kind: "success" } | { kind: "not_found"; error: string } | { kind: "error"; error: string },
+  nowIso: string,
+): void {
+  db.transaction((tx) => {
+    if (outcome.kind === "success") {
+      tx.update(companies)
+        .set({ consecutiveFailures: 0, lastFetchedAt: nowIso, lastError: null })
+        .where(eq(companies.id, companyId))
+        .run();
+      return;
+    }
+    if (outcome.kind === "error") {
+      tx.update(companies).set({ lastError: outcome.error }).where(eq(companies.id, companyId)).run();
+      return;
+    }
+    tx.update(companies)
+      .set({ consecutiveFailures: sql`${companies.consecutiveFailures} + 1`, lastError: outcome.error })
+      .where(eq(companies.id, companyId))
+      .run();
+    const row = tx.select().from(companies).where(eq(companies.id, companyId)).get();
+    if (row && row.consecutiveFailures >= MAX_CONSECUTIVE_404S) {
+      tx.update(companies).set({ status: "inactive" }).where(eq(companies.id, companyId)).run();
+      tx.update(companyCandidates)
+        .set({ status: "pending", nextCheckAt: null, companyId: null })
+        .where(eq(companyCandidates.companyId, companyId))
+        .run();
+    }
+  });
+}
+
+export function listAmbiguousCandidates(db: Db): CandidateRow[] {
+  return db.select().from(companyCandidates).where(eq(companyCandidates.status, "ambiguous")).orderBy(asc(companyCandidates.id)).all();
+}
+
+export function companyCounts(db: Db): { active: number; inactive: number; byAts: Record<string, number> } {
+  const rows = db.select({ ats: companies.ats, status: companies.status }).from(companies).all();
+  const byAts: Record<string, number> = {};
+  let active = 0;
+  let inactive = 0;
+  for (const r of rows) {
+    if (r.status === "active") {
+      active++;
+      byAts[r.ats] = (byAts[r.ats] ?? 0) + 1;
+    } else {
+      inactive++;
+    }
+  }
+  return { active, inactive, byAts };
+}
