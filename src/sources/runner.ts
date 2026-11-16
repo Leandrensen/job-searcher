@@ -1,6 +1,8 @@
 import type { HttpClient } from "@/core/http";
 import type { Db } from "@/db/client";
-import { lastSuccessfulRunAt, latestPostedAt, recordRun, upsertJobs } from "@/db/queries";
+import { recordCandidatesFromBoardJobs } from "@/companies/discover";
+import { BOARD_IDS, type BoardId } from "@/core/job";
+import { lastSuccessfulRunAt, latestPostedAt, recordRun } from "@/db/queries";
 import { runAdapter } from "./run-adapter";
 import type { AnyAdapter, FetchResult } from "./types";
 
@@ -48,6 +50,7 @@ export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSumm
             fetched: 0,
             invalid: 0,
             filtered: 0,
+            latestPostedAt: null,
             error: null,
             durationMs: 0,
             inserted: 0,
@@ -62,8 +65,12 @@ export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSumm
         log,
       });
       counts = { fetched: result.fetched, invalid: result.invalid, filtered: result.filtered };
+      // Boards store no jobs: their postings only become company candidates.
+      if (!(BOARD_IDS as readonly string[]).includes(adapter.id)) throw new Error(`runSources only runs board adapters (got ${adapter.id})`);
       const { inserted, updated } =
-        result.status === "success" ? upsertJobs(db, jobs, startedAt.toISOString()) : { inserted: 0, updated: 0 };
+        result.status === "success"
+          ? recordCandidatesFromBoardJobs(db, adapter.id as BoardId, jobs, startedAt.toISOString())
+          : { inserted: 0, updated: 0 };
       if (result.status === "error") log(`${adapter.id}: ${result.error}`);
 
       recordRun(db, {
@@ -76,6 +83,7 @@ export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSumm
         updated,
         invalid: result.invalid,
         filtered: result.filtered,
+        latestPostedAt: result.latestPostedAt,
         error: result.error,
       });
       return { ...result, inserted, updated };
@@ -100,6 +108,7 @@ export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSumm
         source: adapter.id,
         status: "error",
         ...counts,
+        latestPostedAt: null,
         error: message,
         durationMs: Date.now() - startMs,
         inserted: 0,

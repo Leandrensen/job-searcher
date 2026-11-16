@@ -67,9 +67,9 @@ describe("jobicy adapter", () => {
     });
   });
 
-  it("runs cleanly through the pipeline without the tech filter", async () => {
+  it("applies the tech filter via runAdapter", async () => {
     const r = await runAdapter(jobicy, ctxWith(fixture).ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 0 });
-    expect(r.jobs).toHaveLength(3);
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 2 });
+    expect(r.jobs.map((j) => j.title)).toEqual(["Staff Backend Software Engineer"]);
   });
 });

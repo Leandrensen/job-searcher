@@ -55,6 +55,8 @@ export interface FetchResult {
   /** Items dropped by the tech filter. */
   filtered: number;
   jobs: Job[];
+  /** Newest postedAt among every valid job, including ones the filters dropped. */
+  latestPostedAt: string | null;
   error: string | null;
   durationMs: number;
 }

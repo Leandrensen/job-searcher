@@ -7,6 +7,30 @@ import { defineAdapter, type FetchContext } from "./types";
 const RawSchema = z.object({ id: z.string(), title: z.string() });
 type Raw = z.infer<typeof RawSchema>;
 
+function fakeJob(r: Raw): Job {
+  return {
+    source: "remoteok",
+    externalId: r.id,
+    url: `https://example.com/${r.id}`,
+    applyUrl: null,
+    title: r.title,
+    company: "Acme",
+    location: null,
+    workplaceType: "remote",
+    departments: [],
+    regions: [],
+    employmentType: null,
+    tags: [],
+    salaryMin: null,
+    salaryMax: null,
+    salaryCurrency: null,
+    salaryPeriod: null,
+    descriptionHtml: "",
+    descriptionText: "",
+    postedAt: null,
+  };
+}
+
 function makeAdapter(items: unknown[] | Error, opts: { techFilter?: boolean; normalize?: (r: Raw) => Job | null } = {}) {
   return defineAdapter<Raw>({
     id: "remoteok",
@@ -19,29 +43,7 @@ function makeAdapter(items: unknown[] | Error, opts: { techFilter?: boolean; nor
       if (items instanceof Error) throw items;
       return items;
     },
-    normalize:
-      opts.normalize ??
-      ((r) => ({
-        source: "remoteok",
-        externalId: r.id,
-        url: `https://example.com/${r.id}`,
-        applyUrl: null,
-        title: r.title,
-        company: "Acme",
-        location: null,
-        workplaceType: "remote",
-        departments: [],
-        regions: [],
-        employmentType: null,
-        tags: [],
-        salaryMin: null,
-        salaryMax: null,
-        salaryCurrency: null,
-        salaryPeriod: null,
-        descriptionHtml: "",
-        descriptionText: "",
-        postedAt: null,
-      })),
+    normalize: opts.normalize ?? fakeJob,
   });
 }
 
@@ -101,5 +103,26 @@ describe("runAdapter", () => {
     expect(r.fetched).toBe(2);
     expect(r.jobs).toHaveLength(1);
     expect(r.jobs[0]?.title).toBe("First");
+  });
+
+  it("reports the newest postedAt of every valid job, including filtered ones", async () => {
+    const adapter = makeAdapter(
+      [
+        { id: "1", title: "Backend Developer" },
+        { id: "2", title: "Account Executive" },
+      ],
+      {
+        techFilter: true,
+        normalize: (r) => ({ ...fakeJob(r), postedAt: r.id === "1" ? "2026-11-01T00:00:00.000Z" : "2026-11-05T00:00:00.000Z" }),
+      },
+    );
+    const r = await runAdapter(adapter, ctx());
+    expect(r.filtered).toBe(1);
+    expect(r.latestPostedAt).toBe("2026-11-05T00:00:00.000Z");
+  });
+
+  it("latestPostedAt is null when no job has a date, and for failed fetches", async () => {
+    expect((await runAdapter(makeAdapter([{ id: "1", title: "Dev" }]), ctx())).latestPostedAt).toBeNull();
+    expect((await runAdapter(makeAdapter(new TypeError("boom")), ctx())).latestPostedAt).toBeNull();
   });
 });

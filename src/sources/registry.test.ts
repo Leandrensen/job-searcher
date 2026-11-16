@@ -45,6 +45,11 @@ describe("source registry", () => {
     expect(typeof adapter.techFilter).toBe("boolean");
   });
 
+  it("every board applies the tech filter and no ATS does (the ATS runner filters itself)", () => {
+    for (const a of boardAdapters) expect(a.techFilter, a.id).toBe(true);
+    for (const a of atsAdapters) expect(a.techFilter, a.id).toBe(false);
+  });
+
   it("keeps the 6 hour minimum interval for the rate-limited source", () => {
     const interval = (id: string) => adapters.find((a) => a.id === id)?.minIntervalMinutes;
     expect(interval("remotive")).toBe(360);

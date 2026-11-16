@@ -29,7 +29,7 @@ const adapter: SourceAdapter<Raw> = {
   name: "Jobicy",
   homepage: "https://jobicy.com",
   minIntervalMinutes: 60,
-  techFilter: false,
+  techFilter: true,
   itemSchema: ItemSchema,
 
   async fetch({ http }) {

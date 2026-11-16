@@ -13,6 +13,7 @@ export async function runAdapter(adapter: AnyAdapter, ctx: FetchContext): Promis
     invalid: 0,
     filtered: 0,
     jobs: [],
+    latestPostedAt: null,
     error: null,
     durationMs: 0,
   };
@@ -61,6 +62,9 @@ export async function runAdapter(adapter: AnyAdapter, ctx: FetchContext): Promis
       logFailure(`invalid job at ${issue?.path.join(".") || "(root)"}: ${issue?.message}`);
       continue;
     }
+
+    const posted = valid.data.postedAt;
+    if (posted !== null && (result.latestPostedAt === null || posted > result.latestPostedAt)) result.latestPostedAt = posted;
 
     if (seen.has(valid.data.externalId)) continue;
     seen.add(valid.data.externalId);

@@ -7,7 +7,7 @@ import { jobs } from "./schema";
 
 function makeJob(over: Partial<Job> = {}): Job {
   return {
-    source: "remoteok",
+    source: "greenhouse",
     externalId: "1",
     url: "https://example.com/1",
     applyUrl: null,
@@ -40,8 +40,8 @@ describe("upsertJobs", () => {
     const r = upsertJobs(db, [makeJob(), makeJob({ externalId: "2" })], "2026-11-09T00:00:00.000Z");
     expect(r).toEqual({ inserted: 2, updated: 0 });
     expect(countJobs(db)).toBe(2);
-    expect(countJobs(db, "remoteok")).toBe(2);
-    expect(countJobs(db, "jobicy")).toBe(0);
+    expect(countJobs(db, "greenhouse")).toBe(2);
+    expect(countJobs(db, "lever")).toBe(0);
   });
 
   it("second upsert of same jobs counts as updated and keeps firstSeenAt", () => {
@@ -62,24 +62,50 @@ describe("upsertJobs", () => {
   });
 
   it("treats the same externalId on different sources as different jobs", () => {
-    const r = upsertJobs(db, [makeJob(), makeJob({ source: "jobicy" })], "2026-11-09T00:00:00.000Z");
+    const r = upsertJobs(db, [makeJob(), makeJob({ source: "lever" })], "2026-11-09T00:00:00.000Z");
     expect(r.inserted).toBe(2);
+  });
+});
+
+describe("latestPostedAt for boards", () => {
+  it("reads the newest postedAt recorded by successful runs, not the jobs table", () => {
+    expect(latestPostedAt(db, "remoteok")).toBeNull();
+    recordRun(db, { source: "remoteok", startedAt: "a", finishedAt: "a", status: "success", latestPostedAt: "2026-11-05T00:00:00.000Z" });
+    recordRun(db, { source: "remoteok", startedAt: "b", finishedAt: "b", status: "success", latestPostedAt: "2026-11-08T00:00:00.000Z" });
+    recordRun(db, { source: "remoteok", startedAt: "c", finishedAt: "c", status: "error", latestPostedAt: "2026-12-01T00:00:00.000Z" });
+    recordRun(db, { source: "remoteok", startedAt: "d", finishedAt: "d", status: "success", latestPostedAt: null });
+    recordRun(db, { source: "jobicy", startedAt: "e", finishedAt: "e", status: "success", latestPostedAt: "2026-11-09T00:00:00.000Z" });
+    expect(latestPostedAt(db, "remoteok")).toBe("2026-11-08T00:00:00.000Z");
+  });
+});
+
+describe("upsertJobs", () => {
+  it("refuses board jobs, which are never stored", () => {
+    expect(() => upsertJobs(db, [makeJob({ source: "remoteok" })], "2026-11-09T00:00:00.000Z")).toThrow(
+      "upsertJobs: board jobs are not stored (remoteok)",
+    );
+    expect(countJobs(db)).toBe(0);
+  });
+
+  it("refuses the whole batch when any job is a board job", () => {
+    expect(() => upsertJobs(db, [makeJob(), makeJob({ source: "jobicy", externalId: "2" })], "2026-11-09T00:00:00.000Z")).toThrow();
+    expect(countJobs(db)).toBe(0);
   });
 });
 
 describe("latestPostedAt", () => {
   it("returns max postedAt per source and null when empty", () => {
-    expect(latestPostedAt(db, "remoteok")).toBeNull();
+    expect(latestPostedAt(db, "greenhouse")).toBeNull();
     upsertJobs(
       db,
       [
         makeJob({ postedAt: "2026-11-01T00:00:00.000Z" }),
         makeJob({ externalId: "2", postedAt: "2026-11-05T00:00:00.000Z" }),
-        makeJob({ source: "jobicy", postedAt: "2026-11-09T00:00:00.000Z" }),
+        makeJob({ source: "lever", postedAt: "2026-11-09T00:00:00.000Z" }),
       ],
       "2026-11-09T00:00:00.000Z",
     );
-    expect(latestPostedAt(db, "remoteok")).toBe("2026-11-05T00:00:00.000Z");
+    expect(latestPostedAt(db, "greenhouse")).toBe("2026-11-05T00:00:00.000Z");
   });
 });
 
@@ -97,11 +123,11 @@ describe("duplicate marking", () => {
   const NOW = "2026-11-09T00:00:00.000Z";
 
   it("marks same company+title from another source as duplicate", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a", company: "Acme Inc", title: "Senior Dev!" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", company: "ACME", title: "senior dev" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a", company: "Acme Inc", title: "Senior Dev!" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", company: "ACME", title: "senior dev" })], NOW);
     const rows = db.select().from(jobs).all();
-    const original = rows.find((r) => r.source === "remoteok");
-    const copy = rows.find((r) => r.source === "jobicy");
+    const original = rows.find((r) => r.source === "greenhouse");
+    const copy = rows.find((r) => r.source === "lever");
     expect(original?.duplicateOf).toBeNull();
     expect(copy?.duplicateOf).toBe(original?.id);
   });
@@ -112,40 +138,40 @@ describe("duplicate marking", () => {
   });
 
   it("does not mark when original is older than 30 days", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a" })], "2026-10-09T00:00:00.000Z");
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a" })], "2026-10-09T00:00:00.000Z");
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b" })], NOW);
     expect(db.select().from(jobs).all().every((r) => r.duplicateOf === null)).toBe(true);
   });
 
   it("matches on identical applyUrl", () => {
     const applyUrl = "https://boards.greenhouse.io/acme/jobs/1";
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a", title: "Dev A", applyUrl })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", company: "Other", title: "Totally different", applyUrl })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a", title: "Dev A", applyUrl })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", company: "Other", title: "Totally different", applyUrl })], NOW);
     const rows = db.select().from(jobs).all();
-    expect(rows.find((r) => r.source === "jobicy")?.duplicateOf).toBe(rows.find((r) => r.source === "remoteok")?.id);
+    expect(rows.find((r) => r.source === "lever")?.duplicateOf).toBe(rows.find((r) => r.source === "greenhouse")?.id);
   });
 
   it("does not match null applyUrls to each other", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a", title: "One" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", company: "Other", title: "Two" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a", title: "One" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", company: "Other", title: "Two" })], NOW);
     expect(db.select().from(jobs).all().every((r) => r.duplicateOf === null)).toBe(true);
   });
 
   it("points at the oldest original and never chains duplicates", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b" })], NOW);
-    upsertJobs(db, [makeJob({ source: "remotive", externalId: "c" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b" })], NOW);
+    upsertJobs(db, [makeJob({ source: "ashby", externalId: "c" })], NOW);
     const rows = db.select().from(jobs).all();
-    const original = rows.find((r) => r.source === "remoteok");
-    expect(rows.find((r) => r.source === "jobicy")?.duplicateOf).toBe(original?.id);
-    expect(rows.find((r) => r.source === "remotive")?.duplicateOf).toBe(original?.id);
+    const original = rows.find((r) => r.source === "greenhouse");
+    expect(rows.find((r) => r.source === "lever")?.duplicateOf).toBe(original?.id);
+    expect(rows.find((r) => r.source === "ashby")?.duplicateOf).toBe(original?.id);
   });
 
   it("does not change duplicateOf when an existing job is updated", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", title: "Developer" })], "2026-11-10T00:00:00.000Z");
-    const copy = db.select().from(jobs).all().find((r) => r.source === "jobicy");
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", title: "Developer" })], "2026-11-10T00:00:00.000Z");
+    const copy = db.select().from(jobs).all().find((r) => r.source === "lever");
     expect(copy?.duplicateOf).not.toBeNull();
   });
 });

@@ -1005,7 +1005,7 @@
   - New in `queries.test.ts`: `upsertJobs refuses board jobs`.
 - Verify: `npm test` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T23: ATS runner (`src/sources/ats-runner.ts`, depends on T5, T6, T9, T10, T16, T22)
 - **Interface:**

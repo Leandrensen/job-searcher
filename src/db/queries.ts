@@ -1,6 +1,6 @@
 import { and, asc, count, eq, gte, inArray, isNotNull, isNull, lte, max, ne, notInArray, or } from "drizzle-orm";
 import { dedupeKey } from "@/core/dedupe";
-import type { Job, SourceId } from "@/core/job";
+import { BOARD_IDS, type Job, type SourceId } from "@/core/job";
 import type { Db } from "./client";
 import { fetchRuns, jobs } from "./schema";
 
@@ -32,6 +32,9 @@ export function upsertJobs(
   nowIso: string,
   opts: { companyId?: number } = {},
 ): { inserted: number; updated: number } {
+  // Board jobs only feed company discovery. Letting one in would silently bring back the board-job store.
+  const board = items.find((j) => (BOARD_IDS as readonly string[]).includes(j.source));
+  if (board) throw new Error(`upsertJobs: board jobs are not stored (${board.source})`);
   return db.transaction((tx) => {
     let inserted = 0;
     let updated = 0;
@@ -73,7 +76,19 @@ export function upsertJobs(
   });
 }
 
+/**
+ * Newest posting date already seen for a source. ATS jobs are stored, so it comes from `jobs`;
+ * boards store no jobs, so it comes from the runs that recorded it.
+ */
 export function latestPostedAt(db: Db, source: SourceId): string | null {
+  if ((BOARD_IDS as readonly string[]).includes(source)) {
+    const row = db
+      .select({ v: max(fetchRuns.latestPostedAt) })
+      .from(fetchRuns)
+      .where(and(eq(fetchRuns.source, source), eq(fetchRuns.status, "success")))
+      .get();
+    return row?.v ?? null;
+  }
   const row = db.select({ v: max(jobs.postedAt) }).from(jobs).where(eq(jobs.source, source)).get();
   return row?.v ?? null;
 }

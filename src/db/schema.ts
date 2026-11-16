@@ -105,6 +105,8 @@ export const fetchRuns = sqliteTable(
     updated: integer("updated").notNull().default(0),
     invalid: integer("invalid").notNull().default(0),
     filtered: integer("filtered").notNull().default(0),
+    /** Newest postedAt seen in this run. Boards keep no jobs, so this drives their incremental paging. */
+    latestPostedAt: text("latest_posted_at"),
     error: text("error"),
   },
   (t) => [index("fetch_runs_source_started_idx").on(t.source, t.startedAt)],

@@ -2,9 +2,8 @@ import { sql } from "drizzle-orm";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import type { Job, SourceId } from "@/core/job";
-import { openDb } from "@/db/client";
-import { fetchRuns } from "@/db/schema";
-import { countJobs } from "@/db/queries";
+import { openDb, type Db } from "@/db/client";
+import { companyCandidates, fetchRuns, jobs } from "@/db/schema";
 import { runSources } from "./runner";
 import { defineAdapter, type AnyAdapter } from "./types";
 
@@ -29,7 +28,7 @@ function fakeAdapter(
       url: `https://example.com/${id}/${r.id}`,
       applyUrl: null,
       title: `Developer ${r.id}`,
-      company: "Acme",
+      company: `${id} Co ${r.id}`,
       location: null,
       workplaceType: "remote",
       departments: [],
@@ -47,6 +46,8 @@ function fakeAdapter(
   });
   return { adapter, fetchSpy };
 }
+
+const candidatesFor = (db: Db, origin: string) => db.select().from(companyCandidates).all().filter((c) => c.origin === origin);
 
 function setup() {
   const db = openDb({ url: ":memory:", migrate: true });
@@ -97,8 +98,8 @@ describe("runSources", () => {
       ["jobicy", "success"],
     ]);
     expect(results[0]?.error).toBe("Error: boom");
-    expect(countJobs(db, "remoteok")).toBe(0);
-    expect(countJobs(db, "jobicy")).toBe(2);
+    expect(candidatesFor(db, "board:remoteok")).toHaveLength(0);
+    expect(candidatesFor(db, "board:jobicy")).toHaveLength(2);
     const runs = db.select().from(fetchRuns).all();
     expect(runs.find((r) => r.source === "remoteok")).toMatchObject({ status: "error", error: "Error: boom" });
   });
@@ -126,7 +127,7 @@ describe("runSources", () => {
   it("isolates a DB write failure to its own source", async () => {
     const { db, run } = setup();
     db.run(
-      sql`CREATE TRIGGER fail_remoteok_insert BEFORE INSERT ON jobs WHEN NEW.source = 'remoteok' BEGIN SELECT RAISE(ABORT, 'simulated write failure'); END;`,
+      sql`CREATE TRIGGER fail_remoteok_insert BEFORE INSERT ON company_candidates WHEN NEW.origin = 'board:remoteok' BEGIN SELECT RAISE(ABORT, 'simulated write failure'); END;`,
     );
     const failing = fakeAdapter("remoteok");
     const healthy = fakeAdapter("jobicy");
@@ -139,10 +140,11 @@ describe("runSources", () => {
     ]);
     expect(results[0]?.error).toBe("SqliteError: simulated write failure");
     expect(results[0]).toMatchObject({ fetched: 2, inserted: 0, updated: 0 });
-    expect(countJobs(db, "remoteok")).toBe(0);
-    expect(countJobs(db, "jobicy")).toBe(2);
+    expect(candidatesFor(db, "board:remoteok")).toHaveLength(0);
+    expect(candidatesFor(db, "board:jobicy")).toHaveLength(2);
     const row = db.select().from(fetchRuns).all().find((r) => r.source === "remoteok");
     expect(row).toMatchObject({ status: "error", error: "SqliteError: simulated write failure" });
+    expect(db.select().from(jobs).all()).toEqual([]);
   });
 
   it("still resolves when recording the run fails", async () => {
@@ -163,7 +165,7 @@ describe("runSources", () => {
 
     expect(results).toHaveLength(1);
     expect(results[0]).toMatchObject({ status: "error", error: "SqliteError: runs table locked" });
-    expect(countJobs(db, "remoteok")).toBe(2);
+    expect(candidatesFor(db, "board:remoteok")).toHaveLength(2);
     expect(log).toHaveBeenCalledWith(expect.stringContaining("could not record run: SqliteError: runs table locked"));
   });
   it("runs at most 4 sources at once", async () => {
@@ -216,5 +218,43 @@ describe("runSources", () => {
     clock.advanceMinutes(1);
     expect((await run([adapter]))[0]?.status).toBe("success");
     expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("stores no jobs: board jobs only become company candidates", async () => {
+    const { db, run } = setup();
+    const { adapter } = fakeAdapter("remoteok");
+    const [summary] = await run([adapter]);
+    expect(summary).toMatchObject({ status: "success", fetched: 2, inserted: 2, updated: 0 });
+    expect(db.select().from(jobs).all()).toEqual([]);
+    expect(candidatesFor(db, "board:remoteok").map((c) => [c.name, c.status])).toEqual([
+      ["remoteok Co 1", "pending"],
+      ["remoteok Co 2", "pending"],
+    ]);
+  });
+
+  it("counts candidates that already exist as updated", async () => {
+    const { run } = setup();
+    const { adapter } = fakeAdapter("remoteok");
+    await run([adapter]);
+    const [second] = await run([adapter], true);
+    expect(second).toMatchObject({ inserted: 0, updated: 2 });
+  });
+
+  it("records the newest postedAt on the run, including jobs the tech filter dropped", async () => {
+    const { db, run } = setup();
+    const { adapter } = fakeAdapter("remoteok");
+    // The fake titles ("Developer 1") match no tech keyword, so with the filter on nothing is kept.
+    const filtered = defineAdapter({ ...(adapter as unknown as Parameters<typeof defineAdapter>[0]), techFilter: true });
+    const [summary] = await run([filtered]);
+    expect(summary).toMatchObject({ fetched: 2, filtered: 2, inserted: 0 });
+    expect(db.select().from(fetchRuns).all()[0]?.latestPostedAt).toBe("2026-11-08T00:00:00.000Z");
+    expect(candidatesFor(db, "board:remoteok")).toHaveLength(0);
+  });
+
+  it("records a null latestPostedAt for a run without dated jobs", async () => {
+    const { db, run } = setup();
+    const { adapter } = fakeAdapter("remoteok", { fetch: async () => [] });
+    await run([adapter]);
+    expect(db.select().from(fetchRuns).all()[0]?.latestPostedAt).toBeNull();
   });
 });

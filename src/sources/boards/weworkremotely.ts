@@ -30,7 +30,7 @@ const adapter: SourceAdapter<Raw> = {
   name: "We Work Remotely",
   homepage: "https://weworkremotely.com",
   minIntervalMinutes: 60,
-  techFilter: false,
+  techFilter: true,
   itemSchema: ItemSchema,
 
   async fetch({ http, log }) {
