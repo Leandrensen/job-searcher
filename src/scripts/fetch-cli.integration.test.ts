@@ -14,13 +14,13 @@ type ComparableRow = Omit<SummaryRow, "ms">;
 const EXPECTED_FIRST_RUN: ComparableRow[] = [
   { source: "remoteok", status: "success", fetched: 4, inserted: 3, updated: 0, invalid: 0, filtered: 1, error: "" },
   { source: "weworkremotely", status: "success", fetched: 15, inserted: 3, updated: 0, invalid: 0, filtered: 0, error: "" },
-  { source: "remotive", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
-  { source: "himalayas", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
+  { source: "remotive", status: "success", fetched: 3, inserted: 0, updated: 0, invalid: 0, filtered: 3, error: "" },
+  { source: "himalayas", status: "success", fetched: 3, inserted: 1, updated: 0, invalid: 0, filtered: 2, error: "" },
   { source: "jobicy", status: "success", fetched: 3, inserted: 3, updated: 0, invalid: 0, filtered: 0, error: "" },
-  { source: "workingnomads", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
-  { source: "arbeitnow", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
+  { source: "workingnomads", status: "success", fetched: 3, inserted: 1, updated: 0, invalid: 0, filtered: 2, error: "" },
+  { source: "arbeitnow", status: "success", fetched: 3, inserted: 1, updated: 0, invalid: 0, filtered: 2, error: "" },
 ];
-const TOTAL_JOBS = 17;
+const TOTAL_JOBS = 12;
 
 const withoutMs = (r: SummaryRow): ComparableRow => ({
   source: r.source,

@@ -96,6 +96,6 @@ describe("arbeitnow adapter", () => {
   it("applies the tech filter via runAdapter", async () => {
     const { ctx } = setup(() => ({ data: fixture.data, links: { next: null } }));
     const r = await runAdapter(arbeitnow, ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 1 });
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 2 });
   });
 });

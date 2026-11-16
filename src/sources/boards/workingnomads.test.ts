@@ -68,6 +68,6 @@ describe("workingnomads adapter", () => {
 
   it("applies the tech filter via runAdapter", async () => {
     const r = await runAdapter(workingnomads, ctxWith(fixture).ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 1 });
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 2 });
   });
 });

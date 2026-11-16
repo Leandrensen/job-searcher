@@ -414,7 +414,7 @@
     That's `TOTAL_JOBS = 12`. Remotive inserting 0 is fine.
 - Verify: `npm test` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T7: Slugs and ATS URLs (`src/companies/slugs.ts`, depends on T2)
 - **Interfaces:**

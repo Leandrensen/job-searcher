@@ -63,7 +63,7 @@ describe("remotive adapter", () => {
 
   it("applies the tech filter via runAdapter", async () => {
     const r = await runAdapter(remotive, ctxWith(fixture).ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 1 });
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 3 });
   });
 
   it("has a 6 hour minimum interval (their terms allow ~4 calls a day)", () => {

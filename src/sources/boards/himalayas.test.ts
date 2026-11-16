@@ -100,6 +100,6 @@ describe("himalayas adapter", () => {
   it("applies the tech filter via runAdapter", async () => {
     const { adapter, ctx } = setup(() => ({ jobs: fixture.jobs, nextCursor: null }));
     const r = await runAdapter(adapter, ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 1 });
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 2 });
   });
 });
