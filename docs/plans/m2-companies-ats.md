@@ -853,7 +853,7 @@
   - `a thrown candidate becomes error and others continue`
 - Verify: `npm test -- src/companies` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T19: Seed sources (`src/companies/seeds.ts`, depends on T4, T5, T9)
 - **Interfaces:**
