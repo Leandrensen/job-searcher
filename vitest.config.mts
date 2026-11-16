@@ -15,6 +15,7 @@ export default defineConfig({
         "src/test-utils/**",
         "src/app/**",
         "src/scripts/fetch.ts", // process wiring only; the logic lives in fetch-cli.ts
+        "src/scripts/seed.ts", // process wiring only; the logic lives in seed-cli.ts
         "src/sources/types.ts", // types and one identity helper
       ],
       reporter: ["text", "html", "json-summary"],

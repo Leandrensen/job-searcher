@@ -926,7 +926,7 @@
   - `a failing source still loads the other`
 - Verify: `npm test -- src/scripts` passes, and `npm run seed -- --bogus` prints `Unknown option: --bogus` and exits 1 (no network).
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T21: `npm run company` (`src/scripts/company-cli.ts` + `company.ts`, depends on T9, T17)
 - **Pattern:** the same as `seed`. Add `"company": "tsx src/scripts/company.ts"` to `package.json`, and add `src/scripts/company.ts` to `coverage.exclude`.
