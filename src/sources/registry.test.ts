@@ -13,9 +13,8 @@ describe("source registry", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  // TODO(M2 T16): restore the exact check ([...ids].sort() equals [...SOURCE_IDS].sort()) once all 6 ATS adapters exist.
-  it("only registers known source ids", () => {
-    for (const id of ids) expect(SOURCE_IDS).toContain(id);
+  it("covers SOURCE_IDS exactly", () => {
+    expect([...ids].sort()).toEqual([...SOURCE_IDS].sort());
   });
 
   it("keeps the documented run order: boards first, then ATSs", () => {
@@ -30,7 +29,7 @@ describe("source registry", () => {
       "arbeitnow",
     ]);
     // Each task of M2 Part D appends one ATS here.
-    expect(atsIds).toEqual(["greenhouse", "lever", "ashby", "workable", "recruitee"]);
+    expect(atsIds).toEqual(["greenhouse", "lever", "ashby", "workable", "recruitee", "smartrecruiters"]);
   });
 
   it.each(ids)("adapter %s has a file with the same name", (id) => {

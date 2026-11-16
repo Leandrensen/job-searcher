@@ -33,6 +33,7 @@ describe("live adapters", () => {
     ashby: { id: 3, ats: "ashby", slug: "livekit", name: "LiveKit", homeCountry: "US" },
     workable: { id: 4, ats: "workable", slug: "modash", name: "Modash", homeCountry: "EE" },
     recruitee: { id: 5, ats: "recruitee", slug: "tether", name: "Tether", homeCountry: null },
+    smartrecruiters: { id: 6, ats: "smartrecruiters", slug: "BoschGroup", name: "Bosch Group", homeCountry: "DE" },
   };
   for (const adapter of atsAdapters) {
     it(

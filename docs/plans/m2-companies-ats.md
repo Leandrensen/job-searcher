@@ -786,7 +786,7 @@
   - `probe totalFound 0 → exists false`
 - **After this task:** the `registry.test.ts` "covers SOURCE_IDS exactly" check is restored.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ---
 

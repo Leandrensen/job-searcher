@@ -4,6 +4,7 @@ import { ashby, probeAshby } from "./ats/ashby";
 import { greenhouse, probeGreenhouse } from "./ats/greenhouse";
 import { lever, probeLever } from "./ats/lever";
 import { probeRecruitee, recruitee } from "./ats/recruitee";
+import { probeSmartRecruiters, smartrecruiters } from "./ats/smartrecruiters";
 import { probeWorkable, workable } from "./ats/workable";
 import { arbeitnow } from "./boards/arbeitnow";
 import { himalayas } from "./boards/himalayas";
@@ -26,16 +27,16 @@ export const boardAdapters: AnyAdapter[] = [
 ];
 
 /** ATSs: the only source of stored jobs. Each task of M2 Part D adds one. */
-export const atsAdapters: AnyAdapter[] = [greenhouse, lever, ashby, workable, recruitee];
+export const atsAdapters: AnyAdapter[] = [greenhouse, lever, ashby, workable, recruitee, smartrecruiters];
 
 /** Enabled sources, in the order they run and appear in summaries. */
 export const adapters: AnyAdapter[] = [...boardAdapters, ...atsAdapters];
 
-// TODO(M2 T16): make this a full Record<AtsId, ProbeFn> once all 6 ATS adapters exist.
-export const atsProbes: Partial<Record<AtsId, ProbeFn>> = {
+export const atsProbes: Record<AtsId, ProbeFn> = {
   greenhouse: probeGreenhouse,
   lever: probeLever,
   ashby: probeAshby,
   workable: probeWorkable,
   recruitee: probeRecruitee,
+  smartrecruiters: probeSmartRecruiters,
 };
