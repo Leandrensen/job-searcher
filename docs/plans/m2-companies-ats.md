@@ -749,7 +749,7 @@
 - **Fixtures:** `offers.json`: 3 `tether` offers: one `remote: true` with several `locations`, one `hybrid: true` if any exists, and one more.
 - **Extra tests:** `hybrid flag wins`; `published_at "… UTC" parses`; `salary strings are parsed`.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T16: SmartRecruiters (depends on T6, T11)
 - **Fetch:**
