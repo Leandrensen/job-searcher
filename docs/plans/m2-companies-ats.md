@@ -831,7 +831,7 @@
   - `skips pairs already probed via direct refs`.
 - Verify: `npm test -- src/companies/resolve.test.ts` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T18: Resolution runner (`src/companies/resolve-runner.ts`, depends on T9, T17)
 - **Interface:**
