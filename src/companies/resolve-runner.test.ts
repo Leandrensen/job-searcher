@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { HttpError, type HttpClient } from "@/core/http";
 import { openDb, type Db } from "@/db/client";
 import { listDueCandidates, recordResolution, upsertCandidate } from "@/db/companies";
 import { companies, companyCandidates } from "@/db/schema";
@@ -114,5 +115,42 @@ describe("resolveDueCandidates", () => {
 
   it("does nothing when no candidate is due", async () => {
     expect(await run()).toEqual({ checked: 0, confirmed: 0, ambiguous: 0, notFound: 0, errors: 0, byOrigin: {} });
+  });
+});
+
+describe("resolveDueCandidates when an ATS rate limits us", () => {
+  function rateLimitedWorkable() {
+    const calls: string[] = [];
+    const fail = async (url: string): Promise<never> => {
+      calls.push(url);
+      const status = new URL(url).host === "apply.workable.com" ? 429 : 404;
+      throw new HttpError(status, url, `HTTP ${status} for ${url}`);
+    };
+    const client: HttpClient = { getJson: fail, getText: fail };
+    return { client, workableCalls: () => calls.filter((u) => new URL(u).host === "apply.workable.com") };
+  }
+
+  it("stops probing that ATS for the rest of the run after the first 429", async () => {
+    add("Aaa Co", "seed:yc", "2026-11-16T10:00:00.000Z");
+    add("Bbb Co", "seed:yc", "2026-11-16T10:01:00.000Z");
+    add("Ccc Co", "seed:yc", "2026-11-16T10:02:00.000Z");
+    const { client, workableCalls } = rateLimitedWorkable();
+    const stats = await run({ http: client, concurrency: 1 });
+    expect(workableCalls()).toHaveLength(1);
+    // The other ATSs said "not found", but Workable could not answer, so every candidate is retried tomorrow.
+    expect(stats).toMatchObject({ checked: 3, confirmed: 0, notFound: 0, errors: 3 });
+    expect(rows().map((r) => [r.name, r.status])).toEqual([
+      ["Aaa Co", "error"],
+      ["Bbb Co", "error"],
+      ["Ccc Co", "error"],
+    ]);
+  });
+
+  it("probes Workable again on the next run", async () => {
+    add("Aaa Co", "seed:yc");
+    const { client, workableCalls } = rateLimitedWorkable();
+    await run({ http: client });
+    await run({ http: client, now: () => new Date(NOW.getTime() + 2 * 86_400_000) });
+    expect(workableCalls()).toHaveLength(2);
   });
 });

@@ -3,7 +3,7 @@ import { fetchRemoteintechCandidates, fetchYcCandidates } from "@/companies/seed
 import type { ProbeFn } from "@/companies/types";
 import type { HttpClient } from "@/core/http";
 import type { AtsId } from "@/core/job";
-import { createPacedHttpClient, type PacingOptions } from "@/core/paced-http";
+import { createPacedHttpClient, DEFAULT_PACING, type PacingOptions } from "@/core/paced-http";
 import type { Db } from "@/db/client";
 import { type CandidateInput, companyCounts, upsertCandidate } from "@/db/companies";
 import { CliUsageError } from "./fetch-cli";
@@ -43,7 +43,7 @@ export interface SeedCliDeps {
   http: HttpClient;
   probes: Record<AtsId, ProbeFn>;
   now?: () => Date;
-  /** Default: 500 ms between requests to a host, 100 ms for raw.githubusercontent.com. Tests turn pacing off. */
+  /** Default: DEFAULT_PACING. Tests turn pacing off. */
   pacing?: PacingOptions;
   out: {
     log(msg: string): void;
@@ -51,8 +51,6 @@ export interface SeedCliDeps {
     table(rows: Array<Record<string, string | number>>): void;
   };
 }
-
-const DEFAULT_PACING: PacingOptions = { minIntervalMs: 500, perHostMinIntervalMs: { "raw.githubusercontent.com": 100 } };
 
 /** Runs the seed command and returns the process exit code. */
 export async function runSeedCli(argv: string[], deps: SeedCliDeps): Promise<number> {

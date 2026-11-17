@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { HttpClient } from "./http";
-import { createPacedHttpClient } from "./paced-http";
+import { createPacedHttpClient, DEFAULT_PACING } from "./paced-http";
 
 /** A fake clock: `sleep(ms)` advances `now()`. */
 function setup(opts: { fail?: (url: string) => boolean; perHost?: Record<string, number> } = {}) {
@@ -83,5 +83,37 @@ describe("createPacedHttpClient", () => {
     await client.getJson("https://a.com/2");
     expect(starts).toEqual([0, 5000]);
     expect(sleeps).toEqual([]);
+  });
+});
+
+describe("DEFAULT_PACING", () => {
+  it("spaces Workable requests 10 s apart, GitHub raw 100 ms and everything else 500 ms", async () => {
+    let t = 0;
+    const starts: Array<{ host: string; at: number }> = [];
+    const inner: HttpClient = {
+      async getJson(url) {
+        starts.push({ host: new URL(url).host, at: t });
+        return {};
+      },
+      async getText() {
+        return "";
+      },
+    };
+    const client = createPacedHttpClient(inner, {
+      ...DEFAULT_PACING,
+      now: () => t,
+      sleep: async (ms) => {
+        t += ms;
+      },
+    });
+    for (const host of ["apply.workable.com", "raw.githubusercontent.com", "api.lever.co"]) {
+      await client.getJson(`https://${host}/a`);
+      await client.getJson(`https://${host}/b`);
+    }
+    const gap = (host: string) => {
+      const [a, b] = starts.filter((s) => s.host === host);
+      return b!.at - a!.at;
+    };
+    expect([gap("apply.workable.com"), gap("raw.githubusercontent.com"), gap("api.lever.co")]).toEqual([10_000, 100, 500]);
   });
 });

@@ -14,6 +14,15 @@ interface HostState {
   tail: Promise<unknown>;
 }
 
+/**
+ * Pacing for real runs. Workable's widget API starts answering 429 at about 2 requests per second
+ * (seen on 2026-11-17), so it gets one request every 10 seconds. GitHub's raw host is far more tolerant.
+ */
+export const DEFAULT_PACING: PacingOptions = {
+  minIntervalMs: 500,
+  perHostMinIntervalMs: { "raw.githubusercontent.com": 100, "apply.workable.com": 10_000 },
+};
+
 const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /**

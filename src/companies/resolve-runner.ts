@@ -1,5 +1,5 @@
 import type { AtsId } from "@/core/job";
-import type { HttpClient } from "@/core/http";
+import { HttpError, type HttpClient } from "@/core/http";
 import type { Db } from "@/db/client";
 import { listDueCandidates, recordResolution } from "@/db/companies";
 import { resolveCandidate } from "./resolve";
@@ -32,12 +32,29 @@ const PROGRESS_EVERY = 25;
 
 /** Resolve every due candidate and write each result as soon as it is known, so an interrupted run resumes. Never rejects. */
 export async function resolveDueCandidates(opts: ResolveDueOptions): Promise<ResolutionStats> {
-  const { db, http, probes } = opts;
+  const { db, http } = opts;
   const resolve = opts.resolve ?? resolveCandidate;
   const log = opts.log ?? (() => {});
   const concurrency = Math.max(1, opts.concurrency ?? 6);
   const nowIso = opts.now().toISOString();
   const due = listDueCandidates(db, nowIso, opts.limit);
+
+  // An ATS that answers 429 is left alone for the rest of the run; its candidates are retried on a later run.
+  const rateLimited = new Set<AtsId>();
+  const probes = Object.fromEntries(
+    Object.entries(opts.probes).map(([ats, probe]) => [
+      ats,
+      async (client: HttpClient, slug: string) => {
+        if (rateLimited.has(ats as AtsId)) throw new Error(`${ats} is rate limiting us, skipped for this run`);
+        try {
+          return await probe(client, slug);
+        } catch (err) {
+          if (err instanceof HttpError && err.status === 429) rateLimited.add(ats as AtsId);
+          throw err;
+        }
+      },
+    ]),
+  ) as Record<AtsId, ProbeFn>;
 
   const stats: ResolutionStats = { checked: 0, confirmed: 0, ambiguous: 0, notFound: 0, errors: 0, byOrigin: {} };
 
