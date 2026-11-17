@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    {
+      "id": "i1",
+      "title": "Full-Stack Engineer",
+      "jobUrl": "https://jobs.ashbyhq.com/initech/i1",
+      "applyUrl": "https://jobs.ashbyhq.com/initech/i1/application",
+      "workplaceType": "Remote",
+      "isRemote": true,
+      "descriptionHtml": "<p>We build things.</p>",
+      "descriptionPlain": "We build things.",
+      "publishedAt": "2026-11-10T10:00:00.000+00:00"
+    }
+  ]
+}

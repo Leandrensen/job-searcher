@@ -2,7 +2,7 @@ import { resolveDueCandidates } from "@/companies/resolve-runner";
 import type { ProbeFn } from "@/companies/types";
 import type { HttpClient } from "@/core/http";
 import type { AtsId } from "@/core/job";
-import { createPacedHttpClient } from "@/core/paced-http";
+import { createPacedHttpClient, type PacingOptions } from "@/core/paced-http";
 import type { Db } from "@/db/client";
 import { companyCounts } from "@/db/companies";
 import { countJobs, purgeClosedJobs } from "@/db/queries";
@@ -83,6 +83,8 @@ export interface CliDeps {
   /** Max candidates resolved per fetch run. Default 50. */
   resolveLimit?: number;
   now?: () => Date;
+  /** Default: 500 ms between requests to a host. Tests turn pacing off. */
+  pacing?: PacingOptions;
   out: {
     log(msg: string): void;
     error(msg: string): void;
@@ -119,7 +121,7 @@ export async function runCli(argv: string[], deps: CliDeps): Promise<number> {
 
   const db = deps.openDb();
   const now = deps.now ?? (() => new Date());
-  const paced = createPacedHttpClient(deps.http);
+  const paced = createPacedHttpClient(deps.http, deps.pacing);
 
   // 1. Boards only discover companies. They are single endpoints with their own intervals, so no pacing.
   const boardResults = boards.length

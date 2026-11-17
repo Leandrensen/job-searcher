@@ -1109,7 +1109,7 @@
   6. **`company review`:** lists Initech with `ashby/initech`. **`company confirm <id> ashby initech`** → `Active companies: 3` on the next `fetch` summary. Add a route for `https://api.ashbyhq.com/posting-api/job-board/initech?includeCompensation=true` serving the same Ashby fixture, so that fetch succeeds.
 - Verify: `npm test -- src/scripts/m2.integration.test.ts` passes, and the full `npm test` passes. **Delete** the old `fetch-cli.integration.test.ts` only if it's fully covered by this test plus T22's updated version; otherwise keep both.
 - Commit type: `test`.
-- [ ] Done
+- [x] Done
 
 ### T26: Live checks (depends on T16, T19)
 - **`adapters.live.test.ts`:** the 6 ATS checks (shared rules) plus:
