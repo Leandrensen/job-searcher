@@ -1118,7 +1118,7 @@
   - `probe confirms verified slugs`: for each verified slug, `resolveCandidate` with candidate name Mozilla/Curai/LiveKit/Modash/Tether/Bosch Group and `careersUrl` = its board URL → `confirmed`
 - **Run `npm run test:live` once.** If a source fails because its API changed, stop and report; don't loosen the assertions.
 - Commit type: `test`.
-- [ ] Done
+- [x] Done
 
 ### T27: Real run and M2 acceptance (depends on T25, T26)
 - **Steps** (real network; long-running, so run in the background and watch the progress lines):
