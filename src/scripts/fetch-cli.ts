@@ -1,6 +1,12 @@
+import { resolveDueCandidates } from "@/companies/resolve-runner";
+import type { ProbeFn } from "@/companies/types";
 import type { HttpClient } from "@/core/http";
+import type { AtsId } from "@/core/job";
+import { createPacedHttpClient } from "@/core/paced-http";
 import type { Db } from "@/db/client";
-import { countJobs } from "@/db/queries";
+import { companyCounts } from "@/db/companies";
+import { countJobs, purgeClosedJobs } from "@/db/queries";
+import { runAtsSources } from "@/sources/ats-runner";
 import { runSources } from "@/sources/runner";
 import type { AnyAdapter } from "@/sources/types";
 
@@ -14,15 +20,19 @@ export class CliUsageError extends Error {
 export interface FetchArgs {
   sources: string[];
   force: boolean;
+  skipResolve: boolean;
 }
 
 export function parseFetchArgs(argv: string[]): FetchArgs {
   const sources: string[] = [];
   let force = false;
+  let skipResolve = false;
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
     if (arg === "--force") {
       force = true;
+    } else if (arg === "--skip-resolve") {
+      skipResolve = true;
     } else if (arg === "--source") {
       const value = argv[++i];
       const parts = value && !value.startsWith("--") ? value.split(",").filter(Boolean) : [];
@@ -32,7 +42,7 @@ export function parseFetchArgs(argv: string[]): FetchArgs {
       throw new CliUsageError(`Unknown option: ${arg}`);
     }
   }
-  return { sources, force };
+  return { sources, force, skipResolve };
 }
 
 export interface SummaryRow {
@@ -47,16 +57,36 @@ export interface SummaryRow {
   error: string;
 }
 
+export interface AtsSummaryRow {
+  source: string;
+  status: string;
+  companies: number;
+  failed: number;
+  fetched: number;
+  inserted: number;
+  updated: number;
+  invalid: number;
+  filteredTech: number;
+  filteredLocation: number;
+  closed: number;
+  ms: number;
+  error: string;
+}
+
 export interface CliDeps {
   /** Called only after the arguments are valid. */
   openDb: () => Db;
   http: HttpClient;
-  adapters: AnyAdapter[];
+  boardAdapters: AnyAdapter[];
+  atsAdapters: AnyAdapter[];
+  probes: Record<AtsId, ProbeFn>;
+  /** Max candidates resolved per fetch run. Default 50. */
+  resolveLimit?: number;
   now?: () => Date;
   out: {
     log(msg: string): void;
     error(msg: string): void;
-    table(rows: SummaryRow[]): void;
+    table(rows: SummaryRow[] | AtsSummaryRow[]): void;
   };
 }
 
@@ -75,38 +105,73 @@ export async function runCli(argv: string[], deps: CliDeps): Promise<number> {
     throw err;
   }
 
-  const valid = deps.adapters.map((a) => a.id as string);
+  const all = [...deps.boardAdapters, ...deps.atsAdapters];
+  const valid = all.map((a) => a.id as string);
   const unknown = args.sources.find((id) => !valid.includes(id));
   if (unknown !== undefined) {
     out.error(`Unknown source: ${unknown}. Valid: ${valid.join(", ")}`);
     return 1;
   }
   // Registry order, not argument order.
-  const selected = args.sources.length ? deps.adapters.filter((a) => args.sources.includes(a.id)) : deps.adapters;
+  const pick = (list: AnyAdapter[]) => (args.sources.length ? list.filter((a) => args.sources.includes(a.id)) : list);
+  const boards = pick(deps.boardAdapters);
+  const atsList = pick(deps.atsAdapters);
 
   const db = deps.openDb();
-  const results = await runSources({
-    db,
-    http: deps.http,
-    adapters: selected,
-    force: args.force,
-    now: deps.now,
-    log: out.log,
-  });
+  const now = deps.now ?? (() => new Date());
+  const paced = createPacedHttpClient(deps.http);
 
+  // 1. Boards only discover companies. They are single endpoints with their own intervals, so no pacing.
+  const boardResults = boards.length
+    ? await runSources({ db, http: deps.http, adapters: boards, force: args.force, now, log: out.log })
+    : [];
+  if (boardResults.length) {
+    out.table(
+      boardResults.map((r) => ({
+        source: r.source,
+        status: r.status,
+        fetched: r.fetched,
+        inserted: r.inserted,
+        updated: r.updated,
+        invalid: r.invalid,
+        filtered: r.filtered,
+        ms: r.durationMs,
+        error: r.error ?? "",
+      })),
+    );
+  }
+
+  // 2. Resolve newly discovered candidates to ATS boards.
+  if (args.skipResolve || args.sources.length > 0) {
+    out.log("Resolution: skipped");
+  } else {
+    const s = await resolveDueCandidates({ db, http: paced, probes: deps.probes, now, limit: deps.resolveLimit ?? 50, log: out.log });
+    out.log(`Resolution: checked ${s.checked}, confirmed ${s.confirmed}, ambiguous ${s.ambiguous}, not found ${s.notFound}, errors ${s.errors}`);
+  }
+
+  // 3. Fetch the jobs of every due company.
+  const atsResults = await runAtsSources({ db, http: paced, adapters: atsList, force: args.force, now, log: out.log });
   out.table(
-    results.map((r) => ({
+    atsResults.map((r) => ({
       source: r.source,
       status: r.status,
+      companies: r.companies,
+      failed: r.companiesFailed,
       fetched: r.fetched,
       inserted: r.inserted,
       updated: r.updated,
       invalid: r.invalid,
-      filtered: r.filtered,
+      filteredTech: r.filteredTech,
+      filteredLocation: r.filteredLocation,
+      closed: r.closed,
       ms: r.durationMs,
       error: r.error ?? "",
     })),
   );
-  out.log(`Total jobs in DB: ${countJobs(db)}`);
-  return results.some((r) => r.status === "success" || r.status === "skipped") ? 0 : 1;
+
+  // 4. Forget jobs that have been closed for a month.
+  out.log(`Purged ${purgeClosedJobs(db, now().toISOString())} closed jobs`);
+  out.log(`Open jobs in DB: ${countJobs(db, { openOnly: true })}`);
+  out.log(`Active companies: ${companyCounts(db).active}`);
+  return [...boardResults, ...atsResults].some((r) => r.status === "success" || r.status === "skipped") ? 0 : 1;
 }

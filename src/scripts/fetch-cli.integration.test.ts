@@ -4,10 +4,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { HttpClient } from "@/core/http";
 import { openDb, type Db } from "@/db/client";
 import { companyCandidates, fetchRuns, jobs } from "@/db/schema";
-import { boardAdapters as adapters } from "@/sources/registry";
+import { atsAdapters, atsProbes, boardAdapters } from "@/sources/registry";
 import { createFixtureHttp, type FixtureHttp } from "@/test-utils/fixture-http";
 import { ALL_SOURCE_ROUTES } from "@/test-utils/fixture-routes";
-import { runCli, type SummaryRow } from "./fetch-cli";
+import { runCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
 
 type ComparableRow = Omit<SummaryRow, "ms">;
 
@@ -47,15 +47,17 @@ beforeEach(() => {
 async function run(argv: string[], client: HttpClient = http) {
   const logs: string[] = [];
   const errors: string[] = [];
-  const tables: SummaryRow[][] = [];
-  const code = await runCli(argv, {
+  const tables: Array<SummaryRow[] | AtsSummaryRow[]> = [];
+  const code = await runCli(argv.includes("--source") ? argv : ["--skip-resolve", ...argv], {
     openDb: () => db,
     http: client,
-    adapters,
+    boardAdapters,
+    atsAdapters,
+    probes: atsProbes,
     now: () => new Date(clock),
     out: { log: (m) => logs.push(m), error: (m) => errors.push(m), table: (rows) => tables.push(rows) },
   });
-  return { code, logs, errors, rows: tables[0] ?? [] };
+  return { code, logs, errors, rows: (tables[0] ?? []) as SummaryRow[] };
 }
 
 describe("fetch CLI, offline end to end", () => {
@@ -65,11 +67,12 @@ describe("fetch CLI, offline end to end", () => {
     expect(code).toBe(0);
     expect(errors).toEqual([]);
     expect(rows.map(withoutMs)).toEqual(EXPECTED_FIRST_RUN);
-    expect(logs).toContain("Total jobs in DB: 0");
+    expect(logs).toContain("Open jobs in DB: 0");
 
     const runs = db.select().from(fetchRuns).all();
-    expect(runs).toHaveLength(7);
-    expect(runs.every((r) => r.status === "success")).toBe(true);
+    // 7 boards fetched, plus 6 ATSs skipped because no company is due yet.
+    expect(runs.filter((r) => r.status === "success")).toHaveLength(7);
+    expect(runs.filter((r) => r.status === "skipped")).toHaveLength(6);
     expect(db.select().from(jobs).all()).toEqual([]);
     expect(db.select().from(companyCandidates).all()).toHaveLength(TOTAL_CANDIDATES);
   });
@@ -86,7 +89,7 @@ describe("fetch CLI, offline end to end", () => {
     const { code, rows, logs } = await run([]);
     expect(code).toBe(0);
     expect(rows.map((r) => r.status)).toEqual(Array(7).fill("skipped"));
-    expect(logs).toContain("Total jobs in DB: 0");
+    expect(logs).toContain("Open jobs in DB: 0");
   });
 
   it("forced second run updates instead of inserting", async () => {
@@ -95,7 +98,7 @@ describe("fetch CLI, offline end to end", () => {
     expect(code).toBe(0);
     expect(rows.map((r) => r.inserted)).toEqual(Array(7).fill(0));
     expect(rows.map((r) => r.updated)).toEqual(first.rows.map((r) => r.inserted));
-    expect(logs).toContain("Total jobs in DB: 0");
+    expect(logs).toContain("Open jobs in DB: 0");
   });
 
   it("--source limits the run and keeps registry order", async () => {

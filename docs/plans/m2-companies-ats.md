@@ -1075,7 +1075,7 @@
 - **Tests first:** update the `fetch-cli.test.ts` parsing and validation tests (13 ids, `--skip-resolve`). The integration test is rewritten in T25.
 - Verify: `npm test -- src/scripts/fetch-cli.test.ts` passes, and `npm run fetch -- --source nope` prints the 13-id message and exits 1.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T25: Offline end-to-end test of seed + fetch (`src/scripts/m2.integration.test.ts`, depends on T20, T24)
 - **Hand-written fixtures** in `test/fixtures/integration/`, routed through `createFixtureHttp(routes, { fallbackStatus: 404 })`. All other probe URLs 404 via the fallback.
