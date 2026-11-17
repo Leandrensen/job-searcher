@@ -87,7 +87,7 @@ describe("createPacedHttpClient", () => {
 });
 
 describe("DEFAULT_PACING", () => {
-  it("spaces Workable requests 10 s apart, GitHub raw 100 ms and everything else 500 ms", async () => {
+  it("spaces GitHub raw requests 100 ms apart and everything else 500 ms", async () => {
     let t = 0;
     const starts: Array<{ host: string; at: number }> = [];
     const inner: HttpClient = {
@@ -106,7 +106,7 @@ describe("DEFAULT_PACING", () => {
         t += ms;
       },
     });
-    for (const host of ["apply.workable.com", "raw.githubusercontent.com", "api.lever.co"]) {
+    for (const host of ["raw.githubusercontent.com", "api.lever.co"]) {
       await client.getJson(`https://${host}/a`);
       await client.getJson(`https://${host}/b`);
     }
@@ -114,6 +114,6 @@ describe("DEFAULT_PACING", () => {
       const [a, b] = starts.filter((s) => s.host === host);
       return b!.at - a!.at;
     };
-    expect([gap("apply.workable.com"), gap("raw.githubusercontent.com"), gap("api.lever.co")]).toEqual([10_000, 100, 500]);
+    expect([gap("raw.githubusercontent.com"), gap("api.lever.co")]).toEqual([100, 500]);
   });
 });

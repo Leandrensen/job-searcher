@@ -70,9 +70,9 @@ describe("fetch CLI, offline end to end", () => {
     expect(logs).toContain("Open jobs in DB: 0");
 
     const runs = db.select().from(fetchRuns).all();
-    // 7 boards fetched, plus 6 ATSs skipped because no company is due yet.
+    // 7 boards fetched, plus 5 ATSs skipped because no company is due yet.
     expect(runs.filter((r) => r.status === "success")).toHaveLength(7);
-    expect(runs.filter((r) => r.status === "skipped")).toHaveLength(6);
+    expect(runs.filter((r) => r.status === "skipped")).toHaveLength(5);
     expect(db.select().from(jobs).all()).toEqual([]);
     expect(db.select().from(companyCandidates).all()).toHaveLength(TOTAL_CANDIDATES);
   });

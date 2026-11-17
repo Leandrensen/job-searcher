@@ -9,8 +9,6 @@ describe("parseAtsUrl", () => {
     ["https://jobs.lever.co/weloglobal./abc", { ats: "lever", slug: "weloglobal" }],
     ["https://jobs.eu.lever.co/acme/", { ats: "lever", slug: "acme" }],
     ["https://jobs.ashbyhq.com/livekit/uuid", { ats: "ashby", slug: "livekit" }],
-    ["https://apply.workable.com/modash/j/ABC/", { ats: "workable", slug: "modash" }],
-    ["https://apply.workable.com/j/ABC", null],
     ["https://tether.recruitee.com/o/x", { ats: "recruitee", slug: "tether" }],
     ["https://www.recruitee.com/pricing", null],
     ["https://jobs.smartrecruiters.com/BoschGroup/123", { ats: "smartrecruiters", slug: "BoschGroup" }],
@@ -72,7 +70,6 @@ describe("boardUrl", () => {
     [{ ats: "greenhouse", slug: "acme" }, "https://boards.greenhouse.io/acme"],
     [{ ats: "lever", slug: "acme" }, "https://jobs.lever.co/acme"],
     [{ ats: "ashby", slug: "acme" }, "https://jobs.ashbyhq.com/acme"],
-    [{ ats: "workable", slug: "acme" }, "https://apply.workable.com/acme"],
     [{ ats: "recruitee", slug: "acme" }, "https://acme.recruitee.com"],
     [{ ats: "smartrecruiters", slug: "BoschGroup" }, "https://jobs.smartrecruiters.com/BoschGroup"],
   ])("%j → %s", (ref, url) => {
@@ -80,7 +77,7 @@ describe("boardUrl", () => {
   });
 
   it("round-trips through parseAtsUrl", () => {
-    for (const ats of ["greenhouse", "lever", "ashby", "workable", "recruitee", "smartrecruiters"] as const) {
+    for (const ats of ["greenhouse", "lever", "ashby", "recruitee", "smartrecruiters"] as const) {
       expect(parseAtsUrl(boardUrl({ ats, slug: "Acme" }))).toEqual({ ats, slug: ats === "smartrecruiters" ? "Acme" : "acme" });
     }
   });

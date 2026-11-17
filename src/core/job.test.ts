@@ -44,7 +44,7 @@ describe("JobSchema", () => {
   it("accepts every ATS source id", () => {
     for (const source of ATS_IDS) expect(JobSchema.safeParse({ ...valid, source }).success).toBe(true);
     expect([...SOURCE_IDS]).toEqual([...BOARD_IDS, ...ATS_IDS]);
-    expect([...ATS_IDS]).toEqual(["greenhouse", "lever", "ashby", "workable", "recruitee", "smartrecruiters"]);
+    expect([...ATS_IDS]).toEqual(["greenhouse", "lever", "ashby", "recruitee", "smartrecruiters"]);
   });
 
   it("rejects lowercase or 2-letter currency", () => {

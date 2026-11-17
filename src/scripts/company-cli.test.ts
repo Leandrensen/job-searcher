@@ -80,7 +80,7 @@ describe("company add", () => {
   });
 
   it.each([
-    [["add", "workday", "acme"], "Unknown ATS: workday. Valid: greenhouse, lever, ashby, workable, recruitee, smartrecruiters"],
+    [["add", "workday", "acme"], "Unknown ATS: workday. Valid: greenhouse, lever, ashby, recruitee, smartrecruiters"],
     [["add", "greenhouse", "acme", "--country", "usa"], "Invalid --country: usa (use a 2-letter ISO code like US)"],
     [["add", "greenhouse"], "Usage:"],
     [["add", "greenhouse", "acme", "--bogus"], "Unknown option: --bogus"],

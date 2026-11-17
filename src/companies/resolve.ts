@@ -7,7 +7,7 @@ import type { ProbeFn, ProbeResult, Resolution } from "./types";
 export type Candidate = { name: string; website: string | null; careersUrl: string | null; atsHints: string[] };
 
 /** Order in which guessed slugs are tried against the ATSs. */
-export const PROBE_ORDER: readonly AtsId[] = ["greenhouse", "lever", "ashby", "workable", "recruitee", "smartrecruiters"];
+export const PROBE_ORDER: readonly AtsId[] = ["greenhouse", "lever", "ashby", "recruitee", "smartrecruiters"];
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

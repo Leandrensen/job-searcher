@@ -21,7 +21,6 @@ const PATTERNS: UrlPattern[] = [
   },
   { ats: "lever", re: /jobs\.(?:eu\.)?lever\.co\/([a-z0-9_.-]+?)(?=[/?#"'\s]|$)/gi, ignored: [] },
   { ats: "ashby", re: /jobs\.ashbyhq\.com\/([a-z0-9_.-]+)/gi, ignored: ["api"] },
-  { ats: "workable", re: /apply\.workable\.com\/([a-z0-9_-]+)/gi, ignored: ["j", "api"] },
   { ats: "recruitee", re: /https?:\/\/([a-z0-9-]+)\.recruitee\.com/gi, ignored: ["www", "app", "api"] },
   {
     ats: "smartrecruiters",
@@ -89,8 +88,6 @@ export function boardUrl(ref: AtsRef): string {
       return `https://jobs.lever.co/${ref.slug}`;
     case "ashby":
       return `https://jobs.ashbyhq.com/${ref.slug}`;
-    case "workable":
-      return `https://apply.workable.com/${ref.slug}`;
     case "recruitee":
       return `https://${ref.slug}.recruitee.com`;
     case "smartrecruiters":

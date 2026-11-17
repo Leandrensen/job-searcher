@@ -1,6 +1,6 @@
 # Job Searcher
 
-Personal, single-user tool that fetches IT jobs from companies' ATS job boards (Greenhouse, Lever, Ashby, Workable, Recruitee, SmartRecruiters), filters and ranks them against one search description with local embeddings, and has Claude score only the top matches, once per job. Companies come from seed lists, job-board discovery and manual adds. See the Pipeline section of `PLAN.md`.
+Personal, single-user tool that fetches IT jobs from companies' ATS job boards (Greenhouse, Lever, Ashby, Recruitee, SmartRecruiters), filters and ranks them against one search description with local embeddings, and has Claude score only the top matches, once per job. Companies come from seed lists, job-board discovery and manual adds. See the Pipeline section of `PLAN.md`.
 
 ## Commands
 - Install: `npm install`

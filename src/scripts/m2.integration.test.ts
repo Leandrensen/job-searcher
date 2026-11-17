@@ -108,7 +108,7 @@ describe("M2 end to end, offline", () => {
     expect(logs).toContain("Resolution: checked 10, confirmed 0, ambiguous 0, not found 10, errors 0");
     expect(atsRow(ats, "greenhouse")).toMatchObject({ status: "success", companies: 1, failed: 0, fetched: 3, inserted: 1, filteredTech: 1, filteredLocation: 1, closed: 0 });
     expect(atsRow(ats, "lever")).toMatchObject({ status: "success", companies: 1, fetched: 2, inserted: 1, filteredTech: 0, filteredLocation: 1, closed: 0 });
-    expect(ats.filter((r) => r.status === "skipped").map((r) => r.source)).toEqual(["ashby", "workable", "recruitee", "smartrecruiters"]);
+    expect(ats.filter((r) => r.status === "skipped").map((r) => r.source)).toEqual(["ashby", "recruitee", "smartrecruiters"]);
     expect(logs).toContain("Open jobs in DB: 2");
     expect(db.select().from(jobs).all().map((j) => j.title).sort()).toEqual(["Backend Developer (Node.js)", "Senior Full-Stack Engineer"]);
   });
@@ -117,7 +117,7 @@ describe("M2 end to end, offline", () => {
     const { code, boards, ats, logs } = await fetchAll();
     expect(code).toBe(0);
     expect(boards?.map((r) => r.status)).toEqual(Array(7).fill("skipped"));
-    expect(ats.map((r) => r.status)).toEqual(Array(6).fill("skipped"));
+    expect(ats.map((r) => r.status)).toEqual(Array(5).fill("skipped"));
     expect(logs).toContain("Resolution: checked 0, confirmed 0, ambiguous 0, not found 0, errors 0");
     expect(logs).toContain("Open jobs in DB: 2");
   });

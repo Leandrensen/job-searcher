@@ -7,7 +7,7 @@ A personal tool that finds the IT jobs that best fit one specific search. It bui
 - In:
   - company list seeded from `remoteintech/remote-jobs` and the YC company dataset, plus companies I add by hand
   - job boards (from M1) used **only to discover companies**; board jobs are never stored
-  - jobs fetched from 6 ATSs: Greenhouse, Lever, Ashby, Workable, Recruitee, SmartRecruiters
+  - jobs fetched from 5 ATSs: Greenhouse, Lever, Ashby, Recruitee, SmartRecruiters
   - storage filters: only tech jobs matching my stack keywords, remote, doable from Argentina, at companies based in the USA, Canada, Europe, Australia or New Zealand (or of unknown origin), are stored
   - one search description in its own file (`config/search.md`) plus hard rules (`config/preferences.json`)
   - filters, then local embedding ranking, then Claude scoring of the top N; each job scored once; "get next"
@@ -85,8 +85,8 @@ Build the company list, resolve each company to its ATS precisely, and fetch job
     2. Add `departments: string[]`: Greenhouse `departments`, Lever `team`/`department`, Ashby `department` + `team`, Recruitee `department`, SmartRecruiters `department` / `function`.
     3. Add `regions: string[]` (our own vocabulary, derived only from the job's location text; see "Location filter"). `location` stays as display text. There's no `countries` field: an ATS's structured country is often the office country, not where the job can be done from.
     4. Add `employmentType: string | null` (full-time, contract, ...).
-    5. `externalId` becomes `<slug>:<ATS job id>`, unique per company, because Workable job codes are only unique within an account.
-    6. `SOURCE_IDS` gains the 6 ATS ids, and only ATS jobs are accepted for storage.
+    5. `externalId` becomes `<slug>:<ATS job id>`, unique per company, because ATS job ids are only unique within an account.
+    6. `SOURCE_IDS` gains the 5 ATS ids, and only ATS jobs are accepted for storage.
   - `FetchContext` change: ATS adapters receive their list of active companies.
   - DB:
     - `jobs` gains `companyId` (linked to `companies`) and `closedAt`.
@@ -109,15 +109,15 @@ Build the company list, resolve each company to its ATS precisely, and fetch job
   - YC companies from `https://yc-oss.github.io/api/companies/all.json`: about 6,400 companies, of which about 4,400 have `status = Active`. Seeded only if `status = Active`, `isHiring = true`, and the home country is allowed or unknown (see "Location filter" rule 3): about 1,370 companies as of 2026-11-16. There's no industry filter, because labels like "Healthcare" or "Fintech" still cover software startups and the tech filter handles relevance. The monthly re-seed picks up companies that start hiring. The dataset has no license, so it's fetched at runtime for personal use and never committed, and test fixtures are a few hand-made records.
 - **Manual add and review:** `npm run company -- add <ats> <slug>` (optional name and home country); manual adds are confirmed by definition. `npm run company -- review` lists `ambiguous` companies so I can confirm or reject each one.
 - **Precise slug resolution.** Precision first: only `confirmed` candidates become companies, and only `active` companies are fetched.
-  1. **Direct link first.** If the candidate's `careers_url`, website URL or a board posting contains an ATS URL (`boards.greenhouse.io/<slug>`, `jobs.lever.co/<slug>`, `jobs.ashbyhq.com/<slug>`, `apply.workable.com/<slug>`, `<slug>.recruitee.com`, `jobs.smartrecruiters.com/<slug>`), use that slug.
-  2. **Otherwise, guess at most 3 slugs** from the name (legal suffixes removed) and the website domain, e.g. "Acme Labs, Inc." + `acmelabs.io` → `acmelabs`, `acme-labs`. Probe them against the 6 ATSs.
-  3. **Existence:** HTTP 404 means "not there" on Greenhouse, Lever, Ashby, Workable and Recruitee. SmartRecruiters answers 200 even for unknown slugs, so it needs at least 1 posting.
+  1. **Direct link first.** If the candidate's `careers_url`, website URL or a board posting contains an ATS URL (`boards.greenhouse.io/<slug>`, `jobs.lever.co/<slug>`, `jobs.ashbyhq.com/<slug>`, `<slug>.recruitee.com`, `jobs.smartrecruiters.com/<slug>`), use that slug.
+  2. **Otherwise, guess at most 3 slugs** from the name (legal suffixes removed) and the website domain, e.g. "Acme Labs, Inc." + `acmelabs.io` → `acmelabs`, `acme-labs`. Probe them against the 5 ATSs.
+  3. **Existence:** HTTP 404 means "not there" on Greenhouse, Lever, Ashby and Recruitee. SmartRecruiters answers 200 even for unknown slugs, so it needs at least 1 posting.
   4. **Identity must be proven** by at least one of:
-     - the ATS company name normalizes to the candidate's: Greenhouse board `name`, Workable `name`, Recruitee `company_name`, SmartRecruiters `company.name`
+     - the ATS company name normalizes to the candidate's: Greenhouse board `name`, Recruitee `company_name`, SmartRecruiters `company.name`
      - the candidate's website domain appears in the ATS data
      - for Lever and Ashby, which return no company name: the name appears in the descriptions of at least 2 postings (or of the only posting, if there's just 1), or a direct link from step 1
   5. **Outcome:** `confirmed` → added to `companies`. `ambiguous` (exists but identity unproven, or several ATSs match) → not fetched; shown by `npm run company -- review`. `not_found` → retried after 30 days.
-- **6 ATS adapters.** Each fetches its active companies with polite per-host pacing (1–2 requests at a time, with a delay), errors isolated per company, and each company fetched at most about once a day.
+- **5 ATS adapters.** Each fetches its active companies with polite per-host pacing (1–2 requests at a time, with a delay), errors isolated per company, and each company fetched at most about once a day.
 - **Tech filter** (storage; replaces the M1 tech filter's keyword list). It matches job title, department/team and tags only, never descriptions, where "Next", "Segment" and "AWS" appear almost everywhere. Keywords:
   - full stack / full-stack / fullstack, front end / front-end / frontend, back end / back-end / backend
   - software engineer, software developer, web developer, web engineer, UI engineer, UI developer, product engineer
@@ -125,7 +125,7 @@ Build the company list, resolve each company to its ATS precisely, and fetch job
   - martech, marketing technology, Segment, Snowflake, AWS
 - **Location filter** (storage, applied after the tech filter). A job is stored only if all three hold:
   1. **Remote only:** `workplaceType` is `remote` or unknown. Hybrid and onsite jobs are dropped.
-     - Taken from the ATS when it provides one: Lever `workplaceType`, Ashby `workplaceType`/`isRemote`, Recruitee `remote`/`hybrid`/`on_site`, SmartRecruiters `location.remote`/`hybrid`, Workable `telecommuting`.
+     - Taken from the ATS when it provides one: Lever `workplaceType`, Ashby `workplaceType`/`isRemote`, Recruitee `remote`/`hybrid`/`on_site`, SmartRecruiters `location.remote`/`hybrid`.
      - Otherwise (e.g. Greenhouse), from the location text: "remote", "anywhere", "worldwide" or "remoto" → `remote`; "hybrid" or "híbrido" → `hybrid`; "onsite", "on-site", "in office" or "presencial" → `onsite`.
      - A location with no remote word, such as just a city ("San Francisco, CA"), counts as `onsite`. Only an empty location is unknown.
   2. **Doable from Argentina:** the job's `regions` include `latam`, `south-america`, `americas`, `argentina` or `worldwide`, or no region is found at all (plain "Remote"; unknown passes). Jobs limited to other countries or areas need residency there and are dropped: "Remote - US only", "Remote, United States", "Remote - Brazil", "Remote - Europe", "Remote - India".
@@ -168,10 +168,9 @@ Build the company list, resolve each company to its ATS precisely, and fetch job
   - Ashby `publishedAt`
   - Recruitee `published_at` (not `created_at` or `updated_at`)
   - SmartRecruiters `releasedDate`
-  - Workable: to be confirmed from a real fixture
 
   If an ATS gives no date, `postedAt` stays `null` and the job's effective date is our `firstSeenAt`. Note that `firstSeenAt` is "today" for every job on a company's first fetch.
-- **Workable risk:** every company probed on 2026-11-16 returned 0 jobs from the widget API. Confirm early in M2 that this endpoint still lists jobs; if it doesn't, drop Workable.
+- **Workable dropped (2026-11-17).** Its widget API rate limits this machine hard and unpredictably (see the decisions log).
 - **Closed jobs:** each fetch returns a company's full list, so a stored job missing from it gets `closedAt`, and it's reopened if it reappears. Closed jobs are never ranked or scored. Jobs closed for more than 30 days are deleted, together with their embeddings and scores.
 - **Dead companies:** after 3 consecutive 404s a company becomes `inactive`, and its candidate is resolved again.
 - **Dedupe:** only ATS jobs are stored, so cross-source dedupe only applies between ATSs (e.g. a company that switched ATS).
@@ -235,7 +234,7 @@ Daily `npm run fetch` and monthly `npm run seed` on a local schedule, nightly pr
   - new fields `departments`, `regions` and `employmentType` (no `countries` field)
   - `companies.homeCountry`
   - `externalId` becomes `<slug>:<id>`
-  - 6 ATS source ids
+  - 5 ATS source ids
   - companies passed to ATS adapters through `FetchContext`
   - `companyId` and `closedAt` on jobs
 - 2026-11-16: Storage location filter: remote only (hybrid and onsite dropped); the posting must be doable from Argentina (Argentina, LATAM, South America, Americas, worldwide, or no region; a single other country such as "Remote - Brazil" or "Remote - US" needs residency there and is dropped); a city-only location without a remote word counts as onsite; the company must be based in the USA, Canada, Europe, Australia or New Zealand, or have an unknown home country. There's no ISO code for LATAM, so job regions use our own vocabulary derived only from location text (country names and area phrases, English and Spanish). Structured ATS countries are ignored because they're often the office country; residency limits stated only in descriptions are left to Claude's scoring. The company home country comes from the YC dataset or manual adds.
@@ -248,3 +247,4 @@ Daily `npm run fetch` and monthly `npm run seed` on a local schedule, nightly pr
   - The digest is sent by email.
   - The embedding model is `onnx-community/gte-multilingual-base`: free (Apache-2.0), reads whole descriptions, and verified to run in Transformers.js with good English/Spanish matching. Fallback: `Xenova/multilingual-e5-small`.
 - 2026-11-16: Get on Board dropped as a discovery source. Its companies are mostly LATAM-based with no known home country, so their "Remote - Argentina" jobs would pass the location filter's "unknown passes" rule.
+- 2026-11-17: Workable removed from the app. A real seed run made its widget API answer 429 to every request, even for a known-good slug, and the block lasted over an hour; staged tests showed no spacing that was reliably accepted (8 s worked for 20 requests, then even 5–8 s failed). It was about 7% of confirmed companies and no Workable job was ever fetched. The ATS list is now Greenhouse, Lever, Ashby, Recruitee and SmartRecruiters (12 source ids).

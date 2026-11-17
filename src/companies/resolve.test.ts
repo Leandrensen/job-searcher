@@ -8,7 +8,6 @@ const gh = (slug: string) => `https://boards-api.greenhouse.io/v1/boards/${slug}
 const ghJobs = (slug: string) => `${gh(slug)}/jobs?content=true`;
 const lever = (slug: string) => `https://api.lever.co/v0/postings/${slug}?mode=json`;
 const ashby = (slug: string) => `https://api.ashbyhq.com/posting-api/job-board/${slug}?includeCompensation=true`;
-const workable = (slug: string) => `https://apply.workable.com/api/v1/widget/accounts/${slug}`;
 const recruitee = (slug: string) => `https://${slug}.recruitee.com/api/offers/`;
 const sr = (slug: string) => `https://api.smartrecruiters.com/v1/companies/${slug}/postings?limit=10`;
 
@@ -77,13 +76,13 @@ describe("resolveCandidate", () => {
       [recruitee("globex")]: "resolve/recruitee-globex.json",
     });
     expect(resolution).toEqual({ status: "confirmed", ats: "recruitee", slug: "globex", companyName: "Other Name" });
-    expect(calls).toEqual([gh("globex"), lever("globex"), ashby("globex"), workable("globex"), recruitee("globex")]);
+    expect(calls).toEqual([gh("globex"), lever("globex"), ashby("globex"), recruitee("globex")]);
   });
 
   it("an unproven match is ambiguous and lists the matches", async () => {
     const { resolution, calls } = await resolve(candidate({ name: "Initech" }), { [ashby("initech")]: "resolve/ashby-initech.json" });
     expect(resolution).toEqual({ status: "ambiguous", matches: [{ ats: "ashby", slug: "initech" }] });
-    expect(calls).toEqual([gh("initech"), lever("initech"), ashby("initech"), workable("initech"), recruitee("initech"), sr("initech")]);
+    expect(calls).toEqual([gh("initech"), lever("initech"), ashby("initech"), recruitee("initech"), sr("initech")]);
   });
 
   it("an empty lever board is not found", async () => {
@@ -114,7 +113,7 @@ describe("resolveCandidate", () => {
   it("skips (ats, slug) pairs already probed through a direct link", async () => {
     const { resolution, calls } = await resolve(candidate({ name: "Acme", careersUrl: "https://boards.greenhouse.io/acme" }), {});
     expect(resolution).toEqual({ status: "not_found" });
-    expect(calls).toEqual([gh("acme"), lever("acme"), ashby("acme"), workable("acme"), recruitee("acme"), sr("acme")]);
+    expect(calls).toEqual([gh("acme"), lever("acme"), ashby("acme"), recruitee("acme"), sr("acme")]);
   });
 
   it("tries up to three slug guesses, each against every ATS", async () => {

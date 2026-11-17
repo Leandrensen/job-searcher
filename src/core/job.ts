@@ -9,7 +9,7 @@ export const BOARD_IDS = [
   "workingnomads",
   "arbeitnow",
 ] as const;
-export const ATS_IDS = ["greenhouse", "lever", "ashby", "workable", "recruitee", "smartrecruiters"] as const;
+export const ATS_IDS = ["greenhouse", "lever", "ashby", "recruitee", "smartrecruiters"] as const;
 export const SOURCE_IDS = [...BOARD_IDS, ...ATS_IDS] as const;
 export type BoardId = (typeof BOARD_IDS)[number];
 export type AtsId = (typeof ATS_IDS)[number];

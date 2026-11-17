@@ -186,10 +186,10 @@ describe("runAtsSources", () => {
   });
 
   it("skips an ATS with no due companies and records the skip", async () => {
-    const { adapter } = fakeAts("workable", {});
+    const { adapter } = fakeAts("recruitee", {});
     const [summary] = await run([adapter]);
-    expect(summary).toMatchObject({ source: "workable", status: "skipped", companies: 0, error: null });
-    expect(db.select().from(fetchRuns).all()).toMatchObject([{ source: "workable", status: "skipped" }]);
+    expect(summary).toMatchObject({ source: "recruitee", status: "skipped", companies: 0, error: null });
+    expect(db.select().from(fetchRuns).all()).toMatchObject([{ source: "recruitee", status: "skipped" }]);
   });
 
   it("a company fetched today is skipped, and force fetches it again", async () => {
@@ -262,9 +262,9 @@ describe("runAtsSources", () => {
   });
 
   it("stops fetching an ATS that answers 429 and leaves its companies due", async () => {
-    addCompany("workable", "a");
-    addCompany("workable", "b");
-    addCompany("workable", "c");
+    addCompany("recruitee", "a");
+    addCompany("recruitee", "b");
+    addCompany("recruitee", "c");
     let laterFetches = 0;
     const boards: Record<string, Board> = { a: new HttpError(429, "https://x/a", "HTTP 429 for https://x/a") };
     for (const slug of ["b", "c"]) {
@@ -275,13 +275,13 @@ describe("runAtsSources", () => {
         },
       });
     }
-    const { adapter } = fakeAts("workable", boards);
+    const { adapter } = fakeAts("recruitee", boards);
     const log = vi.fn<(m: string) => void>();
     const [summary] = await run([adapter], { log });
     expect(laterFetches).toBe(0);
     expect(summary).toMatchObject({ status: "error", companies: 3, companiesFailed: 3, inserted: 0 });
     expect(summary?.error).toBe("HttpError: HTTP 429 for https://x/a");
-    expect(log).toHaveBeenCalledWith("workable: rate limited, skipping the other 2 companies until the next run");
+    expect(log).toHaveBeenCalledWith("recruitee: rate limited, skipping the other 2 companies until the next run");
     // Nothing was recorded for any company, so all three are still due and none moves toward deactivation.
     expect(db.select().from(companies).all().map((c) => [c.slug, c.lastFetchedAt, c.consecutiveFailures, c.status])).toEqual([
       ["a", null, 0, "active"],

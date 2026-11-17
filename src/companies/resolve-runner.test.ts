@@ -119,25 +119,25 @@ describe("resolveDueCandidates", () => {
 });
 
 describe("resolveDueCandidates when an ATS rate limits us", () => {
-  function rateLimitedWorkable() {
+  function rateLimitedLever() {
     const calls: string[] = [];
     const fail = async (url: string): Promise<never> => {
       calls.push(url);
-      const status = new URL(url).host === "apply.workable.com" ? 429 : 404;
+      const status = new URL(url).host === "api.lever.co" ? 429 : 404;
       throw new HttpError(status, url, `HTTP ${status} for ${url}`);
     };
     const client: HttpClient = { getJson: fail, getText: fail };
-    return { client, workableCalls: () => calls.filter((u) => new URL(u).host === "apply.workable.com") };
+    return { client, leverCalls: () => calls.filter((u) => new URL(u).host === "api.lever.co") };
   }
 
   it("stops probing that ATS for the rest of the run after the first 429", async () => {
     add("Aaa Co", "seed:yc", "2026-11-16T10:00:00.000Z");
     add("Bbb Co", "seed:yc", "2026-11-16T10:01:00.000Z");
     add("Ccc Co", "seed:yc", "2026-11-16T10:02:00.000Z");
-    const { client, workableCalls } = rateLimitedWorkable();
+    const { client, leverCalls } = rateLimitedLever();
     const stats = await run({ http: client, concurrency: 1 });
-    expect(workableCalls()).toHaveLength(1);
-    // The other ATSs said "not found", but Workable could not answer, so every candidate is retried tomorrow.
+    expect(leverCalls()).toHaveLength(1);
+    // The other ATSs said "not found", but Lever could not answer, so every candidate is retried tomorrow.
     expect(stats).toMatchObject({ checked: 3, confirmed: 0, notFound: 0, errors: 3 });
     expect(rows().map((r) => [r.name, r.status])).toEqual([
       ["Aaa Co", "error"],
@@ -146,11 +146,11 @@ describe("resolveDueCandidates when an ATS rate limits us", () => {
     ]);
   });
 
-  it("probes Workable again on the next run", async () => {
+  it("probes Lever again on the next run", async () => {
     add("Aaa Co", "seed:yc");
-    const { client, workableCalls } = rateLimitedWorkable();
+    const { client, leverCalls } = rateLimitedLever();
     await run({ http: client });
     await run({ http: client, now: () => new Date(NOW.getTime() + 2 * 86_400_000) });
-    expect(workableCalls()).toHaveLength(2);
+    expect(leverCalls()).toHaveLength(2);
   });
 });
