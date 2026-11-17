@@ -261,6 +261,35 @@ describe("runAtsSources", () => {
     expect(db.select().from(jobs).all().map((j) => `${j.source}/${j.externalId}`).sort()).toEqual(["greenhouse/acme:1", "lever/acme:5"]);
   });
 
+  it("stops fetching an ATS that answers 429 and leaves its companies due", async () => {
+    addCompany("workable", "a");
+    addCompany("workable", "b");
+    addCompany("workable", "c");
+    let laterFetches = 0;
+    const boards: Record<string, Board> = { a: new HttpError(429, "https://x/a", "HTTP 429 for https://x/a") };
+    for (const slug of ["b", "c"]) {
+      Object.defineProperty(boards, slug, {
+        get() {
+          laterFetches++;
+          return GOOD;
+        },
+      });
+    }
+    const { adapter } = fakeAts("workable", boards);
+    const log = vi.fn<(m: string) => void>();
+    const [summary] = await run([adapter], { log });
+    expect(laterFetches).toBe(0);
+    expect(summary).toMatchObject({ status: "error", companies: 3, companiesFailed: 3, inserted: 0 });
+    expect(summary?.error).toBe("HttpError: HTTP 429 for https://x/a");
+    expect(log).toHaveBeenCalledWith("workable: rate limited, skipping the other 2 companies until the next run");
+    // Nothing was recorded for any company, so all three are still due and none moves toward deactivation.
+    expect(db.select().from(companies).all().map((c) => [c.slug, c.lastFetchedAt, c.consecutiveFailures, c.status])).toEqual([
+      ["a", null, 0, "active"],
+      ["b", null, 0, "active"],
+      ["c", null, 0, "active"],
+    ]);
+  });
+
   it("only handles ATS adapters", () => {
     expect(ATS_IDS).toContain("greenhouse");
   });

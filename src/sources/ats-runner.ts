@@ -76,11 +76,21 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
       if (due.length === 0) {
         summary.status = "skipped";
       }
-      for (const company of due) {
+      for (const [index, company] of due.entries()) {
         const label = `${adapter.id}/${company.slug}`;
         const nowIso = now().toISOString();
         try {
           const result = await runAdapter(adapter, { http, companies: [toRef(company)], latestPostedAt: null, log });
+          if (result.status === "error" && result.error?.startsWith("HttpError: HTTP 429")) {
+            // The host is rate limiting us. Hitting it again only prolongs the block, so stop and leave every
+            // remaining company due (nothing is recorded for them, so none moves toward deactivation).
+            const skipped = due.length - index - 1;
+            summary.companiesFailed += 1 + skipped;
+            summary.error ??= result.error;
+            log(`${label}: ${result.error}`);
+            log(`${adapter.id}: rate limited, skipping the other ${skipped} companies until the next run`);
+            break;
+          }
           if (result.status === "error") {
             const notFound = result.error?.startsWith("HttpError: HTTP 404") ?? false;
             const message = result.error ?? "unknown error";
