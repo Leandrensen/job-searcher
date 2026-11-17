@@ -1044,7 +1044,7 @@
   - `force refetches companies fetched recently`
 - Verify: `npm test -- src/sources` passes.
 - Commit type: `feat`.
-- [ ] Done
+- [x] Done
 
 ### T24: Fetch CLI orchestration (`src/scripts/fetch-cli.ts`, depends on T18, T22, T23)
 - **`CliDeps` changes:**
