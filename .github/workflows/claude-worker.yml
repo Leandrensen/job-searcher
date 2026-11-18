@@ -1,0 +1,81 @@
+# Shared job for the scheduled Claude workers. Each caller passes its own task.
+name: Claude Worker (reusable)
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: Short worker name, used in logs
+        type: string
+        required: true
+      task:
+        description: What this worker should look for and fix
+        type: string
+        required: true
+      max-turns:
+        type: number
+        default: 40
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+
+jobs:
+  work:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # One Claude worker at a time, so they don't compete for Pro usage.
+    concurrency:
+      group: claude-worker
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      MAX_OPEN_BOT_PRS: 3
+    steps:
+      - name: Skip if too many bot PRs are waiting for review
+        id: gate
+        run: |
+          gh label create bot --repo "$GITHUB_REPOSITORY" --color BFD4F2 \
+            --description "Opened by a Claude worker" --force
+          open=$(gh pr list --repo "$GITHUB_REPOSITORY" --label bot --state open --json number --jq length)
+          echo "Open bot PRs: $open"
+          if [ "$open" -ge "$MAX_OPEN_BOT_PRS" ]; then
+            echo "::notice::Skipping ${{ inputs.name }}: $open bot PRs are already open."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.gate.outputs.skip != 'true'
+        uses: actions/checkout@v5
+      - if: steps.gate.outputs.skip != 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: steps.gate.outputs.skip != 'true'
+        run: npm ci
+      - if: steps.gate.outputs.skip != 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --model claude-sonnet-5-5
+            --max-turns ${{ inputs.max-turns }}
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(npm test*),Bash(npm run lint*),Bash(npm run typecheck*),Bash(npm run test:coverage*),Bash(git *),Bash(gh pr *)"
+          prompt: |
+            You are the "${{ inputs.name }}" worker for this repo. Follow CLAUDE.md strictly.
+
+            ## Task
+            ${{ inputs.task }}
+
+            ## How to deliver
+            1. Check `gh pr list --state open` first and skip anything an open PR already covers.
+            2. Make ONE focused change on a new branch named `<type>/<topic>`,
+               in small Conventional Commits.
+            3. Run `npm test`, `npm run lint` and `npm run typecheck`. All must pass.
+               Never run `npm run test:live`.
+            4. Push the branch and open a PR against main with
+               `gh pr create --label bot`, explaining what you found, what you
+               changed and how you verified it.
+
+            ## Never
+            Push to main. Add or upgrade dependencies. Edit generated files
+            (`drizzle/`, `.next/`, `coverage/`) or read `.env*`. Change the Job
+            schema or the SourceAdapter interface. Make network calls in tests.
+            If nothing is worth changing, open no PR and say so.
