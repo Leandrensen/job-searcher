@@ -5,6 +5,8 @@ export interface PacingOptions {
   minIntervalMs?: number;
   /** Per-host override of the gap. */
   perHostMinIntervalMs?: Record<string, number>;
+  /** Domains whose subdomains share one pacing queue, e.g. "recruitee.com" for <slug>.recruitee.com. */
+  sharedHosts?: string[];
   now?: () => number;
   sleep?: (ms: number) => Promise<void>;
 }
@@ -16,10 +18,12 @@ interface HostState {
 
 /**
  * Pacing for real runs: 500 ms between requests to a host, 100 ms for GitHub's far more tolerant raw host.
+ * Recruitee gives every company its own subdomain, so all of them share one queue.
  */
 export const DEFAULT_PACING: PacingOptions = {
   minIntervalMs: 500,
   perHostMinIntervalMs: { "raw.githubusercontent.com": 100 },
+  sharedHosts: ["recruitee.com"],
 };
 
 const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -34,15 +38,18 @@ export function createPacedHttpClient(inner: HttpClient, opts: PacingOptions = {
   const sleep = opts.sleep ?? defaultSleep;
   const hosts = new Map<string, HostState>();
 
+  /** The queue a host belongs to: its shared parent domain when it has one, otherwise the host itself. */
+  const pacingKey = (host: string) => opts.sharedHosts?.find((d) => host === d || host.endsWith(`.${d}`)) ?? host;
+
   function schedule<T>(url: string, call: () => Promise<T>): Promise<T> {
-    const host = new URL(url).host;
-    let state = hosts.get(host);
+    const key = pacingKey(new URL(url).host);
+    let state = hosts.get(key);
     if (!state) {
       state = { lastStart: null, tail: Promise.resolve() };
-      hosts.set(host, state);
+      hosts.set(key, state);
     }
     const hostState = state;
-    const interval = opts.perHostMinIntervalMs?.[host] ?? minIntervalMs;
+    const interval = opts.perHostMinIntervalMs?.[key] ?? minIntervalMs;
     const run = hostState.tail.then(async () => {
       if (hostState.lastStart !== null) {
         const wait = hostState.lastStart + interval - now();

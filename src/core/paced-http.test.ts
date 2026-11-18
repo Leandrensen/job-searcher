@@ -3,7 +3,7 @@ import type { HttpClient } from "./http";
 import { createPacedHttpClient, DEFAULT_PACING } from "./paced-http";
 
 /** A fake clock: `sleep(ms)` advances `now()`. */
-function setup(opts: { fail?: (url: string) => boolean; perHost?: Record<string, number> } = {}) {
+function setup(opts: { fail?: (url: string) => boolean; perHost?: Record<string, number>; sharedHosts?: string[] } = {}) {
   let t = 0;
   const starts: Array<{ url: string; at: number }> = [];
   const inner: HttpClient = {
@@ -23,6 +23,7 @@ function setup(opts: { fail?: (url: string) => boolean; perHost?: Record<string,
       t += ms;
     },
     perHostMinIntervalMs: opts.perHost,
+    sharedHosts: opts.sharedHosts,
   });
   return { client, starts };
 }
@@ -47,6 +48,24 @@ describe("createPacedHttpClient", () => {
       client.getText("https://raw.githubusercontent.com/x/2"),
     ]);
     expect(starts.map((s) => s.at)).toEqual([0, 100]);
+  });
+
+  it("subdomains of a shared host are paced as one", async () => {
+    const { client, starts } = setup({ sharedHosts: ["recruitee.com"] });
+    await Promise.all([client.getJson("https://a.recruitee.com/x"), client.getJson("https://b.recruitee.com/x")]);
+    expect(starts.map((s) => s.at)).toEqual([0, 500]);
+  });
+
+  it("without sharedHosts, subdomains are separate hosts", async () => {
+    const { client, starts } = setup();
+    await Promise.all([client.getJson("https://a.recruitee.com/x"), client.getJson("https://b.recruitee.com/x")]);
+    expect(starts.map((s) => s.at)).toEqual([0, 0]);
+  });
+
+  it("a shared host's own interval override applies to its subdomains", async () => {
+    const { client, starts } = setup({ sharedHosts: ["recruitee.com"], perHost: { "recruitee.com": 2000 } });
+    await Promise.all([client.getJson("https://a.recruitee.com/x"), client.getJson("https://b.recruitee.com/x")]);
+    expect(starts.map((s) => s.at)).toEqual([0, 2000]);
   });
 
   it("errors propagate and still pace", async () => {
@@ -115,5 +134,28 @@ describe("DEFAULT_PACING", () => {
       return b!.at - a!.at;
     };
     expect([gap("raw.githubusercontent.com"), gap("api.lever.co")]).toEqual([100, 500]);
+  });
+
+  it("spaces requests to different Recruitee subdomains 500 ms apart", async () => {
+    let t = 0;
+    const starts: number[] = [];
+    const inner: HttpClient = {
+      async getJson() {
+        starts.push(t);
+        return {};
+      },
+      async getText() {
+        return "";
+      },
+    };
+    const client = createPacedHttpClient(inner, {
+      ...DEFAULT_PACING,
+      now: () => t,
+      sleep: async (ms) => {
+        t += ms;
+      },
+    });
+    await Promise.all([client.getJson("https://acme.recruitee.com/api/offers/"), client.getJson("https://globex.recruitee.com/api/offers/")]);
+    expect(starts).toEqual([0, 500]);
   });
 });
