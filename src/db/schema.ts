@@ -82,7 +82,8 @@ export const jobs = sqliteTable(
     lastSeenAt: text("last_seen_at").notNull(),
     dedupeKey: text("dedupe_key").notNull(),
     duplicateOf: integer("duplicate_of").references((): AnySQLiteColumn => jobs.id),
-    companyId: integer("company_id").references(() => companies.id, { onDelete: "set null" }),
+    // Companies are deactivated, never deleted, so no ON DELETE action is needed (and the live DB has none).
+    companyId: integer("company_id").references(() => companies.id),
     closedAt: text("closed_at"),
   },
   (t) => [
