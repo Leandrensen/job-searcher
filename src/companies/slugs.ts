@@ -20,7 +20,7 @@ const PATTERNS: UrlPattern[] = [
     ignored: ["embed", "api"],
   },
   { ats: "lever", re: /jobs\.lever\.co\/([a-z0-9_.-]+?)(?=[/?#"'\s]|$)/gi, ignored: [] },
-  { ats: "ashby", re: /jobs\.ashbyhq\.com\/([a-z0-9_.-]+)/gi, ignored: ["api"] },
+  { ats: "ashby", re: /jobs\.ashbyhq\.com\/([a-z0-9_.-]+?)(?=[/?#"'\s]|$)/gi, ignored: ["api"] },
   { ats: "recruitee", re: /https?:\/\/([a-z0-9-]+)\.recruitee\.com/gi, ignored: ["www", "app", "api"] },
   {
     ats: "smartrecruiters",
