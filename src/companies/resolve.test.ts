@@ -208,6 +208,23 @@ describe("proveIdentity", () => {
     expect(proveIdentity(candidate({ name: "Globex" }), "greenhouse", probe({ texts: ["Globex rocks", "Join Globex"] }))).toBe(false);
   });
 
+  it("a common word in lowercase does not prove a board", () => {
+    expect(proveIdentity(candidate({ name: "Ramp" }), "lever", probe({ texts: ["Help us ramp up hiring", "We ramp up fast"] }))).toBe(false);
+  });
+
+  it("a name joined by a hyphen does not count", () => {
+    expect(proveIdentity(candidate({ name: "Front" }), "lever", probe({ texts: ["Front-end engineer wanted"] }))).toBe(false);
+    expect(proveIdentity(candidate({ name: "Front" }), "lever", probe({ texts: ["We need a front-end developer"] }))).toBe(false);
+  });
+
+  it("the name as written proves the board", () => {
+    expect(proveIdentity(candidate({ name: "Front" }), "lever", probe({ texts: ["Join Front as a senior engineer"] }))).toBe(true);
+  });
+
+  it("the match is case-sensitive", () => {
+    expect(proveIdentity(candidate({ name: "ACME" }), "lever", probe({ texts: ["Join Acme", "Acme rocks"] }))).toBe(false);
+  });
+
   it("the name must match as a whole word", () => {
     expect(proveIdentity(candidate({ name: "Apple" }), "lever", probe({ texts: ["Pineapple farm", "Pineapple pizza"] }))).toBe(false);
   });
