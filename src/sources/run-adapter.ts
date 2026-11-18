@@ -1,3 +1,4 @@
+import { HttpError } from "@/core/http";
 import { JobSchema, type Job } from "@/core/job";
 import { isTechJob } from "@/core/tech-filter";
 import type { AnyAdapter, FetchContext, FetchResult } from "./types";
@@ -23,7 +24,13 @@ export async function runAdapter(adapter: AnyAdapter, ctx: FetchContext): Promis
     items = await adapter.fetch(ctx);
   } catch (err) {
     const e = err instanceof Error ? err : new Error(String(err));
-    return { ...result, status: "error", error: `${e.name}: ${e.message}`, durationMs: Date.now() - start };
+    return {
+      ...result,
+      status: "error",
+      error: `${e.name}: ${e.message}`,
+      ...(err instanceof HttpError ? { httpStatus: err.status } : {}),
+      durationMs: Date.now() - start,
+    };
   }
 
   result.fetched = items.length;

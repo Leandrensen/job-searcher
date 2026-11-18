@@ -81,7 +81,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
         const nowIso = now().toISOString();
         try {
           const result = await runAdapter(adapter, { http, companies: [toRef(company)], latestPostedAt: null, log });
-          if (result.status === "error" && result.error?.startsWith("HttpError: HTTP 429")) {
+          if (result.status === "error" && result.httpStatus === 429) {
             // The host is rate limiting us. Hitting it again only prolongs the block, so stop and leave every
             // remaining company due (nothing is recorded for them, so none moves toward deactivation).
             const skipped = due.length - index - 1;
@@ -92,7 +92,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
             break;
           }
           if (result.status === "error") {
-            const notFound = result.error?.startsWith("HttpError: HTTP 404") ?? false;
+            const notFound = result.httpStatus === 404;
             const message = result.error ?? "unknown error";
             recordCompanyFetch(db, company.id, notFound ? { kind: "not_found", error: message } : { kind: "error", error: message }, nowIso);
             summary.companiesFailed++;

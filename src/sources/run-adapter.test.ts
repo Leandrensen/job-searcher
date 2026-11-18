@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
+import { HttpError } from "@/core/http";
 import type { Job } from "@/core/job";
 import { runAdapter } from "./run-adapter";
 import { defineAdapter, type FetchContext } from "./types";
@@ -59,6 +60,16 @@ describe("runAdapter", () => {
     expect(r.status).toBe("error");
     expect(r.error).toBe("TypeError: boom");
     expect(r).toMatchObject({ fetched: 0, invalid: 0, filtered: 0, jobs: [] });
+  });
+
+  it("keeps the HTTP status when fetch fails with an HttpError", async () => {
+    const r = await runAdapter(makeAdapter(new HttpError(404, "https://x", "HTTP 404 for https://x")), ctx());
+    expect(r).toMatchObject({ status: "error", error: "HttpError: HTTP 404 for https://x", httpStatus: 404 });
+  });
+
+  it("has no httpStatus for other errors", async () => {
+    const r = await runAdapter(makeAdapter(new Error("boom")), ctx());
+    expect("httpStatus" in r).toBe(false);
   });
 
   it("counts invalid items from schema failures", async () => {

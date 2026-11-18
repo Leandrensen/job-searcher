@@ -58,5 +58,7 @@ export interface FetchResult {
   /** Newest postedAt among every valid job, including ones the filters dropped. */
   latestPostedAt: string | null;
   error: string | null;
+  /** HTTP status when fetch() failed with an HttpError; absent otherwise. */
+  httpStatus?: number;
   durationMs: number;
 }

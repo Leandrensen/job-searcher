@@ -154,6 +154,14 @@ describe("runAtsSources", () => {
     expect((await run([adapter], { at: hoursLater(100) }))[0]?.status).toBe("skipped");
   });
 
+  it("an error that only looks like a 404 is a plain error", async () => {
+    addCompany("ashby", "acme");
+    const lookalike = Object.assign(new Error("HTTP 404 for https://x/acme"), { name: "HttpError" });
+    const { adapter } = fakeAts("ashby", { acme: lookalike });
+    await run([adapter]);
+    expect(company("acme")).toMatchObject({ consecutiveFailures: 0, status: "active", lastError: "HttpError: HTTP 404 for https://x/acme" });
+  });
+
   it("a non-404 error keeps the company due and the failure count unchanged", async () => {
     addCompany("ashby", "flaky");
     const { adapter, boards } = fakeAts("ashby", { flaky: new Error("HTTP 503") });
