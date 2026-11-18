@@ -56,6 +56,7 @@ Key patterns:
 ## Workflow
 - Plan: see `PLAN.md`. Tick off checkboxes when a milestone's tasks are done.
 - Run tests, lint, and typecheck before declaring a task finished.
+- Claude workers (`.github/workflows/claude-*.yml`, sharing `claude-worker.yml`) open small PRs labeled `bot`: maintenance nightly, docs sync on Tuesdays, test quality on Thursdays, simplify on Saturdays. They skip a run while 3 or more `bot` PRs are open. Writing `@claude` in an issue or PR comment (owner only) runs `claude-mention.yml`.
 - Commits follow Conventional Commits: `<type>(<scope>): <summary>`, where type is one of `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
 - Branches are `<type>/<topic>` using the same types. Commit in small steps; never commit to `main` directly.
 - PRs target `main`. `.github/workflows/claude-review.yml` reviews every PR against this file, and `ci.yml` runs lint, typecheck, tests with coverage, a Drizzle migration drift check and a forbidden-files check. Still run the checks locally before pushing. `live-checks.yml` runs `npm run test:live` nightly and opens an issue on failure; Dependabot opens weekly update PRs. Merge with a merge commit and delete the branch. Stacked PRs: retarget the next PR to `main` before merging it.

@@ -1,0 +1,27 @@
+name: Claude Test Quality
+on:
+  schedule:
+    - cron: "17 8 * * 4" # Thursdays at 05:17 Buenos Aires time (08:17 UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  test-quality:
+    uses: ./.github/workflows/claude-worker.yml
+    secrets: inherit
+    with:
+      name: test quality
+      task: |
+        Find weak tests and strengthen ONE area (one module or adapter). Look for:
+        tests with no meaningful assertions, only happy paths (missing error,
+        empty, malformed-input or edge cases), assertions on implementation
+        details instead of behavior, over-mocking that hides real behavior, and
+        adapter tests that don't exercise their fixtures fully.
+        Only change test files and fixtures. If a stronger test exposes a real
+        bug, fix it in a separate `fix:` commit and call it out in the PR.
+        Use a `test/` branch.

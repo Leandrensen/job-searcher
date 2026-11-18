@@ -1,0 +1,25 @@
+name: Claude Simplify
+on:
+  schedule:
+    - cron: "17 8 * * 6" # Saturdays at 05:17 Buenos Aires time (08:17 UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  simplify:
+    uses: ./.github/workflows/claude-worker.yml
+    secrets: inherit
+    with:
+      name: simplify
+      task: |
+        Find ONE area to simplify without changing behavior: unused exports or
+        files, duplicated logic that belongs in a shared helper, needless
+        indirection, or unclear names. Use Grep to prove that code you remove is
+        unused. Keep public behavior identical; existing tests must pass
+        unchanged, and `npm run test:coverage` must still meet its thresholds.
+        Use a `refactor/` branch.
