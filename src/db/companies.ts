@@ -101,6 +101,9 @@ export function insertOrGetCompany(
     .get().id;
 }
 
+/** From this many error resolutions in a row, a candidate is retried monthly instead of daily. */
+const ERRORS_BEFORE_BACKOFF = 5;
+
 export function recordResolution(db: Db, candidateId: number, result: Resolution, nowIso: string): { companyId: number | null } {
   return db.transaction((tx) => {
     const cand = tx.select().from(companyCandidates).where(eq(companyCandidates.id, candidateId)).get();
@@ -115,29 +118,32 @@ export function recordResolution(db: Db, candidateId: number, result: Resolution
           nowIso,
         );
         tx.update(companyCandidates)
-          .set({ ...base, status: "confirmed", companyId, ambiguousMatches: [], nextCheckAt: null })
+          .set({ ...base, status: "confirmed", companyId, ambiguousMatches: [], nextCheckAt: null, consecutiveErrors: 0 })
           .where(eq(companyCandidates.id, candidateId))
           .run();
         return { companyId };
       }
       case "ambiguous":
         tx.update(companyCandidates)
-          .set({ ...base, status: "ambiguous", ambiguousMatches: result.matches, nextCheckAt: null })
+          .set({ ...base, status: "ambiguous", ambiguousMatches: result.matches, nextCheckAt: null, consecutiveErrors: 0 })
           .where(eq(companyCandidates.id, candidateId))
           .run();
         return { companyId: null };
       case "not_found":
         tx.update(companyCandidates)
-          .set({ ...base, status: "not_found", ambiguousMatches: [], nextCheckAt: addDays(nowIso, 30) })
+          .set({ ...base, status: "not_found", ambiguousMatches: [], nextCheckAt: addDays(nowIso, 30), consecutiveErrors: 0 })
           .where(eq(companyCandidates.id, candidateId))
           .run();
         return { companyId: null };
-      case "error":
+      case "error": {
+        // A probe that fails every time (say, a response we can't parse) would otherwise be retried daily forever.
+        const errors = cand.consecutiveErrors + 1;
         tx.update(companyCandidates)
-          .set({ ...base, status: "error", nextCheckAt: addDays(nowIso, 1) })
+          .set({ ...base, status: "error", consecutiveErrors: errors, nextCheckAt: addDays(nowIso, errors >= ERRORS_BEFORE_BACKOFF ? 30 : 1) })
           .where(eq(companyCandidates.id, candidateId))
           .run();
         return { companyId: null };
+      }
     }
   });
 }

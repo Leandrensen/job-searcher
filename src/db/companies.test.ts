@@ -182,6 +182,32 @@ describe("recordResolution", () => {
     expect(candidates()[0]).toMatchObject({ status: "error", nextCheckAt: plusDays(T0, 1) });
   });
 
+  const fail = (id: number, day: number) => recordResolution(db, id, { status: "error", error: "x" }, plusDays(T0, day));
+
+  it("the first four errors in a row retry the next day", () => {
+    const id = seed();
+    for (const day of [0, 1, 2, 3]) fail(id, day);
+    expect(candidates()[0]).toMatchObject({ status: "error", consecutiveErrors: 4, nextCheckAt: plusDays(T0, 4), attempts: 4 });
+  });
+
+  it("the fifth error in a row waits 30 days", () => {
+    const id = seed();
+    for (const day of [0, 1, 2, 3, 4]) fail(id, day);
+    expect(candidates()[0]).toMatchObject({ consecutiveErrors: 5, nextCheckAt: plusDays(T0, 34) });
+    expect(listDueCandidates(db, plusDays(T0, 10))).toEqual([]);
+    expect(listDueCandidates(db, plusDays(T0, 34)).map((c) => c.id)).toEqual([id]);
+  });
+
+  it("any other result resets the error count", () => {
+    const id = seed();
+    fail(id, 0);
+    fail(id, 1);
+    recordResolution(db, id, { status: "not_found" }, plusDays(T0, 2));
+    expect(candidates()[0]).toMatchObject({ consecutiveErrors: 0 });
+    fail(id, 40);
+    expect(candidates()[0]).toMatchObject({ consecutiveErrors: 1, nextCheckAt: plusDays(T0, 41) });
+  });
+
   it("throws for an unknown candidate", () => {
     expect(() => recordResolution(db, 999, { status: "not_found" }, T0)).toThrow();
   });

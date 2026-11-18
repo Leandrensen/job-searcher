@@ -40,6 +40,8 @@ export const companyCandidates = sqliteTable(
       .notNull()
       .default("pending"),
     attempts: integer("attempts").notNull().default(0),
+    /** Error resolutions in a row; reset by any other result. */
+    consecutiveErrors: integer("consecutive_errors").notNull().default(0),
     lastCheckedAt: text("last_checked_at"),
     /** null means due now. */
     nextCheckAt: text("next_check_at"),
