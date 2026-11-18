@@ -16,7 +16,7 @@ export const companies = sqliteTable(
     status: text("status", { enum: ["active", "inactive"] }).notNull().default("active"),
     /** Counts consecutive 404s only. */
     consecutiveFailures: integer("consecutive_failures").notNull().default(0),
-    /** Last successful fetch. */
+    /** Last fetch attempt: success, 404 or error (not a 429 skip). */
     lastFetchedAt: text("last_fetched_at"),
     lastError: text("last_error"),
     createdAt: text("created_at").notNull(),

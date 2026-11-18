@@ -162,15 +162,25 @@ describe("runAtsSources", () => {
     expect(company("acme")).toMatchObject({ consecutiveFailures: 0, status: "active", lastError: "HttpError: HTTP 404 for https://x/acme" });
   });
 
-  it("a non-404 error keeps the company due and the failure count unchanged", async () => {
+  it("a non-404 error waits a day and keeps the failure count", async () => {
     addCompany("ashby", "flaky");
     const { adapter, boards } = fakeAts("ashby", { flaky: new Error("HTTP 503") });
     const [first] = await run([adapter]);
     expect(first).toMatchObject({ status: "error", companiesFailed: 1 });
-    expect(company("flaky")).toMatchObject({ consecutiveFailures: 0, lastFetchedAt: null, status: "active" });
+    expect(company("flaky")).toMatchObject({ consecutiveFailures: 0, lastFetchedAt: T0.toISOString(), status: "active" });
     boards.flaky = GOOD;
-    const [second] = await run([adapter], { at: hoursLater(1) }); // still due: it never succeeded
-    expect(second).toMatchObject({ status: "success", inserted: 2 });
+    expect((await run([adapter], { at: hoursLater(1) }))[0]?.status).toBe("skipped");
+    const [later] = await run([adapter], { at: hoursLater(21) });
+    expect(later).toMatchObject({ status: "success", inserted: 2 });
+  });
+
+  it("three runs in one day count a 404 only once", async () => {
+    addCompany("lever", "gone");
+    const { adapter } = fakeAts("lever", { gone: "404" });
+    const statuses: string[] = [];
+    for (const at of [T0, hoursLater(1), hoursLater(2)]) statuses.push((await run([adapter], { at }))[0]!.status);
+    expect(statuses).toEqual(["error", "skipped", "skipped"]);
+    expect(company("gone")).toMatchObject({ consecutiveFailures: 1, status: "active" });
   });
 
   it("a failed fetch never closes the company's jobs", async () => {
@@ -245,7 +255,7 @@ describe("runAtsSources", () => {
     const { adapter } = fakeAts("greenhouse", { a: GOOD, b: GOOD });
     const [summary] = await run([adapter]);
     expect(summary).toMatchObject({ status: "success", companies: 2, companiesFailed: 1, inserted: 2 });
-    expect(company("a")).toMatchObject({ lastFetchedAt: null, lastError: "SqliteError: simulated write failure" });
+    expect(company("a")).toMatchObject({ lastFetchedAt: T0.toISOString(), lastError: "SqliteError: simulated write failure" });
     expect(company("b").lastFetchedAt).toBe(T0.toISOString());
   });
 

@@ -186,11 +186,11 @@ export function recordCompanyFetch(
       return;
     }
     if (outcome.kind === "error") {
-      tx.update(companies).set({ lastError: outcome.error }).where(eq(companies.id, companyId)).run();
+      tx.update(companies).set({ lastError: outcome.error, lastFetchedAt: nowIso }).where(eq(companies.id, companyId)).run();
       return;
     }
     tx.update(companies)
-      .set({ consecutiveFailures: sql`${companies.consecutiveFailures} + 1`, lastError: outcome.error })
+      .set({ consecutiveFailures: sql`${companies.consecutiveFailures} + 1`, lastError: outcome.error, lastFetchedAt: nowIso })
       .where(eq(companies.id, companyId))
       .run();
     const row = tx.select().from(companies).where(eq(companies.id, companyId)).get();

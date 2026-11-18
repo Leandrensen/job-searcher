@@ -316,12 +316,19 @@ describe("companies", () => {
     expect(allCompanies()[0]).toMatchObject({ consecutiveFailures: 0, lastError: null, lastFetchedAt: plusHours(T0, 1) });
   });
 
-  it("a non-404 error keeps lastFetchedAt and the failure count", () => {
+  it("a non-404 error records the attempt and keeps the failure count", () => {
     const id = add("acme");
     recordCompanyFetch(db, id, { kind: "success" }, T0);
     recordCompanyFetch(db, id, { kind: "not_found", error: "404" }, plusHours(T0, 25));
     recordCompanyFetch(db, id, { kind: "error", error: "HTTP 500" }, plusHours(T0, 26));
-    expect(allCompanies()[0]).toMatchObject({ lastFetchedAt: T0, consecutiveFailures: 1, lastError: "HTTP 500", status: "active" });
+    expect(allCompanies()[0]).toMatchObject({ lastFetchedAt: plusHours(T0, 26), consecutiveFailures: 1, lastError: "HTTP 500", status: "active" });
+  });
+
+  it("a 404 is not retried within the day", () => {
+    const id = add("acme");
+    recordCompanyFetch(db, id, { kind: "not_found", error: "HTTP 404" }, T0);
+    expect(listDueCompanies(db, "greenhouse", plusHours(T0, 5))).toEqual([]);
+    expect(listDueCompanies(db, "greenhouse", plusHours(T0, 21)).map((c) => c.slug)).toEqual(["acme"]);
   });
 
   it("companyCounts reports active, inactive and active by ats", () => {
