@@ -1,0 +1,37 @@
+name: Live API checks
+on:
+  schedule:
+    - cron: "37 5 * * *" # every night at 02:37 Buenos Aires time (05:37 UTC)
+  workflow_dispatch:
+
+# Remotive allows about 4 calls a day: keep this to one scheduled run.
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run test:live
+      - name: Open or update an issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Live API checks failing"
+          body="The nightly live API checks failed: $RUN_URL. A source may have changed its response shape; compare it with test/fixtures/."
+          num=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$num" ]; then
+            gh issue comment "$num" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi
