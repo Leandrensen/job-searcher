@@ -75,6 +75,20 @@ describe("upsertCandidate", () => {
     expect(candidates()[0]).toMatchObject({ status: "pending", nextCheckAt: null });
   });
 
+  it("a new careers URL re-opens a not_found candidate", () => {
+    const id = (upsertCandidate(db, { name: "Acme", origin: "board:remoteok" }, T0), candidates()[0]!.id);
+    recordResolution(db, id, { status: "not_found" }, T0);
+    expect(upsertCandidate(db, { name: "Acme", careersUrl: "https://jobs.lever.co/acme", origin: "seed:remoteintech" }, T0)).toBe("updated");
+    expect(candidates()[0]).toMatchObject({ status: "pending", nextCheckAt: null, careersUrl: "https://jobs.lever.co/acme" });
+  });
+
+  it("a new careers URL does not reopen a confirmed candidate", () => {
+    const id = (upsertCandidate(db, { name: "Acme", origin: "board:remoteok" }, T0), candidates()[0]!.id);
+    recordResolution(db, id, { status: "confirmed", ats: "greenhouse", slug: "acme", companyName: null }, T0);
+    upsertCandidate(db, { name: "Acme", careersUrl: "https://jobs.lever.co/acme", origin: "seed:remoteintech" }, T0);
+    expect(candidates()[0]).toMatchObject({ status: "confirmed", careersUrl: "https://jobs.lever.co/acme" });
+  });
+
   it("a new hint re-opens an ambiguous candidate", () => {
     const id = (upsertCandidate(db, { name: "Acme", origin: "seed:yc" }, T0), candidates()[0]!.id);
     recordResolution(db, id, { status: "ambiguous", matches: [{ ats: "lever", slug: "acme-labs" }] }, T0);

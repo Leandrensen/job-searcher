@@ -49,13 +49,14 @@ export function upsertCandidate(db: Db, input: CandidateInput, nowIso: string): 
   if (existing.homeCountry === null && clean(input.homeCountry)) patch.homeCountry = clean(input.homeCountry);
   const merged = [...new Set([...existing.atsHints, ...(input.atsHints ?? [])])];
   const addedHint = merged.length > existing.atsHints.length;
-  if (addedHint) {
-    patch.atsHints = merged;
-    if (existing.status === "not_found" || existing.status === "error" || existing.status === "ambiguous") {
-      patch.status = "pending";
-      patch.nextCheckAt = null;
-      patch.ambiguousMatches = [];
-    }
+  if (addedHint) patch.atsHints = merged;
+  // A new ATS hint or careers URL is new evidence (a careers URL is even trusted), so an unresolved candidate is
+  // looked up again right away. A new website alone is not.
+  const newEvidence = addedHint || patch.careersUrl !== undefined;
+  if (newEvidence && (existing.status === "not_found" || existing.status === "error" || existing.status === "ambiguous")) {
+    patch.status = "pending";
+    patch.nextCheckAt = null;
+    patch.ambiguousMatches = [];
   }
   if (Object.keys(patch).length === 0) return "unchanged";
   db.update(companyCandidates).set(patch).where(eq(companyCandidates.id, existing.id)).run();
