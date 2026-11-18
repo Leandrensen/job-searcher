@@ -1,0 +1,53 @@
+name: Claude Maintenance
+on:
+  schedule:
+    - cron: "7 6 * * *" # every night at 03:07 Buenos Aires time (06:07 UTC)
+  workflow_dispatch: # run manually from the Actions tab
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: claude-maintenance
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --model claude-sonnet-5-5
+            --max-turns 40
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(npm test*),Bash(npm run lint*),Bash(npm run typecheck*),Bash(npm run test:coverage*),Bash(git *),Bash(gh pr *)"
+          prompt: |
+            You are the nightly maintainer of this repo. Follow CLAUDE.md strictly.
+
+            1. Scan for correctness bugs, and for core logic, adapters or DB code
+               that is missing unit or integration tests.
+            2. Pick the SINGLE most valuable issue. Skip anything an open PR already
+               addresses (check `gh pr list`).
+            3. Create a branch named `<type>/<topic>` (fix/ for bugs, test/ for
+               missing tests) and fix it test-first, in small Conventional Commits.
+            4. Run `npm test`, `npm run lint` and `npm run typecheck`. All must pass.
+               Do not run `npm run test:live`.
+            5. Push the branch and open a PR against main with `gh pr create`,
+               explaining the issue, the fix and how it was tested.
+
+            Never push to main. Never add dependencies. Never edit generated files
+            or read `.env*`. Don't change the Job schema or the SourceAdapter
+            interface. No network calls in tests. If nothing is worth fixing,
+            open no PR and say so.
