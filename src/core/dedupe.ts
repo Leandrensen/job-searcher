@@ -21,6 +21,19 @@ export function stripLegalSuffixes(name: string): string {
   return current;
 }
 
+const LEGAL_SUFFIX_ANY_CASE = new RegExp(LEGAL_SUFFIX.source, "i");
+
+/** Like stripLegalSuffixes, but keeps the original case: trimmed name without trailing legal suffixes. */
+export function stripLegalSuffixesKeepCase(name: string): string {
+  let current = name.trim();
+  for (let pass = 0; pass < MAX_SUFFIX_PASSES; pass++) {
+    const stripped = current.replace(LEGAL_SUFFIX_ANY_CASE, "").replace(/[,\s]+$/, "");
+    if (stripped === current || stripped === "") break;
+    current = stripped;
+  }
+  return current;
+}
+
 export function normalizeCompany(name: string): string {
   return stripLegalSuffixes(name).replace(/[^\p{L}\p{N}]/gu, "");
 }
