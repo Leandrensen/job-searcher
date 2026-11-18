@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Job } from "@/core/job";
 import { openDb, type Db } from "./client";
 import { insertOrGetCompany } from "./companies";
-import { countJobs, lastSuccessfulRunAt, latestPostedAt, markClosedJobs, purgeClosedJobs, recordRun, upsertJobs } from "./queries";
+import { compactClosedJobs, countJobs, lastSuccessfulRunAt, latestPostedAt, markClosedJobs, purgeClosedJobs, recordRun, upsertJobs } from "./queries";
 import { jobs } from "./schema";
 
 function makeJob(over: Partial<Job> = {}): Job {
@@ -233,6 +233,41 @@ describe("ATS job storage", () => {
     const r = upsertJobs(db, [ats("1")], "2026-11-17T00:00:00.000Z", { companyId: acme });
     expect(r).toEqual({ inserted: 0, updated: 1 });
     expect(rows()[0]?.closedAt).toBeNull();
+  });
+
+  it("compaction drops descriptions of jobs closed 30+ days ago and keeps the rows", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("old"), ats("recent"), ats("open")], NOW, { companyId: acme });
+    markClosedJobs(db, acme, ["acme:recent", "acme:open"], daysAgo(31)); // closes "old" 31 days ago
+    markClosedJobs(db, acme, ["acme:open"], daysAgo(29)); // closes "recent" 29 days ago
+    expect(compactClosedJobs(db, NOW)).toBe(1);
+    expect(rows().map((r) => [r.externalId, r.descriptionHtml, r.descriptionText])).toEqual([
+      ["acme:old", "", ""],
+      ["acme:recent", "<p>x</p>", "x"],
+      ["acme:open", "<p>x</p>", "x"],
+    ]);
+    expect(compactClosedJobs(db, NOW)).toBe(0);
+  });
+
+  it("a compacted job that reappears keeps its id and gets its description back", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("old")], NOW, { companyId: acme });
+    markClosedJobs(db, acme, [], daysAgo(31));
+    compactClosedJobs(db, NOW);
+    const id = rows()[0]!.id;
+    expect(upsertJobs(db, [ats("old")], NOW, { companyId: acme })).toEqual({ inserted: 0, updated: 1 });
+    expect(rows().find((r) => r.externalId === "acme:old")).toMatchObject({ id, closedAt: null, descriptionHtml: "<p>x</p>", descriptionText: "x" });
+  });
+
+  it("compaction keeps duplicate links", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("1", { title: "Same Title", company: "Acme" })], NOW, { companyId: acme });
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "acme:9", title: "Same Title", company: "Acme" })], NOW);
+    markClosedJobs(db, acme, [], daysAgo(40));
+    compactClosedJobs(db, NOW);
+    const original = rows().find((r) => r.source === "greenhouse")!;
+    expect(rows()).toHaveLength(2);
+    expect(rows().find((r) => r.source === "lever")?.duplicateOf).toBe(original.id);
   });
 
   it("purge deletes jobs closed more than 30 days ago only", () => {

@@ -118,6 +118,19 @@ export function markClosedJobs(db: Db, companyId: number, seenExternalIds: strin
     .run().changes;
 }
 
+/**
+ * Drops the descriptions of jobs closed at least `days` (default 30) days ago, keeping the row. A reposted job then
+ * reuses its row (and its embedding and score), so it is never embedded or scored twice. Returns how many rows changed.
+ */
+export function compactClosedJobs(db: Db, nowIso: string, days = 30): number {
+  const cutoff = new Date(Date.parse(nowIso) - days * 86_400_000).toISOString();
+  return db
+    .update(jobs)
+    .set({ descriptionHtml: "", descriptionText: "" })
+    .where(and(isNotNull(jobs.closedAt), lte(jobs.closedAt, cutoff), or(ne(jobs.descriptionHtml, ""), ne(jobs.descriptionText, ""))))
+    .run().changes;
+}
+
 /** Deletes jobs closed more than `days` (default 30) days ago. Returns how many were deleted. */
 export function purgeClosedJobs(db: Db, nowIso: string, days = 30): number {
   const cutoff = new Date(Date.parse(nowIso) - days * 86_400_000).toISOString();
