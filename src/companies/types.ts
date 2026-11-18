@@ -7,7 +7,7 @@ export type Resolution =
   | { status: "confirmed"; ats: AtsId; slug: string; companyName: string | null }
   | { status: "ambiguous"; matches: AtsRef[] }
   | { status: "not_found" }
-  | { status: "error"; error: string };
+  | { status: "error"; error: string; /** Every probe error was a rate limit. */ rateLimited?: boolean };
 
 /** What probing one ATS board slug tells us. */
 export interface ProbeResult {

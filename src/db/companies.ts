@@ -137,9 +137,11 @@ export function recordResolution(db: Db, candidateId: number, result: Resolution
         return { companyId: null };
       case "error": {
         // A probe that fails every time (say, a response we can't parse) would otherwise be retried daily forever.
-        const errors = cand.consecutiveErrors + 1;
+        // Being rate-limited says nothing about the candidate, so it is retried tomorrow without counting.
+        const errors = result.rateLimited === true ? cand.consecutiveErrors : cand.consecutiveErrors + 1;
+        const days = result.rateLimited !== true && errors >= ERRORS_BEFORE_BACKOFF ? 30 : 1;
         tx.update(companyCandidates)
-          .set({ ...base, status: "error", consecutiveErrors: errors, nextCheckAt: addDays(nowIso, errors >= ERRORS_BEFORE_BACKOFF ? 30 : 1) })
+          .set({ ...base, status: "error", consecutiveErrors: errors, nextCheckAt: addDays(nowIso, days) })
           .where(eq(companyCandidates.id, candidateId))
           .run();
         return { companyId: null };

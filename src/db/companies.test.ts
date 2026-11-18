@@ -198,6 +198,28 @@ describe("recordResolution", () => {
     expect(listDueCandidates(db, plusDays(T0, 34)).map((c) => c.id)).toEqual([id]);
   });
 
+  const rateLimited = (id: number, day: number) =>
+    recordResolution(
+      db,
+      id,
+      { status: "error", error: "RateLimitedError: lever is rate limiting us, skipped for this run", rateLimited: true },
+      plusDays(T0, day),
+    );
+
+  it("a rate-limited error retries tomorrow without counting", () => {
+    const id = seed();
+    fail(id, 0);
+    fail(id, 1);
+    rateLimited(id, 2);
+    expect(candidates()[0]).toMatchObject({ status: "error", consecutiveErrors: 2, nextCheckAt: plusDays(T0, 3), attempts: 3 });
+  });
+
+  it("rate limits never push a candidate into the 30-day backoff", () => {
+    const id = seed();
+    for (const day of [0, 1, 2, 3, 4, 5]) rateLimited(id, day);
+    expect(candidates()[0]).toMatchObject({ consecutiveErrors: 0, nextCheckAt: plusDays(T0, 6) });
+  });
+
   it("any other result resets the error count", () => {
     const id = seed();
     fail(id, 0);
