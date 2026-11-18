@@ -144,6 +144,8 @@ describe("resolveDueCandidates when an ATS rate limits us", () => {
       ["Bbb Co", "error"],
       ["Ccc Co", "error"],
     ]);
+    // Being rate-limited is not the candidates' fault, so it doesn't count toward their error backoff.
+    expect(rows().map((r) => r.consecutiveErrors)).toEqual([0, 0, 0]);
   });
 
   it("probes Lever again on the next run", async () => {

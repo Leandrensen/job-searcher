@@ -2,7 +2,7 @@ import type { AtsId } from "@/core/job";
 import { HttpError, type HttpClient } from "@/core/http";
 import type { Db } from "@/db/client";
 import { listDueCandidates, recordResolution } from "@/db/companies";
-import { resolveCandidate } from "./resolve";
+import { RateLimitedError, resolveCandidate } from "./resolve";
 import type { ProbeFn, Resolution } from "./types";
 
 export type ResolutionStats = {
@@ -45,7 +45,7 @@ export async function resolveDueCandidates(opts: ResolveDueOptions): Promise<Res
     Object.entries(opts.probes).map(([ats, probe]) => [
       ats,
       async (client: HttpClient, slug: string) => {
-        if (rateLimited.has(ats as AtsId)) throw new Error(`${ats} is rate limiting us, skipped for this run`);
+        if (rateLimited.has(ats as AtsId)) throw new RateLimitedError(`${ats} is rate limiting us, skipped for this run`);
         try {
           return await probe(client, slug);
         } catch (err) {

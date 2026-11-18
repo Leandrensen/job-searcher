@@ -132,6 +132,17 @@ describe("resolveCandidate", () => {
     expect(resolution).toEqual({ status: "error", error: "HttpError: HTTP 500 for https://boards-api.greenhouse.io/v1/boards/globex" });
   });
 
+  it("an error caused only by a 429 is marked rate limited", async () => {
+    const { resolution } = await resolve(candidate({ name: "Flaky" }), { [lever("flaky")]: { status: 429 } });
+    expect(resolution).toEqual({ status: "error", error: "HttpError: HTTP 429 for https://api.lever.co/v0/postings/flaky?mode=json", rateLimited: true });
+  });
+
+  it("a 429 plus another failure is a plain error", async () => {
+    const { resolution } = await resolve(candidate({ name: "Flaky" }), { [gh("flaky")]: { status: 500 }, [lever("flaky")]: { status: 429 } });
+    expect(resolution.status).toBe("error");
+    expect("rateLimited" in resolution).toBe(false);
+  });
+
   it("a 500 does not hide a confirmation found later", async () => {
     const { resolution } = await resolve(candidate({ name: "Globex" }), {
       [gh("globex")]: { status: 500 },

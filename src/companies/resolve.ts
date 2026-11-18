@@ -1,10 +1,18 @@
 import { normalizeCompany, stripLegalSuffixes } from "@/core/dedupe";
-import type { HttpClient } from "@/core/http";
+import { HttpError, type HttpClient } from "@/core/http";
 import type { AtsId } from "@/core/job";
 import { extractAtsRefs, slugGuesses, websiteDomain, type AtsRef } from "./slugs";
 import type { ProbeFn, ProbeResult, Resolution } from "./types";
 
 export type Candidate = { name: string; website: string | null; careersUrl: string | null; atsHints: string[] };
+
+/** Thrown instead of probing an ATS that rate-limited us earlier in the run. */
+export class RateLimitedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "RateLimitedError";
+  }
+}
 
 /** Order in which guessed slugs are tried against the ATSs. */
 export const PROBE_ORDER: readonly AtsId[] = ["greenhouse", "lever", "ashby", "recruitee", "smartrecruiters"];
@@ -57,6 +65,8 @@ export async function resolveCandidate(
 ): Promise<Resolution> {
   const probed = new Set<string>();
   let firstError: string | null = null;
+  // Stays true while every probe failure is a rate limit, which says nothing about the candidate itself.
+  let onlyRateLimits = true;
 
   async function tryProbe(ats: AtsId, slug: string): Promise<ProbeResult | null> {
     probed.add(`${ats}/${slug}`);
@@ -65,6 +75,7 @@ export async function resolveCandidate(
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));
       firstError ??= `${e.name}: ${e.message}`;
+      if (!((err instanceof HttpError && err.status === 429) || err instanceof RateLimitedError)) onlyRateLimits = false;
       return null;
     }
   }
@@ -105,7 +116,7 @@ export async function resolveCandidate(
   }
 
   // A failed probe may have hidden the real board, so retry later instead of sending the candidate to manual review.
-  if (firstError !== null) return { status: "error", error: firstError };
+  if (firstError !== null) return { status: "error", error: firstError, ...(onlyRateLimits ? { rateLimited: true } : {}) };
   if (unproven.length > 0) return { status: "ambiguous", matches: unproven };
   return { status: "not_found" };
 }
