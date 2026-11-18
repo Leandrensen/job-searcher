@@ -79,6 +79,7 @@ Detailed spec: [docs/plans/m2-companies-ats.md](docs/plans/m2-companies-ats.md)
 Review fixes: [docs/plans/m2.1-review-fixes.md](docs/plans/m2.1-review-fixes.md)
 Second review fixes: [docs/plans/m2.2-review-fixes.md](docs/plans/m2.2-review-fixes.md)
 Third review fixes: [docs/plans/m2.3-review-fixes.md](docs/plans/m2.3-review-fixes.md)
+Fourth review fixes: [docs/plans/m2.4-review-fixes.md](docs/plans/m2.4-review-fixes.md)
 
 Build the company list, resolve each company to its ATS precisely, and fetch jobs only from ATSs.
 
