@@ -10,6 +10,7 @@ import {
   listActiveCompanies,
   listAmbiguousCandidates,
   recordResolution,
+  rejectCandidate,
   upsertCandidate,
 } from "@/db/companies";
 import { CliUsageError } from "./fetch-cli";
@@ -180,7 +181,7 @@ export async function runCompanyCli(argv: string[], deps: CompanyCliDeps): Promi
         out.error(`Candidate ${cmd.candidateId} is not ambiguous`);
         return 1;
       }
-      recordResolution(db, candidate.id, { status: "not_found" }, nowIso);
+      rejectCandidate(db, candidate.id, nowIso);
       out.log(`Rejected ${candidate.name}`);
       return 0;
     }

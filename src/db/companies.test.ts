@@ -12,6 +12,7 @@ import {
   listDueCompanies,
   recordCompanyFetch,
   recordResolution,
+  rejectCandidate,
   upsertCandidate,
 } from "./companies";
 import type { Job } from "@/core/job";
@@ -94,6 +95,31 @@ describe("upsertCandidate", () => {
     recordResolution(db, id, { status: "ambiguous", matches: [{ ats: "lever", slug: "acme-labs" }] }, T0);
     expect(upsertCandidate(db, { name: "Acme", atsHints: ["https://jobs.lever.co/acme"], origin: "board:remoteok" }, T0)).toBe("unchanged");
     expect(candidates()[0]).toMatchObject({ status: "ambiguous", ambiguousMatches: [{ ats: "lever", slug: "acme-labs" }] });
+  });
+});
+
+describe("rejectCandidate", () => {
+  const ambiguousCandidate = () => {
+    const id = (upsertCandidate(db, { name: "Acme", origin: "seed:yc" }, T0), candidates()[0]!.id);
+    recordResolution(db, id, { status: "ambiguous", matches: [{ ats: "lever", slug: "acme-labs" }] }, T0);
+    return id;
+  };
+
+  it("makes a candidate permanently not due", () => {
+    const id = ambiguousCandidate();
+    rejectCandidate(db, id, plusDays(T0, 1));
+    expect(candidates()[0]).toMatchObject({ status: "rejected", nextCheckAt: null, ambiguousMatches: [], lastCheckedAt: plusDays(T0, 1) });
+    expect(listDueCandidates(db, plusDays(T0, 400))).toEqual([]);
+  });
+
+  it("a new hint does not reopen a rejected candidate", () => {
+    rejectCandidate(db, ambiguousCandidate(), T0);
+    upsertCandidate(db, { name: "Acme", atsHints: ["https://jobs.lever.co/acme"], origin: "board:remoteok" }, T0);
+    expect(candidates()[0]).toMatchObject({ status: "rejected", atsHints: ["https://jobs.lever.co/acme"] });
+  });
+
+  it("throws for an unknown candidate", () => {
+    expect(() => rejectCandidate(db, 999, T0)).toThrow("Unknown candidate 999");
   });
 });
 

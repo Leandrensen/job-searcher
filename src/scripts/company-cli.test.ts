@@ -139,12 +139,12 @@ describe("company confirm", () => {
 });
 
 describe("company reject", () => {
-  it("marks an ambiguous candidate not found, with a retry in 30 days", async () => {
+  it("marks an ambiguous candidate rejected for good", async () => {
     const { db, logs, run, ambiguous } = setup();
     const id = ambiguous("Initech");
     expect(await run(["reject", String(id)])).toBe(0);
     expect(logs).toEqual(["Rejected Initech"]);
-    expect(db.select().from(companyCandidates).get()).toMatchObject({ status: "not_found", nextCheckAt: "2026-12-16T12:00:00.000Z", ambiguousMatches: [] });
+    expect(db.select().from(companyCandidates).get()).toMatchObject({ status: "rejected", nextCheckAt: null, ambiguousMatches: [] });
   });
 
   it("refuses a candidate that is not ambiguous", async () => {

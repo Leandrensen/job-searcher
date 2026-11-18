@@ -136,6 +136,16 @@ export function recordResolution(db: Db, candidateId: number, result: Resolution
   });
 }
 
+/** The user said this candidate is not a company we want. It is never resolved again, not even on a new hint. */
+export function rejectCandidate(db: Db, candidateId: number, nowIso: string): void {
+  const changes = db
+    .update(companyCandidates)
+    .set({ status: "rejected", ambiguousMatches: [], nextCheckAt: null, lastCheckedAt: nowIso })
+    .where(eq(companyCandidates.id, candidateId))
+    .run().changes;
+  if (changes === 0) throw new Error(`Unknown candidate ${candidateId}`);
+}
+
 /** Active companies of one ATS that haven't been fetched in the last `minHours` (default 20). */
 export function listDueCompanies(
   db: Db,

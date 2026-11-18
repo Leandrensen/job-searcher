@@ -36,7 +36,7 @@ export const companyCandidates = sqliteTable(
     atsHints: text("ats_hints", { mode: "json" }).$type<string[]>().notNull().default([]),
     homeCountry: text("home_country"),
     origin: text("origin").notNull(),
-    status: text("status", { enum: ["pending", "confirmed", "ambiguous", "not_found", "error"] })
+    status: text("status", { enum: ["pending", "confirmed", "ambiguous", "not_found", "error", "rejected"] })
       .notNull()
       .default("pending"),
     attempts: integer("attempts").notNull().default(0),
