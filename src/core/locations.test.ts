@@ -77,6 +77,15 @@ describe("deriveWorkplaceType", () => {
     [null, ["Anywhere"], "remote"],
     [null, ["Híbrido (Madrid)"], "hybrid"],
     [null, ["Presencial"], "onsite"],
+    [null, ["LATAM"], null],
+    [null, ["Latin America"], null],
+    [null, ["Americas, EMEA"], null],
+    [null, ["Global"], null],
+    [null, ["Europe | APAC"], null],
+    [null, ["LATAM", "Buenos Aires"], "onsite"],
+    [null, ["Argentina"], "onsite"],
+    [null, ["United States"], "onsite"],
+    ["onsite", ["LATAM"], "onsite"],
   ])("(%j, %j) → %j", (structured, texts, expected) => {
     expect(deriveWorkplaceType(structured, texts)).toBe(expected);
   });

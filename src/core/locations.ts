@@ -188,6 +188,10 @@ export function deriveWorkplaceType(structured: WorkplaceType | null, locationTe
   if (REMOTE_RE.test(joined)) return "remote";
   if (HYBRID_RE.test(joined)) return "hybrid";
   if (ONSITE_RE.test(joined)) return "onsite";
-  // A location with no remote word, such as just a city, is an office.
-  return locationTexts.some((t) => t.trim() !== "") ? "onsite" : null;
+  const nonEmpty = locationTexts.filter((t) => t.trim() !== "");
+  if (nonEmpty.length === 0) return null;
+  // A location made only of region names ("LATAM", "Americas, EMEA", "Global") names no office, so it is unknown
+  // and the region rule decides. A city or country with no remote word is an office.
+  const regionOnly = (t: string) => !/[\p{L}\p{N}]/u.test(consume(t, PHRASE_MATCHERS, new Set()));
+  return nonEmpty.every(regionOnly) ? null : "onsite";
 }

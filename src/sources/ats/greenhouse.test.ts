@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { HttpError, type HttpClient } from "@/core/http";
+import { checkLocation } from "@/core/location-filter";
 import { expectCleanText } from "@/test-utils/assertions";
 import { createFixtureHttp } from "@/test-utils/fixture-http";
 import { loadFixture } from "@/test-utils/fixtures";
@@ -104,6 +105,14 @@ describe("greenhouse adapter", () => {
       item.location = null;
     }))!;
     expect(none).toMatchObject({ workplaceType: null, location: null });
+  });
+
+  it("a region-only location is unknown and passes the location filter", async () => {
+    const job = (await normalizeAt(0, (item) => {
+      item.location = { name: "LATAM" };
+    }))!;
+    expect(job).toMatchObject({ location: "LATAM", workplaceType: null, regions: ["latam"] });
+    expect(checkLocation(job, null)).toEqual({ pass: true });
   });
 
   it("runs cleanly through the pipeline", async () => {
