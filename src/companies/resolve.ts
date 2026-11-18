@@ -28,7 +28,9 @@ export function proveIdentity(candidate: Candidate, ats: AtsId, probe: ProbeResu
         return false;
       }
     });
-    if (onDomain || probe.texts.some((t) => t.toLowerCase().includes(domain))) return true;
+    // In text the domain must be a whole host (subdomains allowed): "x.com" must not match "dropbox.com".
+    const domainRe = new RegExp(`(?<![a-z0-9-])${escapeRegExp(domain)}(?![a-z0-9-]|\\.[a-z0-9])`, "i");
+    if (onDomain || probe.texts.some((t) => domainRe.test(t))) return true;
   }
 
   // 3. Lever and Ashby return no company name: the name must appear in at least 2 postings (or in the only one).

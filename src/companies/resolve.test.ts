@@ -144,9 +144,17 @@ describe("proveIdentity", () => {
     ["url on a subdomain of the company domain", { urls: ["https://careers.acme.io/o/1"] }, true],
     ["url on a look-alike domain", { urls: ["https://notacme.io/jobs/1"] }, false],
     ["domain mentioned in a posting text", { texts: ["Apply at ACME.io today"] }, true],
+    ["domain inside a longer domain", { texts: ["We use notacme.io for billing"] }, false],
+    ["domain followed by more labels", { texts: ["See acme.io.example.com"] }, false],
+    ["domain on a subdomain in text", { texts: ["Apply at careers.acme.io/jobs"] }, true],
+    ["domain at the end of a sentence", { texts: ["Learn more at acme.io."] }, true],
     ["nothing to prove it", { texts: ["We build things"], urls: ["https://jobs.example.com/1"] }, false],
   ])("%s", (_label, over, expected) => {
     expect(proveIdentity(acme, "greenhouse", probe(over))).toBe(expected);
+  });
+
+  it("a short domain does not match inside another domain", () => {
+    expect(proveIdentity(candidate({ name: "X", website: "https://x.com" }), "greenhouse", probe({ texts: ["We store files on dropbox.com"] }))).toBe(false);
   });
 
   it("lever and ashby: the name must appear in at least 2 postings (or in the only one)", () => {
