@@ -1,4 +1,4 @@
-import { boardUrl } from "@/companies/slugs";
+import { boardUrl, normalizeSlug } from "@/companies/slugs";
 import type { ProbeFn, ProbeResult } from "@/companies/types";
 import type { HttpClient } from "@/core/http";
 import { ATS_IDS, type AtsId } from "@/core/job";
@@ -69,17 +69,24 @@ function parseCommand(argv: string[]): Command {
       }
       if (positional.length !== 2) throw new CliUsageError(USAGE);
       const ats = parseAts(positional[0]);
+      const slug = normalizeSlug(ats, positional[1]!);
+      if (slug === "") throw new CliUsageError(USAGE);
       if (country !== null && !/^[A-Z]{2}$/.test(country)) {
         throw new CliUsageError(`Invalid --country: ${country} (use a 2-letter ISO code like US)`);
       }
-      return { kind: "add", ats, slug: positional[1]!, name, country };
+      return { kind: "add", ats, slug, name, country };
     }
     case "review":
       if (rest.length > 0) throw new CliUsageError(USAGE);
       return { kind: "review" };
     case "confirm":
       if (rest.length !== 3) throw new CliUsageError(USAGE);
-      return { kind: "confirm", candidateId: parsePositiveInt(rest[0]), ats: parseAts(rest[1]), slug: rest[2]! };
+      {
+        const ats = parseAts(rest[1]);
+        const slug = normalizeSlug(ats, rest[2]!);
+        if (slug === "") throw new CliUsageError(USAGE);
+        return { kind: "confirm", candidateId: parsePositiveInt(rest[0]), ats, slug };
+      }
     case "reject":
       if (rest.length !== 1) throw new CliUsageError(USAGE);
       return { kind: "reject", candidateId: parsePositiveInt(rest[0]) };

@@ -79,10 +79,18 @@ describe("company add", () => {
     expect(db.select().from(companies).all()).toEqual([]);
   });
 
+  it("add lowercases the slug", async () => {
+    const { db, logs, run } = setup();
+    expect(await run(["add", "greenhouse", "Acme"])).toBe(0);
+    expect(logs).toEqual(["Added greenhouse/acme (ACME)"]);
+    expect(db.select().from(companies).all().map((c) => c.slug)).toEqual(["acme"]);
+  });
+
   it.each([
     [["add", "workday", "acme"], "Unknown ATS: workday. Valid: greenhouse, lever, ashby, recruitee, smartrecruiters"],
     [["add", "greenhouse", "acme", "--country", "usa"], "Invalid --country: usa (use a 2-letter ISO code like US)"],
     [["add", "greenhouse"], "Usage:"],
+    [["add", "greenhouse", " "], "Usage:"],
     [["add", "greenhouse", "acme", "--bogus"], "Unknown option: --bogus"],
   ])("rejects bad arguments %j", async (argv, message) => {
     const { errors, openDbSpy, run } = setup();
@@ -111,6 +119,13 @@ describe("company review", () => {
 });
 
 describe("company confirm", () => {
+  it("lowercases the slug", async () => {
+    const { logs, run, ambiguous } = setup();
+    const id = ambiguous("Initech");
+    expect(await run(["confirm", String(id), "ashby", "Initech"])).toBe(0);
+    expect(logs).toEqual(["Confirmed Initech → ashby/initech"]);
+  });
+
   it("confirms an ambiguous candidate against an ATS board that exists", async () => {
     const { db, logs, run, ambiguous } = setup();
     const id = ambiguous("Initech");

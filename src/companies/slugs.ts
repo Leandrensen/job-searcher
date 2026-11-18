@@ -54,6 +54,12 @@ export function extractAtsRefs(text: string): AtsRef[] {
   return refs;
 }
 
+/** The canonical form of a slug: SmartRecruiters slugs keep their case, every other ATS lowercases them. Trims whitespace. */
+export function normalizeSlug(ats: AtsId, slug: string): string {
+  const trimmed = slug.trim();
+  return ats === "smartrecruiters" ? trimmed : trimmed.toLowerCase();
+}
+
 export function parseAtsUrl(url: string): AtsRef | null {
   return extractAtsRefs(url)[0] ?? null;
 }

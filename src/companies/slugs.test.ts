@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { boardUrl, extractAtsRefs, parseAtsUrl, slugGuesses, websiteDomain, type AtsRef } from "./slugs";
+import { boardUrl, extractAtsRefs, normalizeSlug, parseAtsUrl, slugGuesses, websiteDomain, type AtsRef } from "./slugs";
 
 describe("parseAtsUrl", () => {
   it.each<[string, AtsRef | null]>([
@@ -82,5 +82,17 @@ describe("boardUrl", () => {
     for (const ats of ["greenhouse", "lever", "ashby", "recruitee", "smartrecruiters"] as const) {
       expect(parseAtsUrl(boardUrl({ ats, slug: "Acme" }))).toEqual({ ats, slug: ats === "smartrecruiters" ? "Acme" : "acme" });
     }
+  });
+});
+
+describe("normalizeSlug", () => {
+  it.each<[AtsRef["ats"], string, string]>([
+    ["greenhouse", "Acme", "acme"],
+    ["lever", " Globex ", "globex"],
+    ["ashby", "LiveKit", "livekit"],
+    ["recruitee", "Tether", "tether"],
+    ["smartrecruiters", "BoschGroup", "BoschGroup"],
+  ])("%s %j -> %j", (ats, slug, expected) => {
+    expect(normalizeSlug(ats, slug)).toBe(expected);
   });
 });
