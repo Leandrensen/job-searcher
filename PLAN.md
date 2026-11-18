@@ -176,7 +176,7 @@ Build the company list, resolve each company to its ATS precisely, and fetch job
 
   If an ATS gives no date, `postedAt` stays `null` and the job's effective date is our `firstSeenAt`. Note that `firstSeenAt` is "today" for every job on a company's first fetch.
 - **Workable dropped (2026-11-17).** Its widget API rate limits this machine hard and unpredictably (see the decisions log).
-- **Closed jobs:** each fetch returns a company's full list, so a stored job missing from it gets `closedAt`, and it's reopened if it reappears. Closed jobs are never ranked or scored. Jobs closed for more than 30 days are deleted, together with their embeddings and scores.
+- **Closed jobs:** each fetch returns a company's full list, so a stored job missing from it gets `closedAt`, and it's reopened if it reappears. Closed jobs are never ranked or scored. Jobs closed for more than 30 days keep their row (and, from M3/M4, their embedding and score) but lose their descriptions, so a reposted job is never embedded or scored twice.
 - **Dead companies:** after 3 consecutive 404s a company becomes `inactive`, and its candidate is resolved again.
 - **Dedupe:** only ATS jobs are stored, so cross-source dedupe only applies between ATSs (e.g. a company that switched ATS).
 
@@ -258,3 +258,4 @@ Daily `npm run fetch` and monthly `npm run seed` on a local schedule, nightly pr
 - 2026-11-17: M2.2 review fixes: a re-confirmed company is reactivated; a fetch with invalid items closes no jobs; slugs typed into `company add`/`confirm` are normalized (lowercase except SmartRecruiters); the Lever/Ashby name proof ignores legal suffixes.
 - 2026-11-18: M2.3 review fixes: failed fetches are recorded as attempts, so every company is fetched about once a day; website domains match posting text only as whole hosts; ATS links from board postings need identity proof (careers URL and website links stay trusted); candidates whose resolution errors 5 times in a row are retried every 30 days instead of daily.
 - 2026-11-18: M2.4 review fixes: Ashby slugs must end cleanly (no shortened slugs); rate-limited resolutions are retried daily without counting toward the 5-error backoff; the Lever/Ashby name proof is case-sensitive and treats hyphens as part of a word; only 404s in a row (3) deactivate a company.
+- 2026-11-18: M2.5: closed jobs are no longer deleted after 30 days, only compacted (descriptions dropped), so "scored once, ever" survives a repost (supersedes "Closed jobs are deleted 30 days after closing"); companies based outside the allowed countries are not fetched; a new careers URL reopens an unresolved candidate; resolutions are stamped when recorded.
