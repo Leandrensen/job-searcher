@@ -27,11 +27,33 @@ describe("resolveCandidate", () => {
     expect(calls).toEqual([gh("acme"), ghJobs("acme")]);
   });
 
-  it("a direct link found in a board posting hint also confirms", async () => {
-    const { resolution } = await resolve(candidate({ name: "Acme", atsHints: ["https://jobs.lever.co/acme"] }), {
-      [lever("acme")]: "resolve/lever-globex-two.json",
+  it("a board-posting link confirms when identity is proven", async () => {
+    const { resolution } = await resolve(candidate({ name: "Globex", atsHints: ["https://jobs.lever.co/globex"] }), {
+      [lever("globex")]: "resolve/lever-globex-two.json",
     });
-    expect(resolution).toMatchObject({ status: "confirmed", ats: "lever", slug: "acme" });
+    expect(resolution).toMatchObject({ status: "confirmed", ats: "lever", slug: "globex" });
+  });
+
+  it("a board-posting link to another company's board is only ambiguous", async () => {
+    const { resolution } = await resolve(candidate({ name: "Talentco", atsHints: ["https://jobs.lever.co/globex"] }), {
+      [lever("globex")]: "resolve/lever-globex-two.json",
+    });
+    expect(resolution).toEqual({ status: "ambiguous", matches: [{ ats: "lever", slug: "globex" }] });
+  });
+
+  it("a careers_url link still confirms without proof", async () => {
+    const { resolution } = await resolve(candidate({ name: "Talentco", careersUrl: "https://jobs.lever.co/globex" }), {
+      [lever("globex")]: "resolve/lever-globex-two.json",
+    });
+    expect(resolution).toMatchObject({ status: "confirmed", ats: "lever", slug: "globex" });
+  });
+
+  it("a link in both careers_url and the hints is probed once", async () => {
+    const { calls } = await resolve(
+      candidate({ name: "Talentco", careersUrl: "https://jobs.lever.co/globex", atsHints: ["https://jobs.lever.co/globex"] }),
+      { [lever("globex")]: "resolve/lever-globex-two.json" },
+    );
+    expect(calls.filter((u) => u === lever("globex"))).toHaveLength(1);
   });
 
   it("a direct smartrecruiters link needs at least one posting", async () => {

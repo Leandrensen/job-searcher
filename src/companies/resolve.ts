@@ -46,8 +46,9 @@ export function proveIdentity(candidate: Candidate, ats: AtsId, probe: ProbeResu
 
 /**
  * Resolve a candidate to an ATS board. No DB access.
- * 1. Direct ATS links from the company's own data are used first.
- * 2. Otherwise up to 3 slug guesses are probed against every ATS; a board only counts if identity is proven.
+ * 1. ATS links from the company's own careers URL or website: an existing board is enough.
+ * 2. ATS links found in board postings: identity must be proven, since a posting can link another company's board.
+ * 3. Otherwise up to 3 slug guesses are probed against every ATS; a board only counts if identity is proven.
  */
 export async function resolveCandidate(
   http: HttpClient,
@@ -68,27 +69,38 @@ export async function resolveCandidate(
     }
   }
 
-  // 1. Direct links. They come from the company's own data or posting, so an existing board is proof enough.
-  const direct = extractAtsRefs([candidate.careersUrl, candidate.website, ...candidate.atsHints].filter(Boolean).join(" "));
-  for (const ref of direct) {
+  // 1. Links from the company's own data: an existing board is proof enough.
+  const trusted = extractAtsRefs([candidate.careersUrl, candidate.website].filter(Boolean).join(" "));
+  for (const ref of trusted) {
     const probe = await tryProbe(ref.ats, ref.slug);
     if (probe?.exists && (ref.ats !== "smartrecruiters" || probe.postingCount > 0)) {
       return { status: "confirmed", ats: ref.ats, slug: ref.slug, companyName: probe.companyName };
     }
   }
 
-  // 2. Guessed slugs.
+  // An empty board without a name proves nothing and says nothing, so it doesn't count as a match.
   const unproven: AtsRef[] = [];
+  const consider = (ats: AtsId, slug: string, probe: ProbeResult | null): Resolution | null => {
+    if (!probe?.exists) return null;
+    if (proveIdentity(candidate, ats, probe)) return { status: "confirmed", ats, slug, companyName: probe.companyName };
+    if (probe.postingCount > 0 || probe.companyName !== null) unproven.push({ ats, slug });
+    return null;
+  };
+
+  // 2. Links found in board postings. A posting can link someone else's board (an agency's client), so prove identity.
+  const trustedKeys = new Set(trusted.map((r) => `${r.ats}/${r.slug}`));
+  const hinted = extractAtsRefs(candidate.atsHints.join(" ")).filter((r) => !trustedKeys.has(`${r.ats}/${r.slug}`));
+  for (const ref of hinted) {
+    const confirmed = consider(ref.ats, ref.slug, await tryProbe(ref.ats, ref.slug));
+    if (confirmed) return confirmed;
+  }
+
+  // 3. Guessed slugs.
   for (const slug of slugGuesses(candidate.name, candidate.website)) {
     for (const ats of PROBE_ORDER) {
       if (probed.has(`${ats}/${slug}`)) continue;
-      const probe = await tryProbe(ats, slug);
-      if (!probe?.exists) continue;
-      if (proveIdentity(candidate, ats, probe)) {
-        return { status: "confirmed", ats, slug, companyName: probe.companyName };
-      }
-      // An empty board without a name proves nothing and says nothing, so it doesn't count as a match.
-      if (probe.postingCount > 0 || probe.companyName !== null) unproven.push({ ats, slug });
+      const confirmed = consider(ats, slug, await tryProbe(ats, slug));
+      if (confirmed) return confirmed;
     }
   }
 
