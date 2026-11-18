@@ -74,7 +74,7 @@ Detailed spec: [docs/plans/m1.1-test-hardening.md](docs/plans/m1.1-test-hardenin
 
 Verify: lint, typecheck and `npm test` pass; no loose matchers in adapter tests; no `vi.mock` in `src/`.
 
-### M2: Companies + ATS sources (current)
+### M2: Companies + ATS sources (done)
 Detailed spec: [docs/plans/m2-companies-ats.md](docs/plans/m2-companies-ats.md)
 
 Build the company list, resolve each company to its ATS precisely, and fetch jobs only from ATSs.
@@ -186,7 +186,7 @@ Verify:
 - A second run the same day skips companies already fetched.
 - A job removed from a fixture gets `closedAt`.
 
-### M3: Search config, filters and embedding ranking
+### M3: Search config, filters and embedding ranking (current)
 - `config/search.md`: one specific search description in plain text, the most visible and easiest-to-change setting. Gitignored; `config/search.example.md` is committed.
 - `config/preferences.json` (Zod-validated): hard rules (seniority, salary floor, department). Remote-only and location are already handled by the M2 location filter. Gitignored; `config/preferences.example.json` is committed.
 - Filters from the hard rules, using structured ATS fields first and keywords second. **Unknown values pass**; a job is only excluded when its data contradicts a rule.
@@ -248,3 +248,4 @@ Daily `npm run fetch` and monthly `npm run seed` on a local schedule, nightly pr
   - The embedding model is `onnx-community/gte-multilingual-base`: free (Apache-2.0), reads whole descriptions, and verified to run in Transformers.js with good English/Spanish matching. Fallback: `Xenova/multilingual-e5-small`.
 - 2026-11-16: Get on Board dropped as a discovery source. Its companies are mostly LATAM-based with no known home country, so their "Remote - Argentina" jobs would pass the location filter's "unknown passes" rule.
 - 2026-11-17: Workable removed from the app. A real seed run made its widget API answer 429 to every request, even for a known-good slug, and the block lasted over an hour; staged tests showed no spacing that was reliably accepted (8 s worked for 20 requests, then even 5–8 s failed). It was about 7% of confirmed companies and no Workable job was ever fetched. The ATS list is now Greenhouse, Lever, Ashby, Recruitee and SmartRecruiters (12 source ids).
+- 2026-11-17: M2 done: 753 active companies (ashby 416, greenhouse 227, lever 67, recruitee 22, smartrecruiters 21), 255 open jobs; resolution rate 25% remoteintech / 32% yc; 78 ambiguous awaiting review. Workable was dropped along the way (see the entry above).

@@ -1148,7 +1148,7 @@
   - Append to the decisions log, with the real numbers from T27: `- <date>: M2 done: <n> active companies (<byAts>), <n> open jobs; resolution rate <x>% remoteintech / <y>% yc; <n> ambiguous awaiting review.`
 - Verify: the milestone verification below passes.
 - Commit type: `docs`.
-- [ ] Done
+- [x] Done
 
 ## Milestone verification
 1. `nvm use && npm run lint && npm run typecheck && npm test && npm run test:coverage` all pass, including the coverage thresholds.
