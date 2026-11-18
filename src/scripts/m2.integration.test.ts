@@ -129,14 +129,18 @@ describe("M2 end to end, offline", () => {
     expect(atsRow(ats, "greenhouse")).toMatchObject({ status: "success", fetched: 2, inserted: 0, closed: 1 });
     expect(atsRow(ats, "lever")).toMatchObject({ status: "success", closed: 0 });
     expect(logs).toContain("Open jobs in DB: 1");
-    expect(logs).toContain("Purged 0 closed jobs");
+    expect(logs).toContain("Compacted 0 closed jobs");
   });
 
-  it("5. a job closed for more than 30 days is purged", async () => {
+  it("5. a job closed for more than 30 days keeps its row but loses its description", async () => {
     clock = T0 + 21 * 3_600_000 + days(31);
     const { logs } = await fetchAll();
-    expect(logs).toContain("Purged 1 closed jobs");
-    expect(db.select().from(jobs).all()).toHaveLength(1);
+    expect(logs).toContain("Compacted 1 closed jobs");
+    const stored = db.select().from(jobs).all();
+    expect(stored).toHaveLength(2);
+    const closed = stored.find((j) => j.externalId === "acme:1");
+    expect(closed).toMatchObject({ descriptionHtml: "", descriptionText: "" });
+    expect(closed?.closedAt).not.toBeNull();
   });
 
   it("6. an ambiguous company can be confirmed by hand and is then fetched", async () => {

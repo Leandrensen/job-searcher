@@ -5,7 +5,7 @@ import type { AtsId } from "@/core/job";
 import { createPacedHttpClient, DEFAULT_PACING, type PacingOptions } from "@/core/paced-http";
 import type { Db } from "@/db/client";
 import { companyCounts } from "@/db/companies";
-import { countJobs, purgeClosedJobs } from "@/db/queries";
+import { compactClosedJobs, countJobs } from "@/db/queries";
 import { runAtsSources } from "@/sources/ats-runner";
 import { runSources } from "@/sources/runner";
 import type { AnyAdapter } from "@/sources/types";
@@ -172,7 +172,7 @@ export async function runCli(argv: string[], deps: CliDeps): Promise<number> {
   );
 
   // 4. Forget jobs that have been closed for a month.
-  out.log(`Purged ${purgeClosedJobs(db, now().toISOString())} closed jobs`);
+  out.log(`Compacted ${compactClosedJobs(db, now().toISOString())} closed jobs`);
   out.log(`Open jobs in DB: ${countJobs(db, { openOnly: true })}`);
   out.log(`Active companies: ${companyCounts(db).active}`);
   return [...boardResults, ...atsResults].some((r) => r.status === "success" || r.status === "skipped") ? 0 : 1;

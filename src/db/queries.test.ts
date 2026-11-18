@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Job } from "@/core/job";
 import { openDb, type Db } from "./client";
 import { insertOrGetCompany } from "./companies";
-import { compactClosedJobs, countJobs, lastSuccessfulRunAt, latestPostedAt, markClosedJobs, purgeClosedJobs, recordRun, upsertJobs } from "./queries";
+import { compactClosedJobs, countJobs, lastSuccessfulRunAt, latestPostedAt, markClosedJobs, recordRun, upsertJobs } from "./queries";
 import { jobs } from "./schema";
 
 function makeJob(over: Partial<Job> = {}): Job {
@@ -268,29 +268,6 @@ describe("ATS job storage", () => {
     const original = rows().find((r) => r.source === "greenhouse")!;
     expect(rows()).toHaveLength(2);
     expect(rows().find((r) => r.source === "lever")?.duplicateOf).toBe(original.id);
-  });
-
-  it("purge deletes jobs closed more than 30 days ago only", () => {
-    const acme = company("acme");
-    upsertJobs(db, [ats("old"), ats("recent"), ats("open")], NOW, { companyId: acme });
-    markClosedJobs(db, acme, ["acme:recent", "acme:open"], daysAgo(31)); // closes "old" 31 days ago
-    markClosedJobs(db, acme, ["acme:open"], daysAgo(29)); // closes "recent" 29 days ago
-    expect(purgeClosedJobs(db, NOW)).toBe(1);
-    expect(rows().map((r) => r.externalId).sort()).toEqual(["acme:open", "acme:recent"]);
-    expect(purgeClosedJobs(db, NOW, 10)).toBe(1);
-    expect(rows().map((r) => r.externalId)).toEqual(["acme:open"]);
-  });
-
-  it("purge clears duplicate_of pointers first", () => {
-    const acme = company("acme");
-    upsertJobs(db, [ats("1", { title: "Same Title", company: "Acme" })], NOW, { companyId: acme });
-    upsertJobs(db, [makeJob({ source: "lever", externalId: "acme:9", title: "Same Title", company: "Acme" })], NOW);
-    expect(rows().find((r) => r.source === "lever")?.duplicateOf).not.toBeNull();
-    markClosedJobs(db, acme, [], daysAgo(40));
-    expect(purgeClosedJobs(db, NOW)).toBe(1);
-    const remaining = rows();
-    expect(remaining).toHaveLength(1);
-    expect(remaining[0]).toMatchObject({ source: "lever", duplicateOf: null });
   });
 
   it("countJobs openOnly excludes closed jobs and still accepts a plain source", () => {

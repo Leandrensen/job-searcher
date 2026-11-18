@@ -1,4 +1,4 @@
-import { and, asc, count, eq, gte, inArray, isNotNull, isNull, lte, max, ne, notInArray, or } from "drizzle-orm";
+import { and, asc, count, eq, gte, isNotNull, isNull, lte, max, ne, notInArray, or } from "drizzle-orm";
 import { dedupeKey } from "@/core/dedupe";
 import { BOARD_IDS, type Job, type SourceId } from "@/core/job";
 import type { Db } from "./client";
@@ -129,17 +129,6 @@ export function compactClosedJobs(db: Db, nowIso: string, days = 30): number {
     .set({ descriptionHtml: "", descriptionText: "" })
     .where(and(isNotNull(jobs.closedAt), lte(jobs.closedAt, cutoff), or(ne(jobs.descriptionHtml, ""), ne(jobs.descriptionText, ""))))
     .run().changes;
-}
-
-/** Deletes jobs closed more than `days` (default 30) days ago. Returns how many were deleted. */
-export function purgeClosedJobs(db: Db, nowIso: string, days = 30): number {
-  const cutoff = new Date(Date.parse(nowIso) - days * 86_400_000).toISOString();
-  const expired = and(isNotNull(jobs.closedAt), lte(jobs.closedAt, cutoff));
-  return db.transaction((tx) => {
-    const expiredIds = tx.select({ id: jobs.id }).from(jobs).where(expired);
-    tx.update(jobs).set({ duplicateOf: null }).where(inArray(jobs.duplicateOf, expiredIds)).run();
-    return tx.delete(jobs).where(expired).run().changes;
-  });
 }
 
 export function countJobs(db: Db, optsOrSource: SourceId | { source?: SourceId; openOnly?: boolean } = {}): number {
