@@ -60,7 +60,8 @@ export async function resolveDueCandidates(opts: ResolveDueOptions): Promise<Res
 
   function record(origin: string, name: string, candidateId: number, result: Resolution) {
     try {
-      recordResolution(db, candidateId, result, nowIso);
+      // Stamp with the time the result is known: a long seed run would otherwise date every result at its start.
+      recordResolution(db, candidateId, result, opts.now().toISOString());
     } catch (err) {
       log(`resolve: could not record ${name}: ${err instanceof Error ? err.message : String(err)}`);
     }

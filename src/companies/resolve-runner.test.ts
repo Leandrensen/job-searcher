@@ -113,6 +113,25 @@ describe("resolveDueCandidates", () => {
     expect(log).toHaveBeenCalledWith("resolve: 25/26 (confirmed 0, ambiguous 0, not found 25, errors 0)");
   });
 
+  it("stamps each result with the time it was recorded", async () => {
+    add("Aaa Co", "seed:yc", "2026-11-16T10:00:00.000Z");
+    add("Bbb Co", "seed:yc", "2026-11-16T10:01:00.000Z");
+    let t = NOW.getTime();
+    await run({
+      now: () => new Date(t),
+      concurrency: 1,
+      resolve: async () => {
+        t += 3_600_000;
+        return { status: "not_found" };
+      },
+    });
+    const at = (hours: number, days = 0) => new Date(NOW.getTime() + hours * 3_600_000 + days * 86_400_000).toISOString();
+    expect(rows().map((r) => [r.name, r.lastCheckedAt, r.nextCheckAt])).toEqual([
+      ["Aaa Co", at(1), at(1, 30)],
+      ["Bbb Co", at(2), at(2, 30)],
+    ]);
+  });
+
   it("does nothing when no candidate is due", async () => {
     expect(await run()).toEqual({ checked: 0, confirmed: 0, ambiguous: 0, notFound: 0, errors: 0, byOrigin: {} });
   });
