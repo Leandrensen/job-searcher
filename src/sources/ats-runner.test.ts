@@ -184,6 +184,24 @@ describe("runAtsSources", () => {
     expect(countJobs(db, { openOnly: true })).toBe(2);
   });
 
+  it("invalid items stop the run from closing jobs", async () => {
+    addCompany("greenhouse", "acme");
+    const { adapter, boards } = fakeAts("greenhouse", { acme: GOOD });
+    await run([adapter]);
+    boards.acme = [GOOD[0]!, { id: "9" } as never]; // the second item has no title, so it is invalid
+    const log = vi.fn<(m: string) => void>();
+    const [summary] = await run([adapter], { at: hoursLater(21), log });
+    expect(summary).toMatchObject({ status: "success", invalid: 1, closed: 0 });
+    expect(countJobs(db, { openOnly: true })).toBe(2);
+    expect(log).toHaveBeenCalledWith("greenhouse/acme: 1 invalid items, no jobs closed this run");
+
+    // A clean fetch closes the vanished job again.
+    boards.acme = [GOOD[0]!];
+    const [clean] = await run([adapter], { at: hoursLater(42) });
+    expect(clean).toMatchObject({ invalid: 0, closed: 1 });
+    expect(countJobs(db, { openOnly: true })).toBe(1);
+  });
+
   it("an empty board closes all of the company's open jobs", async () => {
     addCompany("greenhouse", "acme");
     const { adapter, boards } = fakeAts("greenhouse", { acme: GOOD });

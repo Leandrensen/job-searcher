@@ -110,7 +110,8 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
           }
           const { inserted, updated, closed } = db.transaction((tx) => {
             const counts = upsertJobs(tx, kept, nowIso, { companyId: company.id });
-            const closedCount = markClosedJobs(tx, company.id, kept.map((j) => j.externalId), nowIso);
+            // An incomplete list (some postings failed validation) can't tell which jobs vanished, so close nothing.
+            const closedCount = result.invalid > 0 ? 0 : markClosedJobs(tx, company.id, kept.map((j) => j.externalId), nowIso);
             return { ...counts, closed: closedCount };
           });
           recordCompanyFetch(db, company.id, { kind: "success" }, nowIso);
@@ -124,6 +125,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
           if (result.latestPostedAt && (!summary.latestPostedAt || result.latestPostedAt > summary.latestPostedAt)) {
             summary.latestPostedAt = result.latestPostedAt;
           }
+          if (result.invalid > 0) log(`${label}: ${result.invalid} invalid items, no jobs closed this run`);
           log(`${label}: kept ${kept.length}, filtered ${tech}+${location}, closed ${closed}`);
         } catch (err) {
           const message = errorMessage(err);
