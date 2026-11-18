@@ -88,7 +88,8 @@ export async function resolveCandidate(
     }
   }
 
-  if (unproven.length > 0) return { status: "ambiguous", matches: unproven };
+  // A failed probe may have hidden the real board, so retry later instead of sending the candidate to manual review.
   if (firstError !== null) return { status: "error", error: firstError };
+  if (unproven.length > 0) return { status: "ambiguous", matches: unproven };
   return { status: "not_found" };
 }

@@ -102,6 +102,14 @@ describe("resolveCandidate", () => {
     expect(calls).toHaveLength(PROBE_ORDER.length);
   });
 
+  it("a probe error plus an unproven match is an error, so it is retried", async () => {
+    const { resolution } = await resolve(candidate({ name: "Globex" }), {
+      [gh("globex")]: { status: 500 },
+      [lever("globex")]: "resolve/lever-globex-one-unrelated.json",
+    });
+    expect(resolution).toEqual({ status: "error", error: "HttpError: HTTP 500 for https://boards-api.greenhouse.io/v1/boards/globex" });
+  });
+
   it("a 500 does not hide a confirmation found later", async () => {
     const { resolution } = await resolve(candidate({ name: "Globex" }), {
       [gh("globex")]: { status: 500 },
