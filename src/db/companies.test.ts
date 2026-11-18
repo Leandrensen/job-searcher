@@ -364,12 +364,24 @@ describe("companies", () => {
     expect(allCompanies()[0]).toMatchObject({ consecutiveFailures: 0, lastError: null, lastFetchedAt: plusHours(T0, 1) });
   });
 
-  it("a non-404 error records the attempt and keeps the failure count", () => {
+  it("a non-404 error records the attempt and resets the 404 count", () => {
     const id = add("acme");
     recordCompanyFetch(db, id, { kind: "success" }, T0);
     recordCompanyFetch(db, id, { kind: "not_found", error: "404" }, plusHours(T0, 25));
     recordCompanyFetch(db, id, { kind: "error", error: "HTTP 500" }, plusHours(T0, 26));
-    expect(allCompanies()[0]).toMatchObject({ lastFetchedAt: plusHours(T0, 26), consecutiveFailures: 1, lastError: "HTTP 500", status: "active" });
+    expect(allCompanies()[0]).toMatchObject({ lastFetchedAt: plusHours(T0, 26), consecutiveFailures: 0, lastError: "HTTP 500", status: "active" });
+  });
+
+  it("404s separated by another error don't deactivate", () => {
+    const id = add("acme");
+    const notFound = { kind: "not_found", error: "HTTP 404" } as const;
+    recordCompanyFetch(db, id, notFound, plusDays(T0, 0));
+    recordCompanyFetch(db, id, { kind: "error", error: "HTTP 500" }, plusDays(T0, 1));
+    recordCompanyFetch(db, id, notFound, plusDays(T0, 2));
+    recordCompanyFetch(db, id, notFound, plusDays(T0, 3));
+    expect(allCompanies()[0]).toMatchObject({ status: "active", consecutiveFailures: 2 });
+    recordCompanyFetch(db, id, notFound, plusDays(T0, 4));
+    expect(allCompanies()[0]).toMatchObject({ status: "inactive", consecutiveFailures: 3 });
   });
 
   it("a 404 is not retried within the day", () => {

@@ -194,7 +194,11 @@ export function recordCompanyFetch(
       return;
     }
     if (outcome.kind === "error") {
-      tx.update(companies).set({ lastError: outcome.error, lastFetchedAt: nowIso }).where(eq(companies.id, companyId)).run();
+      // Only 404s in a row mean the board is gone; any other error breaks the streak.
+      tx.update(companies)
+        .set({ lastError: outcome.error, lastFetchedAt: nowIso, consecutiveFailures: 0 })
+        .where(eq(companies.id, companyId))
+        .run();
       return;
     }
     tx.update(companies)

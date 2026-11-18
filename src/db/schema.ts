@@ -14,7 +14,7 @@ export const companies = sqliteTable(
     /** `seed:remoteintech` | `seed:yc` | `board:<boardId>` | `manual`. */
     origin: text("origin").notNull(),
     status: text("status", { enum: ["active", "inactive"] }).notNull().default("active"),
-    /** Counts consecutive 404s only. */
+    /** Consecutive 404s; any other recorded outcome resets it. */
     consecutiveFailures: integer("consecutive_failures").notNull().default(0),
     /** Last fetch attempt: success, 404 or error (not a 429 skip). */
     lastFetchedAt: text("last_fetched_at"),
