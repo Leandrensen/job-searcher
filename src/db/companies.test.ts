@@ -14,7 +14,9 @@ import {
   recordResolution,
   upsertCandidate,
 } from "./companies";
-import { companies, companyCandidates } from "./schema";
+import type { Job } from "@/core/job";
+import { upsertJobs } from "./queries";
+import { companies, companyCandidates, jobs } from "./schema";
 
 const T0 = "2026-11-16T12:00:00.000Z";
 const plusDays = (iso: string, d: number) => new Date(Date.parse(iso) + d * 86_400_000).toISOString();
@@ -174,6 +176,62 @@ describe("companies", () => {
     recordCompanyFetch(db, companyId!, { kind: "not_found", error: "HTTP 404" }, T0);
     expect(allCompanies()[0]).toMatchObject({ status: "inactive", consecutiveFailures: 3, lastError: "HTTP 404" });
     expect(candidates()[0]).toMatchObject({ status: "pending", nextCheckAt: null, companyId: null });
+  });
+
+  describe("jobs of a deactivated company", () => {
+    const job = (externalId: string): Job => ({
+      source: "greenhouse",
+      externalId,
+      url: `https://example.com/${externalId}`,
+      applyUrl: null,
+      title: "Developer",
+      company: "Acme",
+      location: null,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
+      tags: [],
+      salaryMin: null,
+      salaryMax: null,
+      salaryCurrency: null,
+      salaryPeriod: null,
+      descriptionHtml: "",
+      descriptionText: "",
+      postedAt: null,
+    });
+    const closedAt = () => db.select().from(jobs).all().map((j) => [j.externalId, j.closedAt]);
+
+    function setup() {
+      const dead = add("dead");
+      const alive = add("alive");
+      upsertJobs(db, [job("dead:1"), job("dead:2")], T0, { companyId: dead });
+      upsertJobs(db, [job("alive:1")], T0, { companyId: alive });
+      return dead;
+    }
+
+    it("three consecutive 404s close the company's open jobs", () => {
+      const dead = setup();
+      recordCompanyFetch(db, dead, { kind: "not_found", error: "HTTP 404" }, plusDays(T0, 1));
+      recordCompanyFetch(db, dead, { kind: "not_found", error: "HTTP 404" }, plusDays(T0, 2));
+      recordCompanyFetch(db, dead, { kind: "not_found", error: "HTTP 404" }, plusDays(T0, 3));
+      expect(closedAt()).toEqual([
+        ["dead:1", plusDays(T0, 3)],
+        ["dead:2", plusDays(T0, 3)],
+        ["alive:1", null],
+      ]);
+    });
+
+    it("fewer than three 404s close nothing", () => {
+      const dead = setup();
+      recordCompanyFetch(db, dead, { kind: "not_found", error: "HTTP 404" }, plusDays(T0, 1));
+      recordCompanyFetch(db, dead, { kind: "not_found", error: "HTTP 404" }, plusDays(T0, 2));
+      expect(closedAt()).toEqual([
+        ["dead:1", null],
+        ["dead:2", null],
+        ["alive:1", null],
+      ]);
+    });
   });
 
   it("a success resets failures", () => {

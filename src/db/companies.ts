@@ -3,7 +3,7 @@ import { normalizeCompany } from "@/core/dedupe";
 import type { AtsId } from "@/core/job";
 import type { Resolution } from "@/companies/types";
 import type { Db } from "./client";
-import { companies, companyCandidates } from "./schema";
+import { companies, companyCandidates, jobs } from "./schema";
 
 export type CandidateRow = typeof companyCandidates.$inferSelect;
 export type CompanyRow = typeof companies.$inferSelect;
@@ -179,6 +179,8 @@ export function recordCompanyFetch(
     const row = tx.select().from(companies).where(eq(companies.id, companyId)).get();
     if (row && row.consecutiveFailures >= MAX_CONSECUTIVE_404S) {
       tx.update(companies).set({ status: "inactive" }).where(eq(companies.id, companyId)).run();
+      // A board that no longer exists has no open jobs, so they must not keep counting as open.
+      tx.update(jobs).set({ closedAt: nowIso }).where(and(eq(jobs.companyId, companyId), isNull(jobs.closedAt))).run();
       tx.update(companyCandidates)
         .set({ status: "pending", nextCheckAt: null, companyId: null })
         .where(eq(companyCandidates.companyId, companyId))
