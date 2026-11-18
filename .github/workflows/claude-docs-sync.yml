@@ -1,0 +1,32 @@
+name: Claude Docs Sync
+on:
+  schedule:
+    - cron: "17 8 * * 2" # Tuesdays at 05:17 Buenos Aires time (08:17 UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  docs-sync:
+    uses: ./.github/workflows/claude-worker.yml
+    secrets: inherit
+    with:
+      name: docs sync
+      max-turns: 30
+      task: |
+        Check that the docs match the code, and fix the docs where they don't.
+        Check CLAUDE.md, PLAN.md and docs/plans/:
+        - every `npm run` command they mention exists in package.json, with the
+          flags it really accepts;
+        - the directories and files in the Architecture section exist and hold
+          what is described;
+        - PLAN.md checkboxes are ticked for work that is merged on main, and
+          unticked for work that is not;
+        - nothing describes behavior the code no longer has.
+        Only edit Markdown files. Don't invent plans or change decisions; if the
+        code and a decision disagree, describe it in the PR instead of choosing.
+        Use a `docs/` branch.
