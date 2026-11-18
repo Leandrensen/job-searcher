@@ -104,13 +104,24 @@ describe("smartrecruiters adapter", () => {
     expect(pages).toEqual([0, 100, 200]);
   });
 
-  it("stops after 10 pages", async () => {
+  it("lists up to 50 pages", async () => {
     const http: HttpClient = {
-      getJson: vi.fn(async (url: string) => ({ offset: Number(new URL(url).searchParams.get("offset")), limit: 100, totalFound: 100000, content: [] })),
+      getJson: vi.fn(async (url: string) => ({ offset: Number(new URL(url).searchParams.get("offset")), limit: 100, totalFound: 5000, content: [] })),
       getText: vi.fn(),
     };
     await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] });
-    expect(http.getJson).toHaveBeenCalledTimes(10);
+    expect(http.getJson).toHaveBeenCalledTimes(50);
+  });
+
+  it("refuses a listing larger than it can list, before any detail request", async () => {
+    const http: HttpClient = {
+      getJson: vi.fn(async () => ({ offset: 0, limit: 100, totalFound: 5001, content: [] })),
+      getText: vi.fn(),
+    };
+    await expect(smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] })).rejects.toThrow(
+      "smartrecruiters/BoschGroup: 5001 postings, more than the 5000 this adapter can list",
+    );
+    expect(http.getJson).toHaveBeenCalledTimes(1);
   });
 
   it("throws when the envelope has the wrong shape", async () => {

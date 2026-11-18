@@ -11,7 +11,7 @@ import { defineAdapter, type SourceAdapter } from "../types";
 import { displayLocation, NOT_FOUND_PROBE, nullOn404, requireCompanies, uniqueNonEmpty, wrapperSchema } from "./shared";
 
 const PAGE_SIZE = 100;
-const MAX_PAGES = 10;
+const MAX_PAGES = 50;
 const postingsUrl = (slug: string) => `https://api.smartrecruiters.com/v1/companies/${slug}/postings`;
 
 const EnvelopeSchema = z.looseObject({
@@ -72,6 +72,10 @@ const adapter: SourceAdapter<Raw> = {
       let offset = 0;
       for (let page = 0; page < MAX_PAGES; page++) {
         const body = EnvelopeSchema.parse(await ctx.http.getJson(`${base}?limit=${PAGE_SIZE}&offset=${offset}`));
+        // A partial listing would make the runner close every job past the cutoff, so refuse it up front.
+        if (page === 0 && body.totalFound > MAX_PAGES * PAGE_SIZE) {
+          throw new Error(`smartrecruiters/${company.slug}: ${body.totalFound} postings, more than the ${MAX_PAGES * PAGE_SIZE} this adapter can list`);
+        }
         for (const raw of body.content) {
           const parsed = ListItemSchema.safeParse(raw);
           // Leave unparseable items to the pipeline, which counts them as invalid.
