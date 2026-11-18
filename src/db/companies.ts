@@ -51,9 +51,10 @@ export function upsertCandidate(db: Db, input: CandidateInput, nowIso: string): 
   const addedHint = merged.length > existing.atsHints.length;
   if (addedHint) {
     patch.atsHints = merged;
-    if (existing.status === "not_found" || existing.status === "error") {
+    if (existing.status === "not_found" || existing.status === "error" || existing.status === "ambiguous") {
       patch.status = "pending";
       patch.nextCheckAt = null;
+      patch.ambiguousMatches = [];
     }
   }
   if (Object.keys(patch).length === 0) return "unchanged";
