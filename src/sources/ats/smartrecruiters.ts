@@ -85,7 +85,12 @@ const adapter: SourceAdapter<Raw> = {
           const regions = deriveRegions(textsOf(list));
           if (!isTechJob(partial)) continue;
           if (!checkLocation({ workplaceType: workplaceOf(list), regions }, company.homeCountry).pass) continue;
-          const detail = await ctx.http.getJson(`${base}/${list.id}`);
+          // A posting can be unpublished between the list call and its detail call; that must not fail the company.
+          const detail = await nullOn404(() => ctx.http.getJson(`${base}/${list.id}`));
+          if (detail === null) {
+            ctx.log(`smartrecruiters/${company.slug}: posting ${list.id} is gone, skipped`);
+            continue;
+          }
           items.push({ company, item: { list: raw, detail } });
         }
         offset = body.offset + body.limit;

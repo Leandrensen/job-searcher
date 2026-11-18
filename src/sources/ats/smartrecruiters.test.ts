@@ -45,6 +45,21 @@ describe("smartrecruiters adapter", () => {
     expect(http.calls).toEqual([LIST_URL, detailUrl(TECH_ID)]);
   });
 
+  it("skips a posting whose detail request returns 404", async () => {
+    const http = createFixtureHttp({ [LIST_URL]: "ats/smartrecruiters/postings-tech.json", [detailUrl(TECH_ID)]: { status: 404 } });
+    const log = vi.fn<(msg: string) => void>();
+    const items = await smartrecruiters.fetch({ http, latestPostedAt: null, log, companies: [bosch] });
+    expect(items).toEqual([]);
+    expect(log.mock.calls).toEqual([["smartrecruiters/BoschGroup: posting 744000161904329 is gone, skipped"]]);
+  });
+
+  it("a 500 on a detail request still fails the fetch", async () => {
+    const http = createFixtureHttp({ [LIST_URL]: "ats/smartrecruiters/postings-tech.json", [detailUrl(TECH_ID)]: { status: 500 } });
+    const failure = await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] }).catch((e: unknown) => e);
+    expect(failure).toBeInstanceOf(HttpError);
+    expect((failure as HttpError).status).toBe(500);
+  });
+
   it("makes no detail requests when nothing matches", async () => {
     const { ctx, http } = setup("postings-page.json");
     expect(await smartrecruiters.fetch(ctx)).toEqual([]);
