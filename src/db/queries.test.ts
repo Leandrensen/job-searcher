@@ -132,6 +132,15 @@ describe("duplicate marking", () => {
     expect(copy?.duplicateOf).toBe(original?.id);
   });
 
+  it("does not mark a new job as a duplicate of a closed one", () => {
+    const acme = insertOrGetCompany(db, { ats: "lever", slug: "acme", name: "Acme", website: null, homeCountry: null, origin: "manual" }, NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "acme:a", company: "Acme", title: "Senior Dev" })], NOW, { companyId: acme });
+    markClosedJobs(db, acme, [], NOW);
+    upsertJobs(db, [makeJob({ source: "ashby", externalId: "acme:b", company: "Acme", title: "Senior Dev" })], "2026-11-10T00:00:00.000Z");
+    const copy = db.select().from(jobs).all().find((r) => r.source === "ashby");
+    expect(copy?.duplicateOf).toBeNull();
+  });
+
   it("does not mark same-source jobs", () => {
     upsertJobs(db, [makeJob({ externalId: "a" }), makeJob({ externalId: "b" })], NOW);
     expect(db.select().from(jobs).all().every((r) => r.duplicateOf === null)).toBe(true);

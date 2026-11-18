@@ -16,6 +16,8 @@ function findOriginal(tx: Pick<Db, "select">, job: Job, key: string, nowIso: str
       and(
         ne(jobs.source, job.source),
         isNull(jobs.duplicateOf),
+        // A closed job can't be the surviving copy of anything.
+        isNull(jobs.closedAt),
         gte(jobs.firstSeenAt, cutoff),
         or(eq(jobs.dedupeKey, key), job.applyUrl ? eq(jobs.applyUrl, job.applyUrl) : undefined),
       ),
