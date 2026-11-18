@@ -1135,7 +1135,7 @@
   - If either is below target, **don't change filters or thresholds**. Report the numbers and stop.
   - Also report the count from `npm run company -- review` (ambiguous candidates).
 - No code changes. If the run exposes a bug, fix it in a separate `fix(m2): ...` commit with a failing test first.
-- [ ] Done
+- [x] Done
 
 ### T28: Wrap-up (depends on T27)
 - **`CLAUDE.md` commands:**
