@@ -7,7 +7,9 @@ describe("parseAtsUrl", () => {
     ["https://job-boards.greenhouse.io/acme", { ats: "greenhouse", slug: "acme" }],
     ["https://boards.greenhouse.io/embed/job_app?for=acme&token=1", { ats: "greenhouse", slug: "acme" }],
     ["https://jobs.lever.co/weloglobal./abc", { ats: "lever", slug: "weloglobal" }],
-    ["https://jobs.eu.lever.co/acme/", { ats: "lever", slug: "acme" }],
+    // EU boards live on other API hosts that the probes and adapters don't call, so they are not trusted.
+    ["https://jobs.eu.lever.co/acme/", null],
+    ["https://job-boards.eu.greenhouse.io/acme/jobs/1", null],
     ["https://jobs.ashbyhq.com/livekit/uuid", { ats: "ashby", slug: "livekit" }],
     ["https://tether.recruitee.com/o/x", { ats: "recruitee", slug: "tether" }],
     ["https://www.recruitee.com/pricing", null],

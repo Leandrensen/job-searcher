@@ -16,10 +16,10 @@ interface UrlPattern {
 const PATTERNS: UrlPattern[] = [
   {
     ats: "greenhouse",
-    re: /(?:boards|job-boards)(?:\.eu)?\.greenhouse\.io\/(?:embed\/job_app\?for=)?([a-z0-9_-]+)/gi,
+    re: /(?:boards|job-boards)\.greenhouse\.io\/(?:embed\/job_app\?for=)?([a-z0-9_-]+)/gi,
     ignored: ["embed", "api"],
   },
-  { ats: "lever", re: /jobs\.(?:eu\.)?lever\.co\/([a-z0-9_.-]+?)(?=[/?#"'\s]|$)/gi, ignored: [] },
+  { ats: "lever", re: /jobs\.lever\.co\/([a-z0-9_.-]+?)(?=[/?#"'\s]|$)/gi, ignored: [] },
   { ats: "ashby", re: /jobs\.ashbyhq\.com\/([a-z0-9_.-]+)/gi, ignored: ["api"] },
   { ats: "recruitee", re: /https?:\/\/([a-z0-9-]+)\.recruitee\.com/gi, ignored: ["www", "app", "api"] },
   {
