@@ -157,6 +157,12 @@ describe("proveIdentity", () => {
     expect(proveIdentity(c, "ashby", probe({ texts: [] }))).toBe(false);
   });
 
+  it("the posting-text rule ignores legal suffixes in the candidate name", () => {
+    const c = candidate({ name: "Globex, Inc." });
+    expect(proveIdentity(c, "lever", probe({ texts: ["At Globex we ship", "Join Globex today"] }))).toBe(true);
+    expect(proveIdentity(c, "lever", probe({ texts: ["We ship widgets", "Join us today"] }))).toBe(false);
+  });
+
   it("the posting-text rule applies to lever and ashby only", () => {
     expect(proveIdentity(candidate({ name: "Globex" }), "greenhouse", probe({ texts: ["Globex rocks", "Join Globex"] }))).toBe(false);
   });

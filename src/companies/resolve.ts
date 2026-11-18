@@ -1,4 +1,4 @@
-import { normalizeCompany } from "@/core/dedupe";
+import { normalizeCompany, stripLegalSuffixes } from "@/core/dedupe";
 import type { HttpClient } from "@/core/http";
 import type { AtsId } from "@/core/job";
 import { extractAtsRefs, slugGuesses, websiteDomain, type AtsRef } from "./slugs";
@@ -32,8 +32,10 @@ export function proveIdentity(candidate: Candidate, ats: AtsId, probe: ProbeResu
   }
 
   // 3. Lever and Ashby return no company name: the name must appear in at least 2 postings (or in the only one).
-  if ((ats === "lever" || ats === "ashby") && probe.texts.length >= 1 && candidate.name.trim() !== "") {
-    const nameRe = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(candidate.name.trim())}(?![\\p{L}\\p{N}])`, "iu");
+  // The legal suffix is dropped ("Globex, Inc." -> "globex"), because postings say "Globex".
+  const bareName = stripLegalSuffixes(candidate.name);
+  if ((ats === "lever" || ats === "ashby") && probe.texts.length >= 1 && bareName !== "") {
+    const nameRe = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(bareName)}(?![\\p{L}\\p{N}])`, "iu");
     const mentions = probe.texts.filter((t) => nameRe.test(t)).length;
     if (mentions >= Math.min(2, probe.texts.length)) return true;
   }
