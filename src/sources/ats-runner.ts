@@ -1,6 +1,6 @@
 import type { HttpClient } from "@/core/http";
 import type { AtsId, Job } from "@/core/job";
-import { checkLocation } from "@/core/location-filter";
+import { checkLocation, isAllowedHomeCountry } from "@/core/location-filter";
 import { isTechJob } from "@/core/tech-filter";
 import type { Db } from "@/db/client";
 import { listDueCompanies, recordCompanyFetch, type CompanyRow } from "@/db/companies";
@@ -71,7 +71,11 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
       durationMs: 0,
     };
     try {
-      const due = listDueCompanies(db, adapter.id as AtsId, startedAt.toISOString(), { force });
+      const all = listDueCompanies(db, adapter.id as AtsId, startedAt.toISOString(), { force });
+      // Every job of a company based in a disallowed country fails the location filter, so don't spend requests on it.
+      const due = all.filter((c) => isAllowedHomeCountry(c.homeCountry));
+      const skippedCountry = all.length - due.length;
+      if (skippedCountry > 0) log(`${adapter.id}: skipped ${skippedCountry} companies based outside the allowed countries`);
       summary.companies = due.length;
       if (due.length === 0) {
         summary.status = "skipped";

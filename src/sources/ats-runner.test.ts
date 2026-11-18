@@ -112,11 +112,27 @@ describe("runAtsSources", () => {
     expect(stored.every((j) => j.companyId === id && j.closedAt === null)).toBe(true);
   });
 
-  it("applies the location rule for the company's home country", async () => {
+  it("does not fetch a company based outside the allowed countries", async () => {
     addCompany("greenhouse", "argentinian", "AR");
     const { adapter } = fakeAts("greenhouse", { argentinian: GOOD });
-    const [summary] = await run([adapter]);
-    expect(summary).toMatchObject({ inserted: 0, filteredTech: 1, filteredLocation: 4 });
+    const log = vi.fn<(m: string) => void>();
+    const [summary] = await run([adapter], { log });
+    expect(summary).toMatchObject({ status: "skipped", companies: 0, inserted: 0 });
+    expect(log).toHaveBeenCalledWith("greenhouse: skipped 1 companies based outside the allowed countries");
+    expect(company("argentinian").lastFetchedAt).toBeNull();
+  });
+
+  it("a company with an unknown home country is fetched", async () => {
+    addCompany("greenhouse", "nowhere", null);
+    const { adapter } = fakeAts("greenhouse", { nowhere: GOOD });
+    expect((await run([adapter]))[0]).toMatchObject({ status: "success", companies: 1, inserted: 2 });
+  });
+
+  it("allowed companies are still fetched next to a skipped one", async () => {
+    addCompany("greenhouse", "acme");
+    addCompany("greenhouse", "argentinian", "AR");
+    const { adapter } = fakeAts("greenhouse", { acme: GOOD, argentinian: GOOD });
+    expect((await run([adapter]))[0]).toMatchObject({ status: "success", companies: 1, inserted: 2 });
   });
 
   it("closes jobs missing from the next fetch", async () => {
