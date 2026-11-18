@@ -282,6 +282,33 @@ describe("companies", () => {
     });
   });
 
+  it("insertOrGetCompany reactivates an inactive company", () => {
+    const id = add("acme");
+    for (let i = 0; i < 3; i++) recordCompanyFetch(db, id, { kind: "not_found", error: "HTTP 404" }, T0);
+    expect(allCompanies()[0]).toMatchObject({ status: "inactive", consecutiveFailures: 3 });
+    expect(add("acme")).toBe(id);
+    expect(allCompanies()[0]).toMatchObject({ status: "active", consecutiveFailures: 0, lastError: null });
+  });
+
+  it("a candidate re-confirmed to a deactivated company makes it due again", () => {
+    upsertCandidate(db, { name: "Acme", origin: "seed:yc" }, T0);
+    const candidateId = candidates()[0]!.id;
+    const confirmed = { status: "confirmed", ats: "greenhouse", slug: "acme", companyName: null } as const;
+    const { companyId } = recordResolution(db, candidateId, confirmed, T0);
+    for (let i = 0; i < 3; i++) recordCompanyFetch(db, companyId!, { kind: "not_found", error: "HTTP 404" }, T0);
+    expect(listDueCompanies(db, "greenhouse", plusDays(T0, 1))).toEqual([]);
+    recordResolution(db, candidateId, confirmed, plusDays(T0, 1));
+    expect(listDueCompanies(db, "greenhouse", plusDays(T0, 1)).map((c) => c.slug)).toEqual(["acme"]);
+    expect(candidates()[0]).toMatchObject({ status: "confirmed", companyId });
+  });
+
+  it("insertOrGetCompany leaves an active company unchanged", () => {
+    const id = add("acme");
+    recordCompanyFetch(db, id, { kind: "not_found", error: "HTTP 404" }, T0);
+    expect(add("acme")).toBe(id);
+    expect(allCompanies()[0]).toMatchObject({ status: "active", consecutiveFailures: 1, lastError: "HTTP 404" });
+  });
+
   it("a success resets failures", () => {
     const id = add("acme");
     recordCompanyFetch(db, id, { kind: "not_found", error: "404" }, T0);

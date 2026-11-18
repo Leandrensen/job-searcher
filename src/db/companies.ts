@@ -83,11 +83,17 @@ export function insertOrGetCompany(
   nowIso: string,
 ): number {
   const existing = db
-    .select({ id: companies.id })
+    .select({ id: companies.id, status: companies.status })
     .from(companies)
     .where(and(eq(companies.ats, c.ats), eq(companies.slug, c.slug)))
     .get();
-  if (existing) return existing.id;
+  if (existing) {
+    // The board answers again (a candidate was confirmed to it), so a deactivated company must be fetched again.
+    if (existing.status === "inactive") {
+      db.update(companies).set({ status: "active", consecutiveFailures: 0, lastError: null }).where(eq(companies.id, existing.id)).run();
+    }
+    return existing.id;
+  }
   return db
     .insert(companies)
     .values({ ...c, status: "active", createdAt: nowIso })
