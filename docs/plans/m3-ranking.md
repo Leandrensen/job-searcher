@@ -231,7 +231,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - `cosine`: `[1,0]·[1,0]` → `1`; `[1,0]·[0,1]` → `0`; `[1,0]·[-1,0]` → `-1`; a zero vector → `0`; different lengths throw the exact message.
 - Verify: `npm test -- src/ranking/vectors.test.ts` passes.
 - Commit: `feat(m3): embedding text, text hash and cosine similarity (M3 T6)`
-- [ ] Done
+- [x] Done
 
 ### T7: Embed jobs once, again only when the text changes
 - Depends on: T5, T6
