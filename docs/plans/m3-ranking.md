@@ -135,7 +135,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - `the committed example files are valid`: `loadPreferences("config")` won't work in CI (the real file is gitignored), so read `config/preferences.example.json` directly and check `PreferencesSchema.safeParse(...).success` is `true`, and that `config/search.example.md` trimmed is non-empty.
 - Verify: `npm test -- src/ranking/config.test.ts` passes, and `git check-ignore config/search.md config/preferences.json` prints both paths.
 - Commit: `feat(m3): load the search description and hard rules from config (M3 T2)`
-- [ ] Done
+- [x] Done
 
 ### T3: Hard rules
 - Depends on: T1, T2
