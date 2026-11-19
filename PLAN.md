@@ -193,6 +193,8 @@ Verify:
 - A job removed from a fixture gets `closedAt`.
 
 ### M3: Search config, filters and embedding ranking (current)
+Detailed spec: [docs/plans/m3-ranking.md](docs/plans/m3-ranking.md)
+
 - `config/search.md`: one specific search description in plain text, the most visible and easiest-to-change setting. Gitignored; `config/search.example.md` is committed.
 - `config/preferences.json` (Zod-validated): hard rules (seniority, salary floor, department). Remote-only and location are already handled by the M2 location filter. Gitignored; `config/preferences.example.json` is committed.
 - Filters from the hard rules, using structured ATS fields first and keywords second. **Unknown values pass**; a job is only excluded when its data contradicts a rule.
