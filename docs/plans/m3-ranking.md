@@ -276,7 +276,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - `wrong vector count and wrong dimensions throw`: use a hand-written embedder that returns too few vectors, and another that returns 2-length vectors. Expect the exact messages.
 - Verify: `npm test -- src/ranking/embed-jobs.test.ts` passes.
 - Commit: `feat(m3): embed each job once and again only when its text changes (M3 T7)`
-- [ ] Done
+- [x] Done
 
 ### T8: Ranking
 - Depends on: T3, T6
