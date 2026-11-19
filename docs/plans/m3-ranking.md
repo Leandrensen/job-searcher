@@ -368,7 +368,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - `rejects bad arguments` (`it.each`): `["--top"]`, `["--top", "0"]` and `["--top", "x"]` give `"Missing or invalid value for --top"`; `["--bogus"]` gives `"Unknown option: --bogus"`. All return `1` without opening the DB.
 - Verify: `npm test -- src/scripts/rank-cli.test.ts` passes.
 - Commit: `feat(m3): npm run rank logic: hard rules, embeddings and top N (M3 T10)`
-- [ ] Done
+- [x] Done
 
 ### T11: Wire up `npm run rank`
 - Depends on: T9, T10
