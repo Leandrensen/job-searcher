@@ -209,7 +209,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - `getEmbeddings with no ids returns an empty map`.
 - Verify: `npm test -- src/db/ranking.test.ts` passes.
 - Commit: `feat(m3): queries for open jobs and stored embeddings (M3 T5)`
-- [ ] Done
+- [x] Done
 
 ### T6: Embedding text and vectors
 - Depends on: none
