@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dedupeKey, normalizeCompany, normalizeTitle } from "./dedupe";
+import { dedupeKey, normalizeCompany, normalizeTitle, stripLegalSuffixes, stripLegalSuffixesKeepCase } from "./dedupe";
 
 describe("normalizeCompany", () => {
   it.each([
@@ -26,6 +26,33 @@ describe("normalizeCompany", () => {
     ["Ácme", "ácme"],
   ])("normalizes %j to %j", (input, expected) => {
     expect(normalizeCompany(input)).toBe(expected);
+  });
+});
+
+describe("stripLegalSuffixes", () => {
+  it.each([
+    ["Acme Labs, Inc.", "acme labs"],
+    ["Acme Co., Ltd.", "acme"],
+    ["Quantum-Systems GmbH", "quantum-systems"],
+    ["Corpay", "corpay"],
+    ["Inc", "inc"],
+  ])("%j → %j", (input, expected) => {
+    expect(stripLegalSuffixes(input)).toBe(expected);
+  });
+});
+
+describe("stripLegalSuffixesKeepCase", () => {
+  it.each([
+    ["Acme Labs, Inc.", "Acme Labs"],
+    ["Acme Co., Ltd.", "Acme"],
+    ["ACME CORP.", "ACME"],
+    ["Quantum-Systems GmbH", "Quantum-Systems"],
+    ["dbt Labs", "dbt Labs"],
+    ["Inc", "Inc"],
+    ["  Globex, Inc.  ", "Globex"],
+    ["", ""],
+  ])("%j → %j", (input, expected) => {
+    expect(stripLegalSuffixesKeepCase(input)).toBe(expected);
   });
 });
 

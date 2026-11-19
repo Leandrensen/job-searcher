@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { HttpError } from "@/core/http";
 import { createFixtureHttp } from "./fixture-http";
 
 describe("createFixtureHttp", () => {
@@ -33,5 +34,22 @@ describe("createFixtureHttp", () => {
       "https://example.com/missing",
       "https://example.com/feed.rss",
     ]);
+  });
+
+  it("a status route throws an HttpError", async () => {
+    const http = createFixtureHttp({ "https://a.com/gone": { status: 404 } });
+    const err = await http.getJson("https://a.com/gone").catch((e) => e);
+    expect(err).toBeInstanceOf(HttpError);
+    expect(err).toMatchObject({ status: 404, url: "https://a.com/gone", message: "HTTP 404 for https://a.com/gone" });
+    await expect(http.getText("https://a.com/gone")).rejects.toBeInstanceOf(HttpError);
+    expect(http.calls).toEqual(["https://a.com/gone", "https://a.com/gone"]);
+  });
+
+  it("fallbackStatus makes unknown urls HttpErrors instead of 'No fixture'", async () => {
+    const http = createFixtureHttp(routes, { fallbackStatus: 404 });
+    const err = await http.getJson("https://example.com/other").catch((e) => e);
+    expect(err).toBeInstanceOf(HttpError);
+    expect((err as HttpError).status).toBe(404);
+    expect(Array.isArray(await http.getJson("https://example.com/a.json"))).toBe(true);
   });
 });

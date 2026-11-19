@@ -30,7 +30,7 @@ const adapter: SourceAdapter<Raw> = {
   name: "We Work Remotely",
   homepage: "https://weworkremotely.com",
   minIntervalMinutes: 60,
-  techFilter: false,
+  techFilter: true,
   itemSchema: ItemSchema,
 
   async fetch({ http, log }) {
@@ -63,7 +63,10 @@ const adapter: SourceAdapter<Raw> = {
       title: raw.title.slice(sep + 2).trim(),
       company: raw.title.slice(0, sep).trim(),
       location: raw.region ?? null,
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: normalizeTags([raw.category]),
       salaryMin: null,
       salaryMax: null,

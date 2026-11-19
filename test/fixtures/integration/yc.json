@@ -1,0 +1,4 @@
+[
+  { "name": "Initech", "website": "https://initech.com", "status": "Active", "isHiring": true, "all_locations": "San Francisco, CA, USA" },
+  { "name": "Vandelay", "website": "https://vandelay.example", "status": "Active", "isHiring": true, "all_locations": "Buenos Aires, Argentina" }
+]

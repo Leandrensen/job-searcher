@@ -1,0 +1,225 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/mozilla/jobs/8303335",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 3565395,
+      "location": {
+        "name": "Remote UK"
+      },
+      "metadata": null,
+      "id": 8303335,
+      "updated_at": "2026-10-20T10:17:05-04:00",
+      "requisition_id": "186",
+      "title": "Contract Staff Software Engineer-Bug Burndown",
+      "company_name": "Mozilla",
+      "first_published": "2026-10-20T10:17:05-04:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;You will help reduce Firefox’s WebCompat bug backlog by finishing or verifying the diagnosis of the long tail of site-breakage bugs, and by writing interventions or simple fixes (often with AI assistance). You turn a large queue of reported breakages into diagnosed, actionable, or fixed bugs.&lt;/span&gt;&lt;/p&gt;\n&lt;h2&gt;&lt;strong&gt;Responsibilities&lt;/strong&gt;&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Finish diagnosing, or verify the diagnosis of, long-tail WebCompat bugs.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Write WebCompat interventions where appropriate.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Write simple fixes (AI-assisted) and land them.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Reproduce and triage incoming site-breakage reports.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;&lt;strong&gt;Required qualifications&lt;/strong&gt;&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Solid web development (HTML, CSS, JavaScript) and comfort debugging real-world site breakage.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Fluent with browser devtools and cross-browser diagnosis.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Comfortable using AI tooling to speed up diagnosis and fixes.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;&lt;strong&gt;Preferred&lt;/strong&gt;&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Gecko knowledge is a strong plus (but can be taught).&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Prior WebCompat or web-standards experience.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
+      "departments": [
+        {
+          "id": 128309,
+          "name": "Firefox",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 52711,
+          "name": "Remote Canada",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 101500,
+          "name": "Remote Denmark",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 77539,
+          "name": "Remote France",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 52713,
+          "name": "Remote Germany",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 75722,
+          "name": "Remote UK",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": null,
+      "ai_opt_out_request_url": null
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/mozilla/jobs/8324482",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 3565398,
+      "location": {
+        "name": "Remote Germany"
+      },
+      "metadata": null,
+      "id": 8324482,
+      "updated_at": "2026-10-26T09:47:35-04:00",
+      "requisition_id": "187",
+      "title": "Contract Sr Data Analyst (SQL,Telemetry,Browser Engine)",
+      "company_name": "Mozilla",
+      "first_published": "2026-10-26T09:45:02-04:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;The Gecko platform is the core engine of our product experience. To maintain competitiveness and user satisfaction, we must move beyond surface-level metrics to understand the deep correlations between engine performance and real-world user behavior. We currently face challenges with data quality, such as bot contamination in nightly telemetry, which obscures our understanding of true performance trends. A dedicated analyst is required to bridge the gap between engineering telemetry and actionable product strategy, ensuring that leadership has high-fidelity data to prioritize performance guardrails and technical budgets.&lt;/span&gt;&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;Engineering Deliverables&lt;/strong&gt;&lt;/h3&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Automated Dashboards:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Create and maintain high-level overview dashboards that translate complex performance data into consumable formats for Product Managers and leadership.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Telemetry Gap Analysis:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Audit the Gecko codebase to identify missing collection points or &quot;probes&quot; necessary for a complete understanding of the product experience.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Data Sanitization Frameworks:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Develop methodologies and tools to identify and filter data inconsistencies, specifically focusing on isolating bot traffic and hardware-specific noise from telemetry streams.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Behavioral Inference Reports:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Deliver deep-dive analyses correlating technical performance shifts (e.g., LCP, eTLD+1) with user-facing pain points and engagement trends.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h3&gt;&lt;strong&gt;Scope, Skills, and Effort Estimate&lt;/strong&gt;&lt;/h3&gt;\n&lt;h3&gt;&lt;strong&gt;Scope&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;The analyst will focus exclusively on Gecko engine telemetry across multiple platforms (Desktop and Android), collaborating with the Performance Team, Data Team, and Product Leadership.&lt;/span&gt;&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;Required Skills&lt;/strong&gt;&lt;/h3&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Technical:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Advanced SQL (BigQuery/Redash), proficiency in data visualization using AI tooling, and experience with statistical analysis (e.g., Pearson’s correlation, multivariate analysis). Knowledge of Rust/C++ is a strong plus. Strong proficiency with AI tools like Claude Code, Codex, or similar is highly desirable.&amp;nbsp;&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Domain Knowledge:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Ability to understand browser component interactions and their impact on user experience.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Soft Skills:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Proven ability to work independently, translating technical requirements into business insights.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;Independent problem solving:&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; Comfortable working in unfamiliar technical problem spaces and figuring out a path forward with minimal guidance, using documentation, experimentation, source code, data, and other available resources&lt;/span&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;div class=&quot;content-pay-transparency&quot;&gt;&lt;div class=&quot;pay-input&quot;&gt;&lt;div class=&quot;description&quot;&gt;&lt;p&gt;&lt;strong&gt;Hiring Ranges:&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;title&quot;&gt;Remote Germany&lt;/div&gt;&lt;div class=&quot;pay-range&quot;&gt;&lt;span&gt;$62,100&lt;/span&gt;&lt;span class=&quot;divider&quot;&gt;&amp;mdash;&lt;/span&gt;&lt;span&gt;$82,800 USD&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;",
+      "departments": [
+        {
+          "id": 128309,
+          "name": "Firefox",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 52711,
+          "name": "Remote Canada",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 101500,
+          "name": "Remote Denmark",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 77539,
+          "name": "Remote France",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 52713,
+          "name": "Remote Germany",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 75722,
+          "name": "Remote UK",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": null,
+      "ai_opt_out_request_url": null
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/mozilla/jobs/8359281",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 3612627,
+      "location": {
+        "name": "Remote Canada; Remote Germany; Remote UK; Remote US"
+      },
+      "metadata": null,
+      "id": 8359281,
+      "updated_at": "2026-11-16T09:52:04-05:00",
+      "requisition_id": null,
+      "title": "Chief of Staff to the CEO ",
+      "company_name": "Mozilla",
+      "first_published": "2026-11-06T12:01:11-05:00",
+      "language": "en",
+      "application_deadline": null,
+      "content": "&lt;p&gt;&lt;strong&gt;&lt;a href=&quot;https://foundation.mozilla.org/en/&quot;&gt;Mozilla Foundation&lt;/a&gt;&lt;/strong&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt; &lt;/strong&gt;is a non-profit building a better technology future — powered by people, open by design, fueled by imagination.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;We deliver people-first alternatives to today’s extractive systems. We build side by side with developers, innovators and advocates, united in the belief that a better technology future is not only possible — it’s ours to create!&lt;/span&gt;&lt;/p&gt;\n&lt;h2&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;Team&lt;/strong&gt;&lt;/span&gt;&lt;/h2&gt;\n&lt;p&gt;&lt;a href=&quot;https://www.mozillafoundation.org/en/meet-mozilla/nabiha-syed/&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Our CEO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt; is increasingly focused outward on the Board, funders, partners, and public conversations that will shape the Foundation’s next chapter. This newly created Chief of Staff role exists to extend the CEO’s reach inside the organization and make that outward focus possible.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Reporting directly to the CEO, you’ll serve as the CEO’s strategic partner, internal proxy and trusted extension of their leadership. You’ll hold the CEO’s strategic agenda, translate the CEO’s priorities into organizational alignment, represent the CEO internally where needed, and make decisions on the CEO’s behalf within clearly delegated authority. You’ll determine what reaches the CEO, prepare the CEO for consequential moments, and escalate only what requires the CEO’s judgment.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;As a member of the Executive Leadership Team, you’ll partner strategically with other members of the ELT and work closely with the CEO’s Executive Program Manager to make sure the CEO’s time, priorities, and commitments stay aligned and moving.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;You’ll also partner with the Foundation’s Investment Committee and its technical and strategic advisors, keeping their focus on the right questions, their recommendations aligned with the Foundation’s strategic priorities, and decisions moving efficiently from evaluation to funding.&lt;/span&gt;&lt;/p&gt;\n&lt;h2&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;Job responsibilities&lt;/strong&gt;&lt;/span&gt;&lt;/h2&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Here’s what you’ll likely be focused on for the &lt;span style=&quot;text-decoration: underline;&quot;&gt;first 6 months&lt;/span&gt;:&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Building a strong working partnership with the CEO, aligning on priorities, ways of working and clearly defining the scope of your delegated authority.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Establishing a trusted partnership with each member of the Executive Leadership Team, learning their priorities, pressures and ways of working.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Developing a deep, cross-functional understanding of the Foundation’s work and how each function connects to the CEO’s priorities.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Translating the CEO’s priorities into a concise, clear set of strategic outcomes that leaders understand and can use to guide the decisions they own, with a current view of what’s changing and which decisions are approaching.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Defining with the CEO what truly requires their attention, and ensuring issues reach them decision-ready, with context, options and a recommendation.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;strong&gt;As the Chief of Staff to Mozilla Foundation’s CEO, you will…&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Serve as the CEO’s thought partner in developing, pressure-testing and refining strategic priorities, synthesizing executive insight and external developments to anticipate what will need to be known or decided in the next 30, 60 and 90 days.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Direct the CEO’s time toward strategy, external relationships, development, Board leadership and the Foundation’s highest-consequence decisions.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Filter rather than forward, so significant shifts in strategy, material risks, major budget decisions and Board-level matters reach the CEO early, with context, options and a recommendation.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Maintain a current view of the CEO’s top priorities, identify where work is drifting from strategic intent, and surface conflicts in priorities, resources or attention before they become emergencies.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Enable the Executive Leadership Team to operate as one team around the CEO’s priorities, so the right issues reach the ELT at the right level and decisions and commitments are followed through.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Partner with ELT members on cross-functional issues that need CEO-level alignment but not the CEO’s direct involvement.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Represent the CEO’s position in internal discussions and make decisions on the CEO’s behalf within delegated authority, bringing anything beyond it back to the CEO promptly.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Ensure the CEO enters every Board meeting, funder and partner conversation, speech and public engagement fully prepared, with concise briefings, organizational context and answers to likely questions.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Identify external opportunities that warrant the CEO’s attention, and ensure commitments the CEO makes externally translate into clear internal follow-through.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;What this role is not&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;This is a role of influence. It exists to ensure the CEO can lead effectively through the Executive Leadership Team.&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;The Chief of Staff does not manage the Executive Leadership Team or run the Foundation’s operations. Each executive leader owns execution and decisions within their area.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;This role does not make decisions beyond the authority the CEO has delegated. Anything outside that authority returns to the CEO.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;This role does not have any direct reports and also doesn’t manage the CEO’s calendar, scheduling or administrative support.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;Your Professional Profile&lt;/strong&gt;&lt;/span&gt;&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Significant, verifiable experience as a strategic partner at CEO or executive-team level, with a track record of leading high-stakes work and turning ambiguity into structure and action.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Experience working across multiple legal entities is a plus, including navigating differences, building influence, and coordinating work across entities where relevant.&amp;nbsp;&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;A proven record of driving complex, cross-functional priorities from idea to execution by defining outcomes, ownership, milestones and decision points.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Exceptional judgment and discretion, including handling confidential information and navigating complex executive dynamics with integrity.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Demonstrated ability to influence without formal authority, build trust across functions and at the most senior levels, and give direct feedback with care.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Outstanding written and verbal communication, with experience distilling complex information into decision-ready briefs, recommendations, presentations and executive communications.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Strong analytical and strategic problem-solving skills: you frame the right question, gather the right information, test assumptions and recommend a practical path forward.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Disciplined prioritization, with the agility to move between long-term priorities and time-sensitive issues without losing the thread.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Direct experience supporting Board governance, fundraising or other high-stakes external relationships at an executive level.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;A track record of doing high-impact work out of the spotlight, measuring your success by the CEO’s and the team’s, and acting in the best interests of the CEO and the organization.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;A demonstrated commitment to Mozilla Foundation’s mission and to building an open, accessible and trustworthy internet.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;The ability to work across time zones and occasionally outside standard working hours for Board meetings, major events or urgent organizational needs.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Comfortable traveling for Board meetings, leadership gatherings and major events.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;strong&gt;We Are Excited To See Any Additional Experience With:&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Senior roles in nonprofit, philanthropic, technology or public-interest organizations.&lt;/span&gt;&lt;/li&gt;\n&lt;li style=&quot;font-weight: 400;&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Supporting or advising investment, grantmaking or funding committees.&lt;/span&gt;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;How We Work&lt;/strong&gt;&lt;/span&gt;&lt;/h2&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;A few things that are true about how we work at Mozilla Foundation. Here&#39;s a summary along with our expectation of how these should show up in this role:&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;&lt;strong&gt;Move toward the hard thing&lt;/strong&gt;: you surface conflicts in priorities, resources or attention early, and give the CEO and executives direct, actionable input, including what they may not want to hear. You disagree constructively in the room, not afterward, and you don’t wait for someone else to raise it.&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;Stay curious and current&lt;/strong&gt;:&amp;nbsp;you stay close to what executives are seeing and what’s happening in our fields and communities, and turn it into the context the CEO needs. You pressure-test assumptions, including your own.&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;Work in the open&lt;/strong&gt;:&amp;nbsp;you document decisions and the reasoning behind them, so executives and teams can follow how and why priorities are set. You favor shared channels over side conversations wherever appropriate.&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;Focus and finish&lt;/strong&gt;:&amp;nbsp;you keep the CEO’s agenda focused on what matters most, make deliberate choices about what does and doesn’t need the CEO, and make sure decisions and commitments are seen through.&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;Flex with purpose&lt;/strong&gt;: you move between long-term priorities and time-sensitive issues as context shifts, and adapt how you work with each executive. Flexibility isn’t about being agreeable; it’s staying responsive while holding to the mission and the CEO’s priorities.&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;Lead with care&lt;/strong&gt;:&amp;nbsp;you hold a high bar for the work while treating people as whole humans. You extend good faith to fellow executives, respect that each owns their area, and talk directly to the person who can solve the problem.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;Salary and Benefits Information&lt;/span&gt;&lt;/h2&gt;\n&lt;p&gt;Mozilla Foundation is dedicated to fair and equitable compensation for our staff. We aim to pay a competitive and market-based salary based on the responsibilities and requirements of the role. We do not ask for, or take into account, salary histories in our offer process.&lt;/p&gt;\n&lt;p&gt;The starting salary ranges for this role are listed below.&amp;nbsp;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Germany: €206,448.00 – €232,253.22&lt;/li&gt;\n&lt;li&gt;UK: £181,764.00 – £204,483.81&lt;/li&gt;\n&lt;li&gt;Canada: $356,400.00 – $400,948.65&lt;/li&gt;\n&lt;li&gt;US: $264,000.00 – $296,999.00&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;We also offer the following benefits:&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Private Medical Insurance&lt;/li&gt;\n&lt;li&gt;Extended Sick Leave&lt;/li&gt;\n&lt;li&gt;Global Employee Assistance Program (EAP)&lt;/li&gt;\n&lt;li&gt;Retirement Plan contributions&lt;/li&gt;\n&lt;li&gt;Paid Time Off: 20 days annual leave + sick days and your birthday&lt;/li&gt;\n&lt;li&gt;Company Holidays + EOY Shutdown&lt;/li&gt;\n&lt;li&gt;Wellness budget&lt;/li&gt;\n&lt;li&gt;Professional Development budget&lt;/li&gt;\n&lt;li&gt;Top up program for Pregnancy and Parental leaves&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;em&gt;Benefits are subject to change at any time at the discretion of Mozilla Foundation.&lt;/em&gt;&lt;/p&gt;\n&lt;h2&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;Mozilla Foundation Hiring Practices&lt;/span&gt;&lt;/h2&gt;\n&lt;p&gt;Mozilla understands that valuing diverse creative practices and forms of knowledge are crucial to and enrich the company’s core mission. We encourage applications from everyone, including members of all equity-seeking communities, such as (but certainly not limited to) women, racialized and Indigenous persons, persons with disabilities, and persons of all sexual orientations and gender identities and expressions.&lt;/p&gt;\n&lt;p&gt;We are an equal opportunity employer and value diversity. We do not discriminate on the basis of race, religion, color, national origin, gender, sexual orientation, age, marital status, veteran status, or disability status.&lt;/p&gt;\n&lt;p&gt;We will ensure that individuals with disabilities are provided reasonable accommodation to participate in the job application or interview process, to perform essential job functions, and to receive other benefits and privileges of employment. Please contact us to request accommodation at accommodation@mozillafoundation.org.&lt;/p&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;\n&lt;p&gt;#LI-REMOTE&lt;/p&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
+      "departments": [
+        {
+          "id": 22507,
+          "name": "Mozilla Foundation",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 52711,
+          "name": "Remote Canada",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 52713,
+          "name": "Remote Germany",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 75722,
+          "name": "Remote UK",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        },
+        {
+          "id": 77552,
+          "name": "Remote US",
+          "location": null,
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "ai_disclaimer": null,
+      "include_ai_disclaimer": null,
+      "ai_opt_out_request_url": null
+    }
+  ],
+  "meta": {
+    "total": 3
+  }
+}

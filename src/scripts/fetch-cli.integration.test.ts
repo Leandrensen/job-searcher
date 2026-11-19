@@ -3,26 +3,25 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { HttpClient } from "@/core/http";
 import { openDb, type Db } from "@/db/client";
-import { fetchRuns, jobs } from "@/db/schema";
-import { adapters } from "@/sources/registry";
+import { companyCandidates, fetchRuns, jobs } from "@/db/schema";
+import { atsAdapters, atsProbes, boardAdapters } from "@/sources/registry";
 import { createFixtureHttp, type FixtureHttp } from "@/test-utils/fixture-http";
 import { ALL_SOURCE_ROUTES } from "@/test-utils/fixture-routes";
-import { runCli, type SummaryRow } from "./fetch-cli";
+import { runFetchCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
 
 type ComparableRow = Omit<SummaryRow, "ms">;
 
 const EXPECTED_FIRST_RUN: ComparableRow[] = [
   { source: "remoteok", status: "success", fetched: 4, inserted: 3, updated: 0, invalid: 0, filtered: 1, error: "" },
   { source: "weworkremotely", status: "success", fetched: 15, inserted: 3, updated: 0, invalid: 0, filtered: 0, error: "" },
-  { source: "getonboard", status: "success", fetched: 24, inserted: 4, updated: 0, invalid: 0, filtered: 0, error: "" },
-  { source: "remotive", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
-  { source: "himalayas", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
-  { source: "jobicy", status: "success", fetched: 3, inserted: 3, updated: 0, invalid: 0, filtered: 0, error: "" },
-  { source: "workingnomads", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
-  { source: "arbeitnow", status: "success", fetched: 3, inserted: 2, updated: 0, invalid: 0, filtered: 1, error: "" },
-  { source: "hn-hiring", status: "success", fetched: 4, inserted: 3, updated: 0, invalid: 1, filtered: 0, error: "" },
+  { source: "remotive", status: "success", fetched: 3, inserted: 0, updated: 0, invalid: 0, filtered: 3, error: "" },
+  { source: "himalayas", status: "success", fetched: 3, inserted: 1, updated: 0, invalid: 0, filtered: 2, error: "" },
+  { source: "jobicy", status: "success", fetched: 3, inserted: 1, updated: 0, invalid: 0, filtered: 2, error: "" },
+  { source: "workingnomads", status: "success", fetched: 3, inserted: 1, updated: 0, invalid: 0, filtered: 2, error: "" },
+  { source: "arbeitnow", status: "success", fetched: 3, inserted: 1, updated: 0, invalid: 0, filtered: 2, error: "" },
 ];
-const TOTAL_JOBS = 24;
+// Board jobs are never stored: they only become company candidates (10 distinct companies).
+const TOTAL_CANDIDATES = 10;
 
 const withoutMs = (r: SummaryRow): ComparableRow => ({
   source: r.source,
@@ -48,15 +47,17 @@ beforeEach(() => {
 async function run(argv: string[], client: HttpClient = http) {
   const logs: string[] = [];
   const errors: string[] = [];
-  const tables: SummaryRow[][] = [];
-  const code = await runCli(argv, {
+  const tables: Array<SummaryRow[] | AtsSummaryRow[]> = [];
+  const code = await runFetchCli(argv.includes("--source") ? argv : ["--skip-resolve", ...argv], {
     openDb: () => db,
     http: client,
-    adapters,
+    boardAdapters,
+    atsAdapters,
+    probes: atsProbes,
     now: () => new Date(clock),
     out: { log: (m) => logs.push(m), error: (m) => errors.push(m), table: (rows) => tables.push(rows) },
   });
-  return { code, logs, errors, rows: tables[0] ?? [] };
+  return { code, logs, errors, rows: (tables[0] ?? []) as SummaryRow[] };
 }
 
 describe("fetch CLI, offline end to end", () => {
@@ -66,12 +67,14 @@ describe("fetch CLI, offline end to end", () => {
     expect(code).toBe(0);
     expect(errors).toEqual([]);
     expect(rows.map(withoutMs)).toEqual(EXPECTED_FIRST_RUN);
-    expect(logs).toContain(`Total jobs in DB: ${TOTAL_JOBS}`);
+    expect(logs).toContain("Open jobs in DB: 0");
 
     const runs = db.select().from(fetchRuns).all();
-    expect(runs).toHaveLength(9);
-    expect(runs.every((r) => r.status === "success")).toBe(true);
-    expect(db.select().from(jobs).all().filter((j) => j.duplicateOf !== null)).toHaveLength(0);
+    // 7 boards fetched, plus 5 ATSs skipped because no company is due yet.
+    expect(runs.filter((r) => r.status === "success")).toHaveLength(7);
+    expect(runs.filter((r) => r.status === "skipped")).toHaveLength(5);
+    expect(db.select().from(jobs).all()).toEqual([]);
+    expect(db.select().from(companyCandidates).all()).toHaveLength(TOTAL_CANDIDATES);
   });
 
   it("requests exactly the known urls and nothing else", async () => {
@@ -85,17 +88,17 @@ describe("fetch CLI, offline end to end", () => {
     await run([]);
     const { code, rows, logs } = await run([]);
     expect(code).toBe(0);
-    expect(rows.map((r) => r.status)).toEqual(Array(9).fill("skipped"));
-    expect(logs).toContain(`Total jobs in DB: ${TOTAL_JOBS}`);
+    expect(rows.map((r) => r.status)).toEqual(Array(7).fill("skipped"));
+    expect(logs).toContain("Open jobs in DB: 0");
   });
 
   it("forced second run updates instead of inserting", async () => {
     const first = await run([]);
     const { code, rows, logs } = await run(["--force"]);
     expect(code).toBe(0);
-    expect(rows.map((r) => r.inserted)).toEqual(Array(9).fill(0));
+    expect(rows.map((r) => r.inserted)).toEqual(Array(7).fill(0));
     expect(rows.map((r) => r.updated)).toEqual(first.rows.map((r) => r.inserted));
-    expect(logs).toContain(`Total jobs in DB: ${TOTAL_JOBS}`);
+    expect(logs).toContain("Open jobs in DB: 0");
   });
 
   it("--source limits the run and keeps registry order", async () => {
@@ -122,15 +125,13 @@ describe("fetch CLI, offline end to end", () => {
     expect(rows.every((r) => r.error.includes("offline"))).toBe(true);
   });
 
-  it("stored jobs are clean", async () => {
+  it("stores no jobs: boards only discover companies", async () => {
     await run([]);
-    const stored = db.select().from(jobs).all();
-    expect(stored).toHaveLength(TOTAL_JOBS);
-    for (const job of stored) {
-      expect(job.title.trim(), `empty title for ${job.source}/${job.externalId}`).not.toBe("");
-      expect(job.company.trim(), `empty company for ${job.source}/${job.externalId}`).not.toBe("");
-      expect(job.descriptionText, `${job.source}/${job.externalId}`).not.toMatch(/<\/?[a-z][^>]*>/i);
-      expect(job.descriptionText, `${job.source}/${job.externalId}`).not.toMatch(/&(?:[a-z]+|#\d+|#x[0-9a-f]+);/i);
-    }
+    expect(db.select().from(jobs).all()).toEqual([]);
+    const found = db.select().from(companyCandidates).all();
+    expect(found.map((c) => c.name).sort()).toEqual(
+      ["Airbnb", "Alloy", "Blackbird Collective", "Lithic", "Notabene", "Proxify", "Quantum-Systems GmbH", "RainFocus", "Salvo Software", "Silver.dev"].sort(),
+    );
+    expect(found.every((c) => c.status === "pending" && c.origin.startsWith("board:"))).toBe(true);
   });
 });

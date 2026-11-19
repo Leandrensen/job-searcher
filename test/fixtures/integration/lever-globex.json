@@ -1,0 +1,30 @@
+[
+  {
+    "id": "a1",
+    "text": "Backend Developer (Node.js)",
+    "hostedUrl": "https://jobs.lever.co/globex/a1",
+    "applyUrl": "https://jobs.lever.co/globex/a1/apply",
+    "categories": {
+      "location": "Remote",
+      "team": "Engineering"
+    },
+    "workplaceType": "remote",
+    "createdAt": 1762776000000,
+    "description": "",
+    "descriptionPlain": "Globex builds widgets for the world."
+  },
+  {
+    "id": "a2",
+    "text": "React Developer",
+    "hostedUrl": "https://jobs.lever.co/globex/a2",
+    "applyUrl": "https://jobs.lever.co/globex/a2/apply",
+    "categories": {
+      "location": "United States",
+      "team": "Engineering"
+    },
+    "workplaceType": "remote",
+    "createdAt": 1762776000000,
+    "description": "",
+    "descriptionPlain": "Globex builds widgets for the world."
+  }
+]

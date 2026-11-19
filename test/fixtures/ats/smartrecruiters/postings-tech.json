@@ -1,0 +1,438 @@
+{
+  "offset": 0,
+  "limit": 3,
+  "totalFound": 3,
+  "content": [
+    {
+      "id": "744000161904329",
+      "name": "Senior Full-Stack Engineer",
+      "uuid": "fe112764-e68a-4c3c-a33e-7955de6c0c2e",
+      "jobAdId": "17ed4d14-05ea-4ef5-bb77-ec1ba5ba48a2",
+      "defaultJobAd": true,
+      "refNumber": "REF301058D",
+      "company": {
+        "identifier": "BoschGroup",
+        "name": "Bosch Group"
+      },
+      "releasedDate": "2026-11-16T20:07:24.621Z",
+      "location": {
+        "city": "Campinas",
+        "region": "SP",
+        "country": "br",
+        "address": "Avenida Robert Bosch",
+        "postalCode": "13064-765",
+        "remote": true,
+        "hybrid": false,
+        "hybridDescription": "2 vezes por semana na empresa ",
+        "latitude": "-22.8992722",
+        "longitude": "-47.1170748",
+        "fullLocation": "Remote - LATAM"
+      },
+      "industry": {
+        "id": "it_and_services",
+        "label": "Information Technology And Services"
+      },
+      "department": {},
+      "function": {
+        "id": "information_technology",
+        "label": "Information Technology"
+      },
+      "typeOfEmployment": {
+        "id": "permanent",
+        "label": "Full-time"
+      },
+      "experienceLevel": {
+        "id": "not_applicable",
+        "label": "Not Applicable"
+      },
+      "customField": [
+        {
+          "fieldId": "5abe2a4ab60a5e486a2d9b1d",
+          "fieldLabel": "Contract type",
+          "valueId": "1e46492b-d24f-460c-b095-38cf08a778d8",
+          "valueLabel": "Unlimited"
+        },
+        {
+          "fieldId": "5abe28e96d8bc56863dd9746",
+          "fieldLabel": "Tariff Area",
+          "valueId": "89e3308f-77ac-4db2-9957-49b221a76b0f",
+          "valueLabel": "Brazil Local Grades"
+        },
+        {
+          "fieldId": "586a997ee4b05fd937b86098",
+          "fieldLabel": "Legal Entity(acronym)",
+          "valueId": "8adcb306-e0ec-4495-965f-97ad717c3c61",
+          "valueLabel": "RBLA"
+        },
+        {
+          "fieldId": "586a99b5e4b0daa006ae1079",
+          "fieldLabel": "Working Location",
+          "valueId": "77146c8c-c6c2-467a-b9d9-8d536589b134",
+          "valueLabel": "Campinas"
+        },
+        {
+          "fieldId": "5abe295a6d8bc56863dd9747",
+          "fieldLabel": "Global Salary Level",
+          "valueId": "427b1359-5057-4375-a2ae-6c649782296d",
+          "valueLabel": "Experienced/ Middle Tariff"
+        },
+        {
+          "fieldId": "69ca83a2489188782a1e9f87",
+          "fieldLabel": "Direct Or Indirect",
+          "valueId": "1aefbf4c-c10a-422e-a975-a504a7117792",
+          "valueLabel": "Indirect"
+        },
+        {
+          "fieldId": "5abe29f9b60a5e486a2d9b1c",
+          "fieldLabel": "Working hours",
+          "valueId": "60756b3e-dbab-4353-ac3a-0064d2bb27d8",
+          "valueLabel": "Full-time"
+        },
+        {
+          "fieldId": "586a9995e4b0daa006ae1078",
+          "fieldLabel": "Legal Entity",
+          "valueId": "ac40ae51-3cf3-4683-9bdd-9e334dd485be",
+          "valueLabel": "Robert Bosch Ltda."
+        },
+        {
+          "fieldId": "691cf1c93001c782b9560ab7",
+          "fieldLabel": "Division full name",
+          "valueId": "97356ca1-1888-46b6-b7ce-237363ff5944",
+          "valueLabel": "Bosch Digital"
+        },
+        {
+          "fieldId": "5abe27936d8bc56863dd9745",
+          "fieldLabel": "Position type",
+          "valueId": "c7b4da31-6f38-405a-b2e8-08a76e3c3f2c",
+          "valueLabel": "Professional"
+        },
+        {
+          "fieldId": "COUNTRY",
+          "fieldLabel": "Country/Region",
+          "valueId": "br",
+          "valueLabel": "Brazil"
+        },
+        {
+          "fieldId": "586a971ee4b0daa006ae1077",
+          "fieldLabel": "Brands",
+          "valueId": "default",
+          "valueLabel": "Bosch Group"
+        },
+        {
+          "fieldId": "586a996ce4b05fd937b86097",
+          "fieldLabel": "Working Country",
+          "valueId": "38ffb1d7-cfdc-48e1-a641-1e66623f5afb",
+          "valueLabel": "Brazil"
+        },
+        {
+          "fieldId": "586a9b22e4b05fd937b8609a",
+          "fieldLabel": "Local Grade",
+          "valueId": "346fb6b3-0c79-4432-a690-bc1af0bf16a2",
+          "valueLabel": "BR_MN"
+        },
+        {
+          "fieldId": "586a99a5e4b05fd937b86099",
+          "fieldLabel": "Division",
+          "valueId": "68add7cc-a8f7-4f71-b4ac-9edc4b0ad2db",
+          "valueLabel": "BD"
+        }
+      ],
+      "visibility": "PUBLIC",
+      "ref": "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings/744000161904329",
+      "creator": {
+        "name": "MARIA PAULA DA FONSECA LACERDA E MUNIZ (GS/HRS1-LA)"
+      },
+      "language": {
+        "code": "pt-BR",
+        "label": "Portuguese (Brazil)",
+        "labelNative": "português (Brasil)"
+      }
+    },
+    {
+      "id": "744000161901889",
+      "name": "MID-LEVEL - SAP SUCCESSFACTORS EMPLOYEE CENTRAL (EC) ANALYST - 36517",
+      "uuid": "831e5852-7c20-4292-861c-4bfb6e4916e8",
+      "jobAdId": "c0c9e488-e81b-400b-9ad9-7e853b2be4ee",
+      "defaultJobAd": true,
+      "refNumber": "REF301056F",
+      "company": {
+        "identifier": "BoschGroup",
+        "name": "Bosch Group"
+      },
+      "releasedDate": "2026-11-16T19:54:11.250Z",
+      "location": {
+        "city": "Campinas",
+        "region": "SP",
+        "country": "br",
+        "address": "Avenida Robert Bosch",
+        "postalCode": "13064-765",
+        "remote": false,
+        "hybrid": true,
+        "hybridDescription": "2 vezes por semana na empresa ",
+        "latitude": "-22.8992722",
+        "longitude": "-47.1170748",
+        "fullLocation": "Campinas, SP, Brazil"
+      },
+      "industry": {
+        "id": "it_and_services",
+        "label": "Information Technology And Services"
+      },
+      "department": {},
+      "function": {
+        "id": "information_technology",
+        "label": "Information Technology"
+      },
+      "typeOfEmployment": {
+        "id": "permanent",
+        "label": "Full-time"
+      },
+      "experienceLevel": {
+        "id": "not_applicable",
+        "label": "Not Applicable"
+      },
+      "customField": [
+        {
+          "fieldId": "5abe2a4ab60a5e486a2d9b1d",
+          "fieldLabel": "Contract type",
+          "valueId": "1e46492b-d24f-460c-b095-38cf08a778d8",
+          "valueLabel": "Unlimited"
+        },
+        {
+          "fieldId": "5abe28e96d8bc56863dd9746",
+          "fieldLabel": "Tariff Area",
+          "valueId": "89e3308f-77ac-4db2-9957-49b221a76b0f",
+          "valueLabel": "Brazil Local Grades"
+        },
+        {
+          "fieldId": "586a997ee4b05fd937b86098",
+          "fieldLabel": "Legal Entity(acronym)",
+          "valueId": "8adcb306-e0ec-4495-965f-97ad717c3c61",
+          "valueLabel": "RBLA"
+        },
+        {
+          "fieldId": "586a99b5e4b0daa006ae1079",
+          "fieldLabel": "Working Location",
+          "valueId": "77146c8c-c6c2-467a-b9d9-8d536589b134",
+          "valueLabel": "Campinas"
+        },
+        {
+          "fieldId": "5abe295a6d8bc56863dd9747",
+          "fieldLabel": "Global Salary Level",
+          "valueId": "427b1359-5057-4375-a2ae-6c649782296d",
+          "valueLabel": "Experienced/ Middle Tariff"
+        },
+        {
+          "fieldId": "69ca83a2489188782a1e9f87",
+          "fieldLabel": "Direct Or Indirect",
+          "valueId": "1aefbf4c-c10a-422e-a975-a504a7117792",
+          "valueLabel": "Indirect"
+        },
+        {
+          "fieldId": "5abe29f9b60a5e486a2d9b1c",
+          "fieldLabel": "Working hours",
+          "valueId": "60756b3e-dbab-4353-ac3a-0064d2bb27d8",
+          "valueLabel": "Full-time"
+        },
+        {
+          "fieldId": "586a9995e4b0daa006ae1078",
+          "fieldLabel": "Legal Entity",
+          "valueId": "ac40ae51-3cf3-4683-9bdd-9e334dd485be",
+          "valueLabel": "Robert Bosch Ltda."
+        },
+        {
+          "fieldId": "691cf1c93001c782b9560ab7",
+          "fieldLabel": "Division full name",
+          "valueId": "97356ca1-1888-46b6-b7ce-237363ff5944",
+          "valueLabel": "Bosch Digital"
+        },
+        {
+          "fieldId": "5abe27936d8bc56863dd9745",
+          "fieldLabel": "Position type",
+          "valueId": "c7b4da31-6f38-405a-b2e8-08a76e3c3f2c",
+          "valueLabel": "Professional"
+        },
+        {
+          "fieldId": "COUNTRY",
+          "fieldLabel": "Country/Region",
+          "valueId": "br",
+          "valueLabel": "Brazil"
+        },
+        {
+          "fieldId": "586a971ee4b0daa006ae1077",
+          "fieldLabel": "Brands",
+          "valueId": "default",
+          "valueLabel": "Bosch Group"
+        },
+        {
+          "fieldId": "586a996ce4b05fd937b86097",
+          "fieldLabel": "Working Country",
+          "valueId": "38ffb1d7-cfdc-48e1-a641-1e66623f5afb",
+          "valueLabel": "Brazil"
+        },
+        {
+          "fieldId": "586a9b22e4b05fd937b8609a",
+          "fieldLabel": "Local Grade",
+          "valueId": "346fb6b3-0c79-4432-a690-bc1af0bf16a2",
+          "valueLabel": "BR_MN"
+        },
+        {
+          "fieldId": "586a99a5e4b05fd937b86099",
+          "fieldLabel": "Division",
+          "valueId": "68add7cc-a8f7-4f71-b4ac-9edc4b0ad2db",
+          "valueLabel": "BD"
+        }
+      ],
+      "visibility": "PUBLIC",
+      "ref": "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings/744000161901889",
+      "creator": {
+        "name": "MARIA PAULA DA FONSECA LACERDA E MUNIZ (GS/HRS1-LA)"
+      },
+      "language": {
+        "code": "pt-BR",
+        "label": "Portuguese (Brazil)",
+        "labelNative": "português (Brasil)"
+      }
+    },
+    {
+      "id": "744000161898799",
+      "name": "Accounting and Operations Specialist - Diablo Tools",
+      "uuid": "576b2350-c1b4-48a3-90e6-d53efff2381f",
+      "jobAdId": "080c9c51-42d5-460d-b44c-2f8fa2a14dec",
+      "defaultJobAd": true,
+      "refNumber": "REF299646C",
+      "company": {
+        "identifier": "BoschGroup",
+        "name": "Bosch Group"
+      },
+      "releasedDate": "2026-11-16T19:37:50.974Z",
+      "location": {
+        "city": "Atlanta",
+        "region": "GA",
+        "country": "us",
+        "address": "251 Armour Drive Northeast",
+        "postalCode": "30324",
+        "remote": false,
+        "hybrid": false,
+        "latitude": "33.8116014",
+        "longitude": "-84.3795785",
+        "fullLocation": "Atlanta, GA, United States"
+      },
+      "industry": {
+        "id": "consumer_goods",
+        "label": "Consumer Goods"
+      },
+      "department": {},
+      "function": {
+        "id": "distribution",
+        "label": "Distribution"
+      },
+      "typeOfEmployment": {
+        "id": "permanent",
+        "label": "Full-time"
+      },
+      "experienceLevel": {
+        "id": "associate",
+        "label": "Associate"
+      },
+      "customField": [
+        {
+          "fieldId": "5abe2a4ab60a5e486a2d9b1d",
+          "fieldLabel": "Contract type",
+          "valueId": "1e46492b-d24f-460c-b095-38cf08a778d8",
+          "valueLabel": "Unlimited"
+        },
+        {
+          "fieldId": "5abe28e96d8bc56863dd9746",
+          "fieldLabel": "Tariff Area",
+          "valueId": "82f1dd4b-de9d-4134-9f1a-8d315be380ae",
+          "valueLabel": "United States Local Grades"
+        },
+        {
+          "fieldId": "586a997ee4b05fd937b86098",
+          "fieldLabel": "Legal Entity(acronym)",
+          "valueId": "PTNF",
+          "valueLabel": "PTNF"
+        },
+        {
+          "fieldId": "586a99b5e4b0daa006ae1079",
+          "fieldLabel": "Working Location",
+          "valueId": "Atlanta, GA",
+          "valueLabel": "Atlanta, GA"
+        },
+        {
+          "fieldId": "5abe295a6d8bc56863dd9747",
+          "fieldLabel": "Global Salary Level",
+          "valueId": "427b1359-5057-4375-a2ae-6c649782296d",
+          "valueLabel": "Experienced/ Middle Tariff"
+        },
+        {
+          "fieldId": "69ca83a2489188782a1e9f87",
+          "fieldLabel": "Direct Or Indirect",
+          "valueId": "1aefbf4c-c10a-422e-a975-a504a7117792",
+          "valueLabel": "Indirect"
+        },
+        {
+          "fieldId": "5abe29f9b60a5e486a2d9b1c",
+          "fieldLabel": "Working hours",
+          "valueId": "60756b3e-dbab-4353-ac3a-0064d2bb27d8",
+          "valueLabel": "Full-time"
+        },
+        {
+          "fieldId": "586a9995e4b0daa006ae1078",
+          "fieldLabel": "Legal Entity",
+          "valueId": "Freud America Inc.",
+          "valueLabel": "Diablo Tools Inc."
+        },
+        {
+          "fieldId": "691cf1c93001c782b9560ab7",
+          "fieldLabel": "Division full name",
+          "valueId": "d46bc602-375e-4c5b-8773-170f49339203",
+          "valueLabel": "Power Tools"
+        },
+        {
+          "fieldId": "5abe27936d8bc56863dd9745",
+          "fieldLabel": "Position type",
+          "valueId": "c7b4da31-6f38-405a-b2e8-08a76e3c3f2c",
+          "valueLabel": "Professional"
+        },
+        {
+          "fieldId": "COUNTRY",
+          "fieldLabel": "Country/Region",
+          "valueId": "us",
+          "valueLabel": "United States"
+        },
+        {
+          "fieldId": "586a971ee4b0daa006ae1077",
+          "fieldLabel": "Brands",
+          "valueId": "2ab0864b-8431-4fba-9340-f4fdd6e770b9",
+          "valueLabel": "Diablo Tools Inc."
+        },
+        {
+          "fieldId": "586a996ce4b05fd937b86097",
+          "fieldLabel": "Working Country",
+          "valueId": "US",
+          "valueLabel": "United States"
+        },
+        {
+          "fieldId": "586a9b22e4b05fd937b8609a",
+          "fieldLabel": "Local Grade",
+          "valueId": "US_E3",
+          "valueLabel": "US_E3"
+        },
+        {
+          "fieldId": "586a99a5e4b05fd937b86099",
+          "fieldLabel": "Division",
+          "valueId": "PT",
+          "valueLabel": "PT"
+        }
+      ],
+      "visibility": "PUBLIC",
+      "ref": "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings/744000161898799",
+      "language": {
+        "code": "en",
+        "label": "English",
+        "labelNative": "English (US)"
+      }
+    }
+  ]
+}

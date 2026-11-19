@@ -1,0 +1,929 @@
+{
+  "offers": [
+    {
+      "locations_question": "What is your preferred work location?",
+      "employment_type_code": "fulltime_permanent",
+      "guid": "ft5f1",
+      "position": 3919,
+      "state_code": "KA",
+      "max_hours_per_week": null,
+      "country_code": "IN",
+      "mailbox_email": "job.ft5f1@tether.recruitee.com",
+      "created_at": "2026-10-26 15:18:00 UTC",
+      "options_title": "off",
+      "options_cv": "required",
+      "requirements": "<p>Proven experience in <a rel=\"noopener\" target=\"_blank\" href=\"http://Node.js\">Node.js</a> development with production-scale applications.</p><ul><li><p>Strong competency in writing modular, maintainable code.&nbsp;</p></li><li><p>Experience creating and managing reusable npm modules.</p></li><li><p>Solid skillset in testing &amp; debugging.</p></li><li><p>Deep interest or experience with P2P technologies or distributed systems.</p></li></ul><ul><li><p>Comfort working in a remote, globally distributed team; good communication skills.</p></li></ul><p style=\"text-align:start;min-height: 1.7em;\"></p><h3 style=\"text-align:start;\"><strong>Preferred Qualifications</strong></h3><ul><li><p>Experience with native <a rel=\"noopener\" target=\"_blank\" href=\"http://Node.js\">Node.js</a> extensions (C/C++), or binding JS to lower-level code.</p></li><li><p>Demonstrated ability to optimize network protocols or systems: latency, throughput, etc.</p></li><li><p>Familiarity with advanced networking concepts.</p></li></ul><p>Past contributions to OSS projects, especially in P2P or decentralized tech.</p>",
+      "city": "Bangalore",
+      "options_photo": "off",
+      "dynamic_fields": [],
+      "title": "Senior Node.js Software Engineer - Holepunch (100% Remote, Worldwide)",
+      "options_phone": "required",
+      "salary": {
+        "max": null,
+        "min": null,
+        "period": null,
+        "currency": null
+      },
+      "min_hours_per_week": null,
+      "company_name": "Tether Operations Limited",
+      "min_hours": null,
+      "sharing_title": "Senior Node.js Software Engineer - Holepunch (100% Remote, Worldwide)",
+      "education_code": "bachelor_degree",
+      "category_code": "engineering",
+      "country": "India",
+      "updated_at": "2026-11-16 11:45:17 UTC",
+      "tags": [],
+      "locations_question_type": "multiple_choice",
+      "experience_code": "experienced",
+      "sharing_image": null,
+      "max_hours": null,
+      "options_salutation": "off",
+      "open_questions": [
+        {
+          "id": 4461450,
+          "position": 1,
+          "options": {
+            "length": 120
+          },
+          "required": true,
+          "body": "Why are you interested in working at Tether?",
+          "kind": "video",
+          "translations": {
+            "en": {
+              "body": "Why are you interested in working at Tether?"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4461451,
+          "position": 2,
+          "options": {},
+          "required": true,
+          "body": "How do you rate your own skills with Node.js?",
+          "kind": "multi_choice",
+          "translations": {
+            "en": {
+              "body": "How do you rate your own skills with Node.js?"
+            }
+          },
+          "open_question_options": [
+            {
+              "id": 6873146,
+              "position": 0,
+              "body": "Begineer",
+              "translations": {
+                "en": {
+                  "body": "Begineer"
+                }
+              }
+            },
+            {
+              "id": 6873147,
+              "position": 1,
+              "body": "Intermediate",
+              "translations": {
+                "en": {
+                  "body": "Intermediate"
+                }
+              }
+            },
+            {
+              "id": 6873148,
+              "position": 2,
+              "body": "Advanced / Expert",
+              "translations": {
+                "en": {
+                  "body": "Advanced / Expert"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 4461452,
+          "position": 3,
+          "options": {},
+          "required": false,
+          "body": "Do you have any experience with Chromium? If so, give a brief overview",
+          "kind": "text",
+          "translations": {
+            "en": {
+              "body": "Do you have any experience with Chromium? If so, give a brief overview"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4461453,
+          "position": 4,
+          "options": {},
+          "required": false,
+          "body": "Do you have any experience working with modular code based and making npm modules? If so, give a brief overview",
+          "kind": "text",
+          "translations": {
+            "en": {
+              "body": "Do you have any experience working with modular code based and making npm modules? If so, give a brief overview"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4461454,
+          "position": 5,
+          "options": {},
+          "required": true,
+          "body": "Useful links (e.g. GitHub)",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Useful links (e.g. GitHub)"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4461455,
+          "position": 6,
+          "options": {},
+          "required": false,
+          "body": "Tell us about an interesting project you worked on recently (could be spare time open source project)",
+          "kind": "text",
+          "translations": {
+            "en": {
+              "body": "Tell us about an interesting project you worked on recently (could be spare time open source project)"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4461456,
+          "position": 7,
+          "options": {
+            "currency": "USD"
+          },
+          "required": true,
+          "body": "What's your expected annual salary for this role? (in USD)",
+          "kind": "salary",
+          "translations": {
+            "en": {
+              "body": "What's your expected annual salary for this role? (in USD)"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4461457,
+          "position": 8,
+          "options": {},
+          "required": true,
+          "body": "Considering this is a remote role, from which country will you be working?",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Considering this is a remote role, from which country will you be working?"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4461458,
+          "position": 9,
+          "options": {},
+          "required": true,
+          "body": "How did you hear about this opportunity?",
+          "kind": "single_choice",
+          "translations": {
+            "en": {
+              "body": "How did you hear about this opportunity?"
+            }
+          },
+          "open_question_options": [
+            {
+              "id": 6873149,
+              "position": 0,
+              "body": "Company website",
+              "translations": {
+                "en": {
+                  "body": "Company website"
+                }
+              }
+            },
+            {
+              "id": 6873150,
+              "position": 1,
+              "body": "LinkedIn",
+              "translations": {
+                "en": {
+                  "body": "LinkedIn"
+                }
+              }
+            },
+            {
+              "id": 6873151,
+              "position": 2,
+              "body": "HackerNews",
+              "translations": {
+                "en": {
+                  "body": "HackerNews"
+                }
+              }
+            },
+            {
+              "id": 6873152,
+              "position": 3,
+              "body": "Wellfound",
+              "translations": {
+                "en": {
+                  "body": "Wellfound"
+                }
+              }
+            },
+            {
+              "id": 6873153,
+              "position": 4,
+              "body": "Networking event or conference",
+              "translations": {
+                "en": {
+                  "body": "Networking event or conference"
+                }
+              }
+            },
+            {
+              "id": 6873154,
+              "position": 5,
+              "body": "Referral",
+              "translations": {
+                "en": {
+                  "body": "Referral"
+                }
+              }
+            },
+            {
+              "id": 6873155,
+              "position": 6,
+              "body": "Other",
+              "translations": {
+                "en": {
+                  "body": "Other"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "published_at": "2026-11-16 11:45:17 UTC",
+      "on_site": false,
+      "cover_image": null,
+      "locations": [
+        {
+          "id": 204517,
+          "name": "India, Bangalore",
+          "state": "Karnātaka",
+          "country": "India",
+          "city": "Bangalore",
+          "translations": {
+            "en": {
+              "name": "India, Bangalore",
+              "city": "Bangalore",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "IN",
+          "state_code": "KA",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        },
+        {
+          "id": 175690,
+          "name": "India, Chennai",
+          "state": "Tamil Nādu",
+          "country": "India",
+          "city": "Chennai",
+          "translations": {
+            "en": {
+              "name": "India, Chennai",
+              "city": "Chennai",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "IN",
+          "state_code": "TN",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        },
+        {
+          "id": 171072,
+          "name": "India, Delhi",
+          "state": "Delhi",
+          "country": "India",
+          "city": "Delhi",
+          "translations": {
+            "en": {
+              "name": "India, Delhi",
+              "city": "Delhi",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "IN",
+          "state_code": "DL",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        },
+        {
+          "id": 175691,
+          "name": "India, Gurgaon",
+          "state": "Haryāna",
+          "country": "India",
+          "city": "Gurgaon",
+          "translations": {
+            "en": {
+              "name": "India, Gurgaon",
+              "city": "Gurgaon",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "IN",
+          "state_code": "HR",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        },
+        {
+          "id": 175689,
+          "name": "India, Hyderabad",
+          "state": "Telangāna",
+          "country": "India",
+          "city": "Hyderabad",
+          "translations": {
+            "en": {
+              "name": "India, Hyderabad",
+              "city": "Hyderabad",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "IN",
+          "state_code": "TS",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        },
+        {
+          "id": 175692,
+          "name": "India, Pune",
+          "state": "Mahārāshtra",
+          "country": "India",
+          "city": "Pune",
+          "translations": {
+            "en": {
+              "name": "India, Pune",
+              "city": "Pune",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "IN",
+          "state_code": "MH",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        }
+      ],
+      "department": "Engineering",
+      "state_name": "Karnātaka",
+      "translations": {
+        "en": {
+          "description": "<p><strong><em>Join Tether and Shape the Future of Digital Finance</em></strong></p><p>At Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from exchanges and wallets to payment processors and ATMs—to seamlessly integrate reserve-backed tokens across blockchains. By harnessing the power of blockchain technology, Tether enables you to store, send, and receive digital tokens instantly, securely, and globally, all at a fraction of the cost. Transparency is the bedrock of everything we do, ensuring trust in every transaction.</p><p style=\"min-height: 1.7em;\"></p><p><strong><em>Innovate with Tether</em></strong></p><p><strong>Tether Finance: </strong>Our innovative product suite features the world’s most trusted stablecoin, <strong>USDT</strong>, relied upon by hundreds of millions worldwide, alongside pioneering digital asset tokenization services.</p><p>But that’s just the beginning:</p><p><strong>Tether Power: </strong>Driving sustainable growth, our energy solutions optimize excess power for Bitcoin mining using eco-friendly practices in state-of-the-art, geo-diverse facilities.</p><p><strong>Tether Data: </strong>Fueling breakthroughs in AI and peer-to-peer technology, we reduce infrastructure costs and enhance global communications with cutting-edge solutions like <strong>KEET</strong>, our flagship app that redefines secure and private data sharing.</p><p><strong>Tether Education</strong>: Democratizing access to top-tier digital learning, we empower individuals to thrive in the digital and gig economies, driving global growth and opportunity.</p><p><strong>Tether Evolution</strong>: At the intersection of technology and human potential, we are pushing the boundaries of what is possible, crafting a future where innovation and human capabilities merge in powerful, unprecedented ways.</p><p style=\"min-height: 1.7em;\"></p><p><strong><em>Why Join Us?</em></strong></p><p style=\"min-height: 1.7em;\"></p><p style=\"text-align:start;\">We are seeking a talented and motivated <a rel=\"noopener\" target=\"_blank\" href=\"http://node.js/\">Node.js</a> Software Engineer to join our dynamic team. In this role, you will be responsible for developing and maintaining our P2P stack and expanding our ecosystem, which includes over 1500 public npm modules and robust, modular codebase.</p><p><br></p>",
+          "title": "Senior Node.js Software Engineer - Holepunch (100% Remote, Worldwide)",
+          "highlight": "<p style=\"min-height: 1.7em;\"></p><p style=\"min-height: 1.7em;\"></p>",
+          "requirements": "<p>Proven experience in <a rel=\"noopener\" target=\"_blank\" href=\"http://Node.js\">Node.js</a> development with production-scale applications.</p><ul><li><p>Strong competency in writing modular, maintainable code.&nbsp;</p></li><li><p>Experience creating and managing reusable npm modules.</p></li><li><p>Solid skillset in testing &amp; debugging.</p></li><li><p>Deep interest or experience with P2P technologies or distributed systems.</p></li></ul><ul><li><p>Comfort working in a remote, globally distributed team; good communication skills.</p></li></ul><p style=\"text-align:start;min-height: 1.7em;\"></p><h3 style=\"text-align:start;\"><strong>Preferred Qualifications</strong></h3><ul><li><p>Experience with native <a rel=\"noopener\" target=\"_blank\" href=\"http://Node.js\">Node.js</a> extensions (C/C++), or binding JS to lower-level code.</p></li><li><p>Demonstrated ability to optimize network protocols or systems: latency, throughput, etc.</p></li><li><p>Familiarity with advanced networking concepts.</p></li></ul><p>Past contributions to OSS projects, especially in P2P or decentralized tech.</p>",
+          "sharing_image": null,
+          "locations_question": "What is your preferred work location?",
+          "sharing_description": "Join Tether and Shape the Future of Digital Finance At Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from exch",
+          "sharing_title": "Senior Node.js Software Engineer - Holepunch (100% Remote, Worldwide)"
+        }
+      },
+      "locations_question_required": true,
+      "description": "<p><strong><em>Join Tether and Shape the Future of Digital Finance</em></strong></p><p>At Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from exchanges and wallets to payment processors and ATMs—to seamlessly integrate reserve-backed tokens across blockchains. By harnessing the power of blockchain technology, Tether enables you to store, send, and receive digital tokens instantly, securely, and globally, all at a fraction of the cost. Transparency is the bedrock of everything we do, ensuring trust in every transaction.</p><p style=\"min-height: 1.7em;\"></p><p><strong><em>Innovate with Tether</em></strong></p><p><strong>Tether Finance: </strong>Our innovative product suite features the world’s most trusted stablecoin, <strong>USDT</strong>, relied upon by hundreds of millions worldwide, alongside pioneering digital asset tokenization services.</p><p>But that’s just the beginning:</p><p><strong>Tether Power: </strong>Driving sustainable growth, our energy solutions optimize excess power for Bitcoin mining using eco-friendly practices in state-of-the-art, geo-diverse facilities.</p><p><strong>Tether Data: </strong>Fueling breakthroughs in AI and peer-to-peer technology, we reduce infrastructure costs and enhance global communications with cutting-edge solutions like <strong>KEET</strong>, our flagship app that redefines secure and private data sharing.</p><p><strong>Tether Education</strong>: Democratizing access to top-tier digital learning, we empower individuals to thrive in the digital and gig economies, driving global growth and opportunity.</p><p><strong>Tether Evolution</strong>: At the intersection of technology and human potential, we are pushing the boundaries of what is possible, crafting a future where innovation and human capabilities merge in powerful, unprecedented ways.</p><p style=\"min-height: 1.7em;\"></p><p><strong><em>Why Join Us?</em></strong></p><p style=\"min-height: 1.7em;\"></p><p style=\"text-align:start;\">We are seeking a talented and motivated <a rel=\"noopener\" target=\"_blank\" href=\"http://node.js/\">Node.js</a> Software Engineer to join our dynamic team. In this role, you will be responsible for developing and maintaining our P2P stack and expanding our ecosystem, which includes over 1500 public npm modules and robust, modular codebase.</p><p><br></p>",
+      "postal_code": null,
+      "remote": true,
+      "slug": "senior-nodejs-software-engineer-holepunch-100-remote-worldwide-17",
+      "close_at": null,
+      "careers_apply_url": "https://tether.recruitee.com/o/senior-nodejs-software-engineer-holepunch-100-remote-worldwide-17/c/new",
+      "hybrid": false,
+      "location": "Remote job",
+      "highlight": "<p style=\"min-height: 1.7em;\"></p><p style=\"min-height: 1.7em;\"></p>",
+      "id": 2797907,
+      "options_cover_letter": "optional",
+      "sharing_description": "Join Tether and Shape the Future of Digital Finance At Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from exch",
+      "status": "published",
+      "careers_url": "https://tether.recruitee.com/o/senior-nodejs-software-engineer-holepunch-100-remote-worldwide-17",
+      "location_question_visible": false
+    },
+    {
+      "locations_question": "What is your preferred work location?",
+      "employment_type_code": "fulltime_permanent",
+      "guid": "5ts8a",
+      "position": 3538,
+      "state_code": "LND",
+      "max_hours_per_week": null,
+      "country_code": "GB",
+      "mailbox_email": "job.5ts8a@tether.recruitee.com",
+      "created_at": "2026-06-02 13:41:03 UTC",
+      "options_title": "off",
+      "options_cv": "required",
+      "requirements": "<ul><li><p><span style=\"color:#000000\">Prepare accurate and timely financial statements, management accounts, and supporting reports in accordance with IFRS and US GAAP.</span></p></li><li><p><span style=\"color:#000000\">Manage day-to-day accounting operations across multiple entities and jurisdictions.</span></p></li><li><p><span style=\"color:#000000\">Oversee month-end, quarter-end, and year-end close processes, including general ledger reconciliations and control reviews.</span></p></li><li><p><span style=\"color:#000000\">Maintain oversight of accounts payable, accounts receivable, accruals, and balance sheet reconciliations.</span></p></li><li><p><span style=\"color:#000000\">Lead coordination with external auditors, ensuring timely delivery of audit requests, supporting documentation, and issue resolution.</span></p></li><li><p><span style=\"color:#000000\">Support preparation of any regulatory, tax, statutory and ad hoc reporting requirements.</span></p></li><li><p><span style=\"color:#000000\">Strengthen and maintain internal controls, accounting policies, and financial governance frameworks.</span></p></li><li><p><span style=\"color:#000000\">Drive continuous improvement across accounting processes, reporting workflows, and operational controls.</span></p></li><li><p><span style=\"color:#000000\">Leverage technology and automation to improve efficiency, scalability, and reporting accuracy.</span></p></li><li><p><span style=\"color:#000000\">Partner closely with operations to ensure integrity of financial data and reporting.</span></p></li><li><p><span style=\"color:#000000\">Assist with implementation and optimisation of financial systems and reporting infrastructure.</span></p></li><li><p><span style=\"color:#000000\">Support ad hoc financial analysis, projects, and strategic initiatives as required.</span></p></li></ul><p style=\"min-height: 1.7em;\"></p><p><strong><span style=\"color:#000000\">Qualifications &amp; Experience:</span></strong></p><ul><li><p><span style=\"color:#000000\">Bachelor’s degree in accounting, finance, or a related field; ACCA, ACA, CPA, CFA, or equivalent certifications.</span></p></li><li><p><span style=\"color:#000000\">10+ years of experience in financial control, audit, or accounting, preferably at a credit hedge fund. Prior experience in digital assets or blockchain ecosystems is a distinct advantage.</span></p></li><li><p><span style=\"color:#000000\">Proficiency in Xero and Enfusion portfolio management system.</span></p></li><li><p><span style=\"color:#000000\">Proficiency in Excel +&nbsp; VBA / Python is mandatory.</span></p></li><li><p><span style=\"color:#000000\">Exceptional analytical and problem-solving abilities.</span></p></li><li><p><span style=\"color:#000000\">Strong understanding of regulatory and tax requirements.</span></p></li><li><p><span style=\"color:#000000\">Excellent attention to detail and communication skills.</span></p></li></ul><p style=\"min-height: 1.7em;\"></p>",
+      "city": "London",
+      "options_photo": "off",
+      "dynamic_fields": [
+        {
+          "name": "Team ",
+          "value": null,
+          "translations": {
+            "en": {
+              "name": "Team ",
+              "value": null
+            }
+          }
+        }
+      ],
+      "title": "Financial Controller (VC or Hedge Fund- Investment Accountant)",
+      "options_phone": "required",
+      "salary": {
+        "max": null,
+        "min": null,
+        "period": null,
+        "currency": null
+      },
+      "min_hours_per_week": null,
+      "company_name": "Tether Operations Limited",
+      "min_hours": null,
+      "sharing_title": "Financial Controller (VC or Hedge Fund- Investment Accountant)",
+      "education_code": "bachelor_degree",
+      "category_code": "accountancy",
+      "country": "United Kingdom",
+      "updated_at": "2026-08-04 12:01:36 UTC",
+      "tags": [],
+      "locations_question_type": "multiple_choice",
+      "experience_code": "mid_level",
+      "sharing_image": null,
+      "max_hours": null,
+      "options_salutation": "off",
+      "open_questions": [
+        {
+          "id": 4166766,
+          "position": 1,
+          "options": {},
+          "required": false,
+          "body": "<p>To fairly assess candidates’ skills and experiences, please <strong>do not use AI tools</strong> when completing this application. Answers generated by AI may disqualify your application, as we’re looking for your own perspective and reasoning.</p>",
+          "kind": "infobox",
+          "translations": {
+            "en": {
+              "body": "<p>To fairly assess candidates’ skills and experiences, please <strong>do not use AI tools</strong> when completing this application. Answers generated by AI may disqualify your application, as we’re looking for your own perspective and reasoning.</p>"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4166767,
+          "position": 2,
+          "options": {
+            "length": 120
+          },
+          "required": true,
+          "body": "Why are you interested in working at Tether?",
+          "kind": "video",
+          "translations": {
+            "en": {
+              "body": "Why are you interested in working at Tether?"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4166779,
+          "position": 3,
+          "options": {},
+          "required": true,
+          "body": "Do you have any experience with valuations of complex investments?",
+          "kind": "text",
+          "translations": {
+            "en": {
+              "body": "Do you have any experience with valuations of complex investments?"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4166769,
+          "position": 4,
+          "options": {
+            "currency": "USD"
+          },
+          "required": true,
+          "body": "What's your expected annual salary for this role? (in USD)",
+          "kind": "salary",
+          "translations": {
+            "en": {
+              "body": "What's your expected annual salary for this role? (in USD)"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4166770,
+          "position": 5,
+          "options": {},
+          "required": true,
+          "body": "Linkedin profile",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Linkedin profile"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4166771,
+          "position": 6,
+          "options": {},
+          "required": true,
+          "body": "Useful links (e.g. GitHub)",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Useful links (e.g. GitHub)"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4166772,
+          "position": 7,
+          "options": {},
+          "required": true,
+          "body": "How did you hear about this opportunity?",
+          "kind": "single_choice",
+          "translations": {
+            "en": {
+              "body": "How did you hear about this opportunity?"
+            }
+          },
+          "open_question_options": [
+            {
+              "id": 6406592,
+              "position": 0,
+              "body": "Company website",
+              "translations": {
+                "en": {
+                  "body": "Company website"
+                }
+              }
+            },
+            {
+              "id": 6406593,
+              "position": 1,
+              "body": "LinkedIn",
+              "translations": {
+                "en": {
+                  "body": "LinkedIn"
+                }
+              }
+            },
+            {
+              "id": 6406594,
+              "position": 2,
+              "body": "HackerNews",
+              "translations": {
+                "en": {
+                  "body": "HackerNews"
+                }
+              }
+            },
+            {
+              "id": 6406595,
+              "position": 3,
+              "body": "Wellfound",
+              "translations": {
+                "en": {
+                  "body": "Wellfound"
+                }
+              }
+            },
+            {
+              "id": 6406596,
+              "position": 4,
+              "body": "Networking event or conference",
+              "translations": {
+                "en": {
+                  "body": "Networking event or conference"
+                }
+              }
+            },
+            {
+              "id": 6406597,
+              "position": 5,
+              "body": "Referral",
+              "translations": {
+                "en": {
+                  "body": "Referral"
+                }
+              }
+            },
+            {
+              "id": 6406598,
+              "position": 6,
+              "body": "Other",
+              "translations": {
+                "en": {
+                  "body": "Other"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "published_at": "2026-06-02 13:45:18 UTC",
+      "on_site": false,
+      "cover_image": null,
+      "locations": [
+        {
+          "id": 25342,
+          "name": "United Kingdom, London",
+          "state": "Greater London",
+          "country": "United Kingdom",
+          "city": "London",
+          "translations": {
+            "en": {
+              "name": "United Kingdom, London",
+              "city": "London",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "GB",
+          "state_code": "LND",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        }
+      ],
+      "department": "Finance",
+      "state_name": "Greater London",
+      "translations": {
+        "en": {
+          "description": "<p><strong><span style=\"color:#1D1C1D\">Join Tether and Shape the Future of Digital Finance</span></strong></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">At Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from exchanges and wallets to payment processors and ATMs—to seamlessly integrate reserve-backed tokens across blockchains. By harnessing the power of blockchain technology, Tether enables you to store, send, and receive digital tokens instantly, securely, and globally, all at a fraction of the cost. Transparency is the bedrock of everything we do, ensuring trust in every transaction.</span></p><p><br></p><p><strong><span style=\"color:#1D1C1D\">Innovate with Tether</span></strong></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Finance</span></strong><span style=\"color:#1D1C1D\">: Our innovative product suite features the world’s most trusted stablecoin, USDT, relied upon by hundreds of millions worldwide, alongside pioneering digital asset tokenization services.&nbsp;</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">But that’s just the beginning:</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Power:</span></strong><span style=\"color:#1D1C1D\"> Driving sustainable growth, our energy solutions optimize excess power for Bitcoin mining using eco-friendly practices in state-of-the-art, geo-diverse facilities.</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Data</span></strong><span style=\"color:#1D1C1D\">: Fueling breakthroughs in AI and peer-to-peer technology, we reduce infrastructure costs and enhance global communications with cutting-edge solutions like KEET, our flagship app that redefines secure and private data sharing.</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Education:</span></strong><span style=\"color:#1D1C1D\"> Democratizing access to top-tier digital learning, we empower individuals to thrive in the digital and gig economies, driving global growth and opportunity.</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Evolution</span></strong><span style=\"color:#1D1C1D\">: At the intersection of technology and human potential, we are pushing the boundaries of what is possible, crafting a future where innovation and human capabilities merge in powerful, unprecedented ways.</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\"><br></span><strong><span style=\"color:#1D1C1D\">Why Join Us?</span></strong></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">Our team is a global talent powerhouse, working remotely from every corner of the world. If you’re passionate about making a mark in the fintech space, this is your opportunity to collaborate with some of the brightest minds, pushing boundaries and setting new standards. We’ve grown fast, stayed lean, and secured our place as a leader in the industry.</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">If you have excellent English communication skills and are ready to contribute to the most innovative platform on the planet, Tether is the place for you.</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">Are you ready to be part of the future?</span></p><p style=\"min-height: 1.7em;\"></p><p><strong><span style=\"color:#1D1C1D\">About the job:</span></strong></p><p style=\"text-align:justify;\"><span style=\"color:#000000\">The Financial Controller will oversee financial reporting, audit coordination, and accounting operations across a multi-entity investment and treasury platform. The role requires a technically strong finance professional with deep accounting expertise, strong operational discipline, and the ability to operate in a fast-paced, high-growth environment.</span></p><p style=\"min-height: 1.7em;\"></p>",
+          "title": "Financial Controller (VC or Hedge Fund- Investment Accountant)",
+          "highlight": null,
+          "requirements": "<ul><li><p><span style=\"color:#000000\">Prepare accurate and timely financial statements, management accounts, and supporting reports in accordance with IFRS and US GAAP.</span></p></li><li><p><span style=\"color:#000000\">Manage day-to-day accounting operations across multiple entities and jurisdictions.</span></p></li><li><p><span style=\"color:#000000\">Oversee month-end, quarter-end, and year-end close processes, including general ledger reconciliations and control reviews.</span></p></li><li><p><span style=\"color:#000000\">Maintain oversight of accounts payable, accounts receivable, accruals, and balance sheet reconciliations.</span></p></li><li><p><span style=\"color:#000000\">Lead coordination with external auditors, ensuring timely delivery of audit requests, supporting documentation, and issue resolution.</span></p></li><li><p><span style=\"color:#000000\">Support preparation of any regulatory, tax, statutory and ad hoc reporting requirements.</span></p></li><li><p><span style=\"color:#000000\">Strengthen and maintain internal controls, accounting policies, and financial governance frameworks.</span></p></li><li><p><span style=\"color:#000000\">Drive continuous improvement across accounting processes, reporting workflows, and operational controls.</span></p></li><li><p><span style=\"color:#000000\">Leverage technology and automation to improve efficiency, scalability, and reporting accuracy.</span></p></li><li><p><span style=\"color:#000000\">Partner closely with operations to ensure integrity of financial data and reporting.</span></p></li><li><p><span style=\"color:#000000\">Assist with implementation and optimisation of financial systems and reporting infrastructure.</span></p></li><li><p><span style=\"color:#000000\">Support ad hoc financial analysis, projects, and strategic initiatives as required.</span></p></li></ul><p style=\"min-height: 1.7em;\"></p><p><strong><span style=\"color:#000000\">Qualifications &amp; Experience:</span></strong></p><ul><li><p><span style=\"color:#000000\">Bachelor’s degree in accounting, finance, or a related field; ACCA, ACA, CPA, CFA, or equivalent certifications.</span></p></li><li><p><span style=\"color:#000000\">10+ years of experience in financial control, audit, or accounting, preferably at a credit hedge fund. Prior experience in digital assets or blockchain ecosystems is a distinct advantage.</span></p></li><li><p><span style=\"color:#000000\">Proficiency in Xero and Enfusion portfolio management system.</span></p></li><li><p><span style=\"color:#000000\">Proficiency in Excel +&nbsp; VBA / Python is mandatory.</span></p></li><li><p><span style=\"color:#000000\">Exceptional analytical and problem-solving abilities.</span></p></li><li><p><span style=\"color:#000000\">Strong understanding of regulatory and tax requirements.</span></p></li><li><p><span style=\"color:#000000\">Excellent attention to detail and communication skills.</span></p></li></ul><p style=\"min-height: 1.7em;\"></p>",
+          "sharing_image": null,
+          "locations_question": "What is your preferred work location?",
+          "sharing_description": "Join Tether and Shape the Future of Digital FinanceAt Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from excha",
+          "sharing_title": "Financial Controller (VC or Hedge Fund- Investment Accountant)"
+        }
+      },
+      "locations_question_required": true,
+      "description": "<p><strong><span style=\"color:#1D1C1D\">Join Tether and Shape the Future of Digital Finance</span></strong></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">At Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from exchanges and wallets to payment processors and ATMs—to seamlessly integrate reserve-backed tokens across blockchains. By harnessing the power of blockchain technology, Tether enables you to store, send, and receive digital tokens instantly, securely, and globally, all at a fraction of the cost. Transparency is the bedrock of everything we do, ensuring trust in every transaction.</span></p><p><br></p><p><strong><span style=\"color:#1D1C1D\">Innovate with Tether</span></strong></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Finance</span></strong><span style=\"color:#1D1C1D\">: Our innovative product suite features the world’s most trusted stablecoin, USDT, relied upon by hundreds of millions worldwide, alongside pioneering digital asset tokenization services.&nbsp;</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">But that’s just the beginning:</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Power:</span></strong><span style=\"color:#1D1C1D\"> Driving sustainable growth, our energy solutions optimize excess power for Bitcoin mining using eco-friendly practices in state-of-the-art, geo-diverse facilities.</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Data</span></strong><span style=\"color:#1D1C1D\">: Fueling breakthroughs in AI and peer-to-peer technology, we reduce infrastructure costs and enhance global communications with cutting-edge solutions like KEET, our flagship app that redefines secure and private data sharing.</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Education:</span></strong><span style=\"color:#1D1C1D\"> Democratizing access to top-tier digital learning, we empower individuals to thrive in the digital and gig economies, driving global growth and opportunity.</span></p><p style=\"text-align:justify;\"><strong><span style=\"color:#1D1C1D\">Tether Evolution</span></strong><span style=\"color:#1D1C1D\">: At the intersection of technology and human potential, we are pushing the boundaries of what is possible, crafting a future where innovation and human capabilities merge in powerful, unprecedented ways.</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\"><br></span><strong><span style=\"color:#1D1C1D\">Why Join Us?</span></strong></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">Our team is a global talent powerhouse, working remotely from every corner of the world. If you’re passionate about making a mark in the fintech space, this is your opportunity to collaborate with some of the brightest minds, pushing boundaries and setting new standards. We’ve grown fast, stayed lean, and secured our place as a leader in the industry.</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">If you have excellent English communication skills and are ready to contribute to the most innovative platform on the planet, Tether is the place for you.</span></p><p style=\"text-align:justify;\"><span style=\"color:#1D1C1D\">Are you ready to be part of the future?</span></p><p style=\"min-height: 1.7em;\"></p><p><strong><span style=\"color:#1D1C1D\">About the job:</span></strong></p><p style=\"text-align:justify;\"><span style=\"color:#000000\">The Financial Controller will oversee financial reporting, audit coordination, and accounting operations across a multi-entity investment and treasury platform. The role requires a technically strong finance professional with deep accounting expertise, strong operational discipline, and the ability to operate in a fast-paced, high-growth environment.</span></p><p style=\"min-height: 1.7em;\"></p>",
+      "postal_code": null,
+      "remote": false,
+      "slug": "financial-controller-vc-or-hedge-fund-investment-accountant",
+      "close_at": null,
+      "careers_apply_url": "https://tether.recruitee.com/o/financial-controller-vc-or-hedge-fund-investment-accountant/c/new",
+      "hybrid": true,
+      "location": "London, Greater London, United Kingdom",
+      "highlight": null,
+      "id": 2625267,
+      "options_cover_letter": "optional",
+      "sharing_description": "Join Tether and Shape the Future of Digital FinanceAt Tether, we’re not just building products, we’re pioneering a global financial revolution. Our cutting-edge solutions empower businesses—from excha",
+      "status": "published",
+      "careers_url": "https://tether.recruitee.com/o/financial-controller-vc-or-hedge-fund-investment-accountant",
+      "location_question_visible": false
+    },
+    {
+      "locations_question": "What is your preferred work location?",
+      "employment_type_code": "fulltime_permanent",
+      "guid": "13kdd",
+      "position": 3792,
+      "state_code": "MD",
+      "max_hours_per_week": null,
+      "country_code": "ES",
+      "mailbox_email": "job.13kdd@tether.recruitee.com",
+      "created_at": "2026-10-06 09:58:58 UTC",
+      "options_title": "off",
+      "options_cv": "required",
+      "requirements": "<h4>Key Responsibilities:</h4><ul><li><p>Underwrite and structure credit facilities, including revolving credit facilities, working capital loans, and liquidity facilities.</p></li><li><p>Analyse companies' financial statements, cash flows, liquidity position and repayment capacity.</p></li><li><p>Determine appropriate lending amounts, terms, covenants, security, and other risk protections.</p></li><li><p>Develop credit policies, underwriting guidelines, templates, and concentration limits from scratch.</p></li><li><p>Monitor credit risk and borrower performance and establish appropriate risk-monitoring processes.</p></li><li><p>Support the development and scaling of the new credit business.</p></li></ul><p style=\"min-height: 1.7em;\"></p><h4>Requirements:</h4><ul><li><p><strong>10+ years of relevant credit experience.</strong></p></li><li><p>Strong experience in <strong>credit underwriting and structuring</strong>, rather than purely credit analysis.</p></li><li><p>Previous experience with <strong>fintech &amp; payments is mandatory.</strong></p></li><li><p>Background in institutional lending, private credit, venture debt, specialty finance, or a similar environment.</p></li><li><p>Experience establishing or developing credit policies, processes, or risk frameworks.</p></li><li><p>Crypto, digital assets, or stablecoin experience is a plus, but <strong>not required</strong>.</p></li></ul><p style=\"min-height: 1.7em;\"></p>",
+      "city": "Madrid",
+      "options_photo": "off",
+      "dynamic_fields": [
+        {
+          "name": "Team ",
+          "value": null,
+          "translations": {
+            "en": {
+              "name": "Team ",
+              "value": null
+            }
+          }
+        }
+      ],
+      "title": "Credit Lead (Underwriter), Institutional Lending & Liquidity",
+      "options_phone": "required",
+      "salary": {
+        "max": null,
+        "min": null,
+        "period": null,
+        "currency": null
+      },
+      "min_hours_per_week": null,
+      "company_name": "Tether Operations Limited",
+      "min_hours": null,
+      "sharing_title": "Credit Lead (Underwriter), Institutional Lending & Liquidity",
+      "education_code": "bachelor_degree",
+      "category_code": "finance",
+      "country": "Spain",
+      "updated_at": "2026-10-06 09:59:42 UTC",
+      "tags": [],
+      "locations_question_type": "multiple_choice",
+      "experience_code": "experienced",
+      "sharing_image": null,
+      "max_hours": null,
+      "options_salutation": "off",
+      "open_questions": [
+        {
+          "id": 4417186,
+          "position": 1,
+          "options": {},
+          "required": false,
+          "body": "<p>To fairly assess candidates’ skills and experiences, please <strong>do not use AI tools</strong> when completing this application. Answers generated by AI may disqualify your application, as we’re looking for your own perspective and reasoning.</p>",
+          "kind": "infobox",
+          "translations": {
+            "en": {
+              "body": "<p>To fairly assess candidates’ skills and experiences, please <strong>do not use AI tools</strong> when completing this application. Answers generated by AI may disqualify your application, as we’re looking for your own perspective and reasoning.</p>"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4417187,
+          "position": 2,
+          "options": {
+            "length": 120
+          },
+          "required": true,
+          "body": "Why are you interested in working at Tether?",
+          "kind": "video",
+          "translations": {
+            "en": {
+              "body": "Why are you interested in working at Tether?"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4417188,
+          "position": 3,
+          "options": {},
+          "required": true,
+          "body": "Considering this is a remote role, from which country will you be working?",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Considering this is a remote role, from which country will you be working?"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4417189,
+          "position": 4,
+          "options": {
+            "currency": "USD"
+          },
+          "required": true,
+          "body": "What's your expected annual salary for this role? (in GBP)",
+          "kind": "salary",
+          "translations": {
+            "en": {
+              "body": "What's your expected annual salary for this role? (in GBP)"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4417190,
+          "position": 5,
+          "options": {},
+          "required": true,
+          "body": "Linkedin profile",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Linkedin profile"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4417191,
+          "position": 6,
+          "options": {},
+          "required": false,
+          "body": "Do you have experience in Fintech ( analysing fintech's) &amp; Payments?",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Do you have experience in Fintech ( analysing fintech's) &amp; Payments?"
+            }
+          },
+          "open_question_options": []
+        },
+        {
+          "id": 4417192,
+          "position": 7,
+          "options": {},
+          "required": false,
+          "body": "Do you have strong experience in credit underwriting and structuring ?",
+          "kind": "string",
+          "translations": {
+            "en": {
+              "body": "Do you have strong experience in credit underwriting and structuring ?"
+            }
+          },
+          "open_question_options": []
+        }
+      ],
+      "published_at": "2026-10-06 09:59:42 UTC",
+      "on_site": false,
+      "cover_image": null,
+      "locations": [
+        {
+          "id": 25352,
+          "name": "Spain, Madrid",
+          "state": "Comunidad de Madrid",
+          "country": "Spain",
+          "city": "Madrid",
+          "translations": {
+            "en": {
+              "name": "Spain, Madrid",
+              "city": "Madrid",
+              "postal_code": null,
+              "street": null,
+              "note": null
+            }
+          },
+          "country_code": "ES",
+          "state_code": "MD",
+          "postal_code": null,
+          "street": null,
+          "note": null
+        }
+      ],
+      "department": "Finance",
+      "state_name": "Comunidad de Madrid",
+      "translations": {
+        "en": {
+          "description": "<h4><strong>The role:</strong></h4><p>Tether Capital is launching a new credit vertical focused on providing short-term liquidity and credit facilities to fintech companies, payment providers, exchanges, and other financial institutions.</p><p style=\"min-height: 1.7em;\"></p><p>We are looking for a Credit Lead (underwriter) focused on institutional lending and liquidity&nbsp;to join this new initiative and help build the credit function from the ground up.</p><p>This is a hands-on role for someone with strong experience in credit underwriting and structuring, who is comfortable assessing businesses, making credit recommendations, and developing the policies and processes needed to support a growing lending platform.</p><p style=\"min-height: 1.7em;\"></p>",
+          "title": "Credit Lead (Underwriter), Institutional Lending & Liquidity",
+          "highlight": "<p><strong>You will have the opportunity to help build the credit framework, policies, underwriting standards, and risk processes while also being directly involved in individual transactions.</strong></p><p style=\"min-height: 1.7em;\"></p>",
+          "requirements": "<h4>Key Responsibilities:</h4><ul><li><p>Underwrite and structure credit facilities, including revolving credit facilities, working capital loans, and liquidity facilities.</p></li><li><p>Analyse companies' financial statements, cash flows, liquidity position and repayment capacity.</p></li><li><p>Determine appropriate lending amounts, terms, covenants, security, and other risk protections.</p></li><li><p>Develop credit policies, underwriting guidelines, templates, and concentration limits from scratch.</p></li><li><p>Monitor credit risk and borrower performance and establish appropriate risk-monitoring processes.</p></li><li><p>Support the development and scaling of the new credit business.</p></li></ul><p style=\"min-height: 1.7em;\"></p><h4>Requirements:</h4><ul><li><p><strong>10+ years of relevant credit experience.</strong></p></li><li><p>Strong experience in <strong>credit underwriting and structuring</strong>, rather than purely credit analysis.</p></li><li><p>Previous experience with <strong>fintech &amp; payments is mandatory.</strong></p></li><li><p>Background in institutional lending, private credit, venture debt, specialty finance, or a similar environment.</p></li><li><p>Experience establishing or developing credit policies, processes, or risk frameworks.</p></li><li><p>Crypto, digital assets, or stablecoin experience is a plus, but <strong>not required</strong>.</p></li></ul><p style=\"min-height: 1.7em;\"></p>",
+          "sharing_image": null,
+          "locations_question": "What is your preferred work location?",
+          "sharing_description": "The role:Tether Capital is launching a new credit vertical focused on providing short-term liquidity and credit facilities to fintech companies, payment providers, exchanges, and other financial insti",
+          "sharing_title": "Credit Lead (Underwriter), Institutional Lending & Liquidity"
+        }
+      },
+      "locations_question_required": true,
+      "description": "<h4><strong>The role:</strong></h4><p>Tether Capital is launching a new credit vertical focused on providing short-term liquidity and credit facilities to fintech companies, payment providers, exchanges, and other financial institutions.</p><p style=\"min-height: 1.7em;\"></p><p>We are looking for a Credit Lead (underwriter) focused on institutional lending and liquidity&nbsp;to join this new initiative and help build the credit function from the ground up.</p><p>This is a hands-on role for someone with strong experience in credit underwriting and structuring, who is comfortable assessing businesses, making credit recommendations, and developing the policies and processes needed to support a growing lending platform.</p><p style=\"min-height: 1.7em;\"></p>",
+      "postal_code": null,
+      "remote": true,
+      "slug": "credit-lead-underwriter-institutional-lending-liquidity-1",
+      "close_at": null,
+      "careers_apply_url": "https://tether.recruitee.com/o/credit-lead-underwriter-institutional-lending-liquidity-1/c/new",
+      "hybrid": false,
+      "location": "Remote job",
+      "highlight": "<p><strong>You will have the opportunity to help build the credit framework, policies, underwriting standards, and risk processes while also being directly involved in individual transactions.</strong></p><p style=\"min-height: 1.7em;\"></p>",
+      "id": 2772772,
+      "options_cover_letter": "off",
+      "sharing_description": "The role:Tether Capital is launching a new credit vertical focused on providing short-term liquidity and credit facilities to fintech companies, payment providers, exchanges, and other financial insti",
+      "status": "published",
+      "careers_url": "https://tether.recruitee.com/o/credit-lead-underwriter-institutional-lending-liquidity-1",
+      "location_question_visible": false
+    }
+  ]
+}

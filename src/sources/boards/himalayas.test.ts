@@ -66,7 +66,10 @@ describe("himalayas adapter", () => {
       title: "Java developer - Germany",
       company: "Blackbird Collective",
       location: "Germany",
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: [
         "java development", "backend engineering", "software engineer", "kotlin", "backend development",
         "java developer", "java developer jobs", "java application developer", "java software engineer", "senior",
@@ -97,6 +100,6 @@ describe("himalayas adapter", () => {
   it("applies the tech filter via runAdapter", async () => {
     const { adapter, ctx } = setup(() => ({ jobs: fixture.jobs, nextCursor: null }));
     const r = await runAdapter(adapter, ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 1 });
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 2 });
   });
 });

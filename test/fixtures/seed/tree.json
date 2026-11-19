@@ -1,0 +1,14 @@
+{
+  "sha": "abc",
+  "truncated": false,
+  "tree": [
+    { "path": "README.md", "type": "blob" },
+    { "path": "src/companies", "type": "tree" },
+    { "path": "src/companies/acme.md", "type": "blob" },
+    { "path": "src/companies/globex.md", "type": "blob" },
+    { "path": "src/companies/no-title.md", "type": "blob" },
+    { "path": "src/companies/broken.md", "type": "blob" },
+    { "path": "src/companies/sub/nested.md", "type": "blob" },
+    { "path": "src/pages/about.md", "type": "blob" }
+  ]
+}

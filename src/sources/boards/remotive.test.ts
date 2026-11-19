@@ -37,7 +37,10 @@ describe("remotive adapter", () => {
       title: "Tier III Service Desk Engineer",
       company: "Unio Digital",
       location: "Worldwide",
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: [
         "azure", "cisco", "security", "video", "documentation", "hardware", "helpdesk",
         "onboarding", "msp", "ticketing", "microsoft 365", "it systems", "information technology",
@@ -60,7 +63,7 @@ describe("remotive adapter", () => {
 
   it("applies the tech filter via runAdapter", async () => {
     const r = await runAdapter(remotive, ctxWith(fixture).ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 1 });
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 3 });
   });
 
   it("has a 6 hour minimum interval (their terms allow ~4 calls a day)", () => {

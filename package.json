@@ -14,7 +14,9 @@
     "fetch": "tsx src/scripts/fetch.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "seed": "tsx src/scripts/seed.ts",
+    "company": "tsx src/scripts/company.ts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

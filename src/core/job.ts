@@ -1,17 +1,22 @@
 import { z } from "zod";
 
-export const SOURCE_IDS = [
+export const BOARD_IDS = [
   "remoteok",
   "weworkremotely",
-  "getonboard",
   "remotive",
   "himalayas",
   "jobicy",
   "workingnomads",
   "arbeitnow",
-  "hn-hiring",
 ] as const;
+export const ATS_IDS = ["greenhouse", "lever", "ashby", "recruitee", "smartrecruiters"] as const;
+export const SOURCE_IDS = [...BOARD_IDS, ...ATS_IDS] as const;
+export type BoardId = (typeof BOARD_IDS)[number];
+export type AtsId = (typeof ATS_IDS)[number];
 export type SourceId = (typeof SOURCE_IDS)[number];
+
+export const WORKPLACE_TYPES = ["remote", "hybrid", "onsite"] as const;
+export type WorkplaceType = (typeof WORKPLACE_TYPES)[number];
 
 export const JobSchema = z.object({
   source: z.enum(SOURCE_IDS),
@@ -24,7 +29,11 @@ export const JobSchema = z.object({
   /** Free text as given by the source. */
   location: z.string().nullable(),
   /** null = unknown. */
-  remote: z.boolean().nullable(),
+  workplaceType: z.enum(WORKPLACE_TYPES).nullable(),
+  departments: z.array(z.string()),
+  /** Our own region vocabulary, derived from the location text. */
+  regions: z.array(z.string()),
+  employmentType: z.string().nullable(),
   /** Always passed through normalizeTags. */
   tags: z.array(z.string()),
   salaryMin: z.number().positive().nullable(),

@@ -29,7 +29,7 @@ const adapter: SourceAdapter<Raw> = {
   name: "Jobicy",
   homepage: "https://jobicy.com",
   minIntervalMinutes: 60,
-  techFilter: false,
+  techFilter: true,
   itemSchema: ItemSchema,
 
   async fetch({ http }) {
@@ -51,7 +51,10 @@ const adapter: SourceAdapter<Raw> = {
       title: decodeEntities(raw.jobTitle),
       company: decodeEntities(raw.companyName),
       location: raw.jobGeo || null,
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: normalizeTags([...raw.jobIndustry, ...raw.jobType, raw.jobLevel]),
       salaryMin,
       salaryMax,

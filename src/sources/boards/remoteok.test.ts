@@ -46,7 +46,10 @@ describe("remoteok adapter", () => {
       title: "Feltsense AI Engineer",
       company: "Silver.dev",
       location: null,
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: [
         "design", "sys admin", "exec", "technical", "customer support", "dev", "testing", "javascript",
         "cloud", "postgres", "typescript", "node", "node.js", "engineer", "backend", "digital nomad",

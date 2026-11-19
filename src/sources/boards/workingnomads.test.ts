@@ -36,7 +36,10 @@ describe("workingnomads adapter", () => {
       title: "Senior SecOps Engineer",
       company: "Proxify",
       location: "Time zone: CET (+/- 3 hours)",
-      remote: true,
+      workplaceType: "remote",
+      departments: [],
+      regions: [],
+      employmentType: null,
       tags: ["security", "operations", "cloud", "audit", "compliance", "development"],
       salaryMin: null,
       salaryMax: null,
@@ -65,6 +68,6 @@ describe("workingnomads adapter", () => {
 
   it("applies the tech filter via runAdapter", async () => {
     const r = await runAdapter(workingnomads, ctxWith(fixture).ctx);
-    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 1 });
+    expect(r).toMatchObject({ status: "success", fetched: 3, invalid: 0, filtered: 2 });
   });
 });

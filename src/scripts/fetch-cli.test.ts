@@ -1,18 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
-import { adapters } from "@/sources/registry";
-import { CliUsageError, parseFetchArgs, runCli, type SummaryRow } from "./fetch-cli";
+import { atsAdapters, atsProbes, boardAdapters } from "@/sources/registry";
+import { CliUsageError } from "./cli-errors";
+import { parseFetchArgs, runFetchCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
 
 describe("parseFetchArgs", () => {
   it("returns defaults for no arguments", () => {
-    expect(parseFetchArgs([])).toEqual({ sources: [], force: false });
+    expect(parseFetchArgs([])).toEqual({ sources: [], force: false, skipResolve: false });
   });
 
   it("parses --force", () => {
-    expect(parseFetchArgs(["--force"])).toEqual({ sources: [], force: true });
+    expect(parseFetchArgs(["--force"])).toEqual({ sources: [], force: true, skipResolve: false });
   });
 
   it("parses a single --source", () => {
-    expect(parseFetchArgs(["--source", "remoteok"])).toEqual({ sources: ["remoteok"], force: false });
+    expect(parseFetchArgs(["--source", "remoteok"])).toEqual({ sources: ["remoteok"], force: false, skipResolve: false });
   });
 
   it("splits a comma separated --source", () => {
@@ -27,9 +28,14 @@ describe("parseFetchArgs", () => {
     expect(parseFetchArgs(["--source", "jobicy,,remoteok", "--source", "jobicy"]).sources).toEqual(["jobicy", "remoteok"]);
   });
 
+  it("parses --skip-resolve", () => {
+    expect(parseFetchArgs(["--skip-resolve"])).toEqual({ sources: [], force: false, skipResolve: true });
+    expect(parseFetchArgs(["--source", "lever", "--skip-resolve", "--force"])).toEqual({ sources: ["lever"], force: true, skipResolve: true });
+  });
+
   it("accepts flags in any order", () => {
-    expect(parseFetchArgs(["--force", "--source", "jobicy"])).toEqual({ sources: ["jobicy"], force: true });
-    expect(parseFetchArgs(["--source", "jobicy", "--force"])).toEqual({ sources: ["jobicy"], force: true });
+    expect(parseFetchArgs(["--force", "--source", "jobicy"])).toEqual({ sources: ["jobicy"], force: true, skipResolve: false });
+    expect(parseFetchArgs(["--source", "jobicy", "--force"])).toEqual({ sources: ["jobicy"], force: true, skipResolve: false });
   });
 
   it.each([
@@ -64,19 +70,21 @@ function deps() {
   return {
     openDb: vi.fn(),
     http: { getJson: vi.fn(), getText: vi.fn() },
-    adapters,
+    boardAdapters,
+    atsAdapters,
+    probes: atsProbes,
     out: {
       log: vi.fn<(msg: string) => void>(),
       error: vi.fn<(msg: string) => void>(),
-      table: vi.fn<(rows: SummaryRow[]) => void>(),
+      table: vi.fn<(rows: SummaryRow[] | AtsSummaryRow[]) => void>(),
     },
   };
 }
 
-describe("runCli argument validation", () => {
+describe("runFetchCli argument validation", () => {
   it("returns 1 and does not open the DB for an unknown source", async () => {
     const d = deps();
-    expect(await runCli(["--source", "nope"], d)).toBe(1);
+    expect(await runFetchCli(["--source", "nope"], d)).toBe(1);
     expect(d.openDb).not.toHaveBeenCalled();
     expect(d.http.getJson).not.toHaveBeenCalled();
     expect(d.out.table).not.toHaveBeenCalled();
@@ -84,29 +92,38 @@ describe("runCli argument validation", () => {
 
   it("lists the valid ids in the unknown-source message", async () => {
     const d = deps();
-    await runCli(["--source", "nope"], d);
+    await runFetchCli(["--source", "nope"], d);
     expect(d.out.error).toHaveBeenCalledTimes(1);
     expect(d.out.error).toHaveBeenCalledWith(
-      "Unknown source: nope. Valid: remoteok, weworkremotely, getonboard, remotive, himalayas, jobicy, workingnomads, arbeitnow, hn-hiring",
+      "Unknown source: nope. Valid: remoteok, weworkremotely, remotive, himalayas, jobicy, workingnomads, arbeitnow, greenhouse, lever, ashby, recruitee, smartrecruiters",
     );
+  });
+
+  it("accepts ATS ids as sources", async () => {
+    const d = deps();
+    d.openDb.mockImplementation(() => {
+      throw new Error("opened");
+    });
+    await expect(runFetchCli(["--source", "lever,greenhouse"], d)).rejects.toThrow("opened");
+    expect(d.out.error).not.toHaveBeenCalled();
   });
 
   it("reports the first unknown id when several are given", async () => {
     const d = deps();
-    await runCli(["--source", "remoteok,nope,other"], d);
+    await runFetchCli(["--source", "remoteok,nope,other"], d);
     expect(d.out.error).toHaveBeenCalledWith(expect.stringMatching(/^Unknown source: nope\./));
   });
 
   it("returns 1 and does not open the DB for a usage error", async () => {
     const d = deps();
-    expect(await runCli(["--bogus"], d)).toBe(1);
+    expect(await runFetchCli(["--bogus"], d)).toBe(1);
     expect(d.openDb).not.toHaveBeenCalled();
     expect(d.out.error).toHaveBeenCalledWith("Unknown option: --bogus");
   });
 
   it("returns 1 for a missing --source value", async () => {
     const d = deps();
-    expect(await runCli(["--source"], d)).toBe(1);
+    expect(await runFetchCli(["--source"], d)).toBe(1);
     expect(d.out.error).toHaveBeenCalledWith("Missing value for --source");
     expect(d.openDb).not.toHaveBeenCalled();
   });

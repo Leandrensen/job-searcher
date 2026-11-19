@@ -1,85 +1,62 @@
 import { describe, expect, it } from "vitest";
 import { isTechJob, TECH_KEYWORDS } from "./tech-filter";
 
-const job = (title: string, tags: string[] = []) => ({ title, tags });
+const job = (title: string, departments: string[] = [], tags: string[] = []) => ({ title, departments, tags });
 
 describe("isTechJob", () => {
   describe("matches tech roles", () => {
     it.each([
-      "Senior React Developer",
-      "Site Reliability Engineer",
-      "Full-Stack Dev",
+      "Senior Full-Stack Engineer",
       "Frontend Engineer",
-      "Back End Developer",
-      "DevOps Lead",
-      "SRE",
-      "Data Scientist",
-      "Machine Learning Researcher",
-      "QA Analyst",
-      "iOS Developer",
-      "Android Engineer",
-      "Cloud Architect",
-      "Database Administrator",
-      "IT Support Specialist",
-      "Technical Support Specialist",
-      "CTO",
-      "Tech Lead",
-      "Senior Software Engineer (Python)",
+      "Back-End Developer",
+      "Software Engineer",
+      "Senior Software Developer",
+      "Web Developer",
+      "UI Engineer",
+      "Product Engineer",
+      "React Native Developer", // accepted false positive: mobile
+      "Node.js Developer",
+      "TypeScript Engineer",
+      "Next.js Developer",
+      "Martech Engineer",
+      "Marketing Technology Manager",
+      "Snowflake Data Engineer",
+      "AWS Cloud Engineer",
     ])("%s", (title) => {
       expect(isTechJob(job(title))).toBe(true);
     });
 
-    it("matches via tags only", () => {
-      expect(isTechJob(job("Rockstar", ["software development"]))).toBe(true);
-      expect(isTechJob(job("Rockstar", ["machine-learning"]))).toBe(true);
+    it("matches via department or tags", () => {
+      expect(isTechJob(job("Rockstar", ["Frontend"]))).toBe(true);
+      expect(isTechJob(job("Rockstar", [], ["full stack programming"]))).toBe(true);
     });
   });
 
-  describe("rejects non-tech roles", () => {
+  describe("rejects other roles", () => {
     it.each([
       "Account Executive",
-      "Email Marketing Manager",
-      "Registered Nurse",
-      "Recruiter",
-      "Customer Success Manager",
-      "Paid Social Specialist",
-      "Accountant",
-      "Content Writer",
-      "Revenue Cycle Manager",
-      "Senior Medical Director, Product Safety Physician Lead",
-      "Studio Manager",
-      "Bios Technician",
-    ])("%s", (title) => {
-      expect(isTechJob(job(title))).toBe(false);
-    });
-
-    it("ignores non-tech tags", () => {
-      expect(isTechJob(job("Account Executive", ["sales"]))).toBe(false);
-    });
-  });
-
-  // KNOWN AND ACCEPTED: the filter is a keyword heuristic, so these non-tech jobs pass.
-  // M3 (Claude scoring) removes them later. Changing one of these to `false` is a deliberate
-  // behavior change: update this table and the PLAN.md decisions log together.
-  describe("accepted false positives", () => {
-    it.each([
-      "Security Guard",
-      "AI Trainer",
-      "Platform Sales Manager",
       "Sales Engineer",
-      "Web Designer",
-      "Mobile Sales Representative",
-      "Cloud Kitchen Manager",
+      "Data Scientist",
+      "DevOps Engineer",
+      "Site Reliability Engineer",
+      "Security Guard",
+      "Registered Nurse",
+      "Customer Success Manager",
+      "Product Manager",
+      "Next Generation Sales Lead", // "next" alone is not a keyword
+      "Engineer",
     ])("%s", (title) => {
-      expect(isTechJob(job(title))).toBe(true);
+      expect(isTechJob(job(title))).toBe(false);
     });
   });
 
-  // KNOWN AND ACCEPTED: tech roles whose titles use none of the keywords are missed.
-  describe("known false negatives", () => {
-    it.each(["Rust Wizard", "Kubernetes Specialist", "Golang Ninja"])("%s", (title) => {
-      expect(isTechJob(job(title))).toBe(false);
-    });
+  it("never reads descriptions", () => {
+    expect(isTechJob({ ...job("Account Executive"), descriptionText: "We use React and Node" } as never)).toBe(false);
+  });
+
+  // KNOWN AND ACCEPTED: keywords on the title can match non-developer roles. Claude scoring (M4) handles these.
+  it("accepts the known false positive 'Segment Marketing Manager'", () => {
+    expect(isTechJob(job("Segment Marketing Manager"))).toBe(true);
   });
 
   it.each([...TECH_KEYWORDS])("every keyword matches itself: %s", (keyword) => {

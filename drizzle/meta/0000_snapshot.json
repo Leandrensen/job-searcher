@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4be83d7a-5659-460d-9d6d-0c3e5a4f36f0",
+  "id": "1d12d387-7b0f-4bcb-8701-423992fe66b8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "fetch_runs": {
@@ -164,9 +164,32 @@
           "notNull": false,
           "autoincrement": false
         },
-        "remote": {
-          "name": "remote",
-          "type": "integer",
+        "workplace_type": {
+          "name": "workplace_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "departments": {
+          "name": "departments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "regions": {
+          "name": "regions",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "employment_type": {
+          "name": "employment_type",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

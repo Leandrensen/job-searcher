@@ -1,19 +1,23 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Job } from "@/core/job";
 import { openDb, type Db } from "./client";
-import { countJobs, lastSuccessfulRunAt, latestPostedAt, recordRun, upsertJobs } from "./queries";
+import { insertOrGetCompany } from "./companies";
+import { compactClosedJobs, countJobs, lastSuccessfulRunAt, latestPostedAt, markClosedJobs, recordRun, upsertJobs } from "./queries";
 import { jobs } from "./schema";
 
 function makeJob(over: Partial<Job> = {}): Job {
   return {
-    source: "remoteok",
+    source: "greenhouse",
     externalId: "1",
     url: "https://example.com/1",
     applyUrl: null,
     title: "Developer",
     company: "Acme",
     location: null,
-    remote: true,
+    workplaceType: "remote",
+    departments: [],
+    regions: [],
+    employmentType: null,
     tags: ["react"],
     salaryMin: null,
     salaryMax: null,
@@ -36,8 +40,8 @@ describe("upsertJobs", () => {
     const r = upsertJobs(db, [makeJob(), makeJob({ externalId: "2" })], "2026-11-09T00:00:00.000Z");
     expect(r).toEqual({ inserted: 2, updated: 0 });
     expect(countJobs(db)).toBe(2);
-    expect(countJobs(db, "remoteok")).toBe(2);
-    expect(countJobs(db, "jobicy")).toBe(0);
+    expect(countJobs(db, "greenhouse")).toBe(2);
+    expect(countJobs(db, "lever")).toBe(0);
   });
 
   it("second upsert of same jobs counts as updated and keeps firstSeenAt", () => {
@@ -58,24 +62,50 @@ describe("upsertJobs", () => {
   });
 
   it("treats the same externalId on different sources as different jobs", () => {
-    const r = upsertJobs(db, [makeJob(), makeJob({ source: "jobicy" })], "2026-11-09T00:00:00.000Z");
+    const r = upsertJobs(db, [makeJob(), makeJob({ source: "lever" })], "2026-11-09T00:00:00.000Z");
     expect(r.inserted).toBe(2);
+  });
+});
+
+describe("latestPostedAt for boards", () => {
+  it("reads the newest postedAt recorded by successful runs, not the jobs table", () => {
+    expect(latestPostedAt(db, "remoteok")).toBeNull();
+    recordRun(db, { source: "remoteok", startedAt: "a", finishedAt: "a", status: "success", latestPostedAt: "2026-11-05T00:00:00.000Z" });
+    recordRun(db, { source: "remoteok", startedAt: "b", finishedAt: "b", status: "success", latestPostedAt: "2026-11-08T00:00:00.000Z" });
+    recordRun(db, { source: "remoteok", startedAt: "c", finishedAt: "c", status: "error", latestPostedAt: "2026-12-01T00:00:00.000Z" });
+    recordRun(db, { source: "remoteok", startedAt: "d", finishedAt: "d", status: "success", latestPostedAt: null });
+    recordRun(db, { source: "jobicy", startedAt: "e", finishedAt: "e", status: "success", latestPostedAt: "2026-11-09T00:00:00.000Z" });
+    expect(latestPostedAt(db, "remoteok")).toBe("2026-11-08T00:00:00.000Z");
+  });
+});
+
+describe("upsertJobs", () => {
+  it("refuses board jobs, which are never stored", () => {
+    expect(() => upsertJobs(db, [makeJob({ source: "remoteok" })], "2026-11-09T00:00:00.000Z")).toThrow(
+      "upsertJobs: board jobs are not stored (remoteok)",
+    );
+    expect(countJobs(db)).toBe(0);
+  });
+
+  it("refuses the whole batch when any job is a board job", () => {
+    expect(() => upsertJobs(db, [makeJob(), makeJob({ source: "jobicy", externalId: "2" })], "2026-11-09T00:00:00.000Z")).toThrow();
+    expect(countJobs(db)).toBe(0);
   });
 });
 
 describe("latestPostedAt", () => {
   it("returns max postedAt per source and null when empty", () => {
-    expect(latestPostedAt(db, "remoteok")).toBeNull();
+    expect(latestPostedAt(db, "greenhouse")).toBeNull();
     upsertJobs(
       db,
       [
         makeJob({ postedAt: "2026-11-01T00:00:00.000Z" }),
         makeJob({ externalId: "2", postedAt: "2026-11-05T00:00:00.000Z" }),
-        makeJob({ source: "jobicy", postedAt: "2026-11-09T00:00:00.000Z" }),
+        makeJob({ source: "lever", postedAt: "2026-11-09T00:00:00.000Z" }),
       ],
       "2026-11-09T00:00:00.000Z",
     );
-    expect(latestPostedAt(db, "remoteok")).toBe("2026-11-05T00:00:00.000Z");
+    expect(latestPostedAt(db, "greenhouse")).toBe("2026-11-05T00:00:00.000Z");
   });
 });
 
@@ -93,13 +123,22 @@ describe("duplicate marking", () => {
   const NOW = "2026-11-09T00:00:00.000Z";
 
   it("marks same company+title from another source as duplicate", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a", company: "Acme Inc", title: "Senior Dev!" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", company: "ACME", title: "senior dev" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a", company: "Acme Inc", title: "Senior Dev!" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", company: "ACME", title: "senior dev" })], NOW);
     const rows = db.select().from(jobs).all();
-    const original = rows.find((r) => r.source === "remoteok");
-    const copy = rows.find((r) => r.source === "jobicy");
+    const original = rows.find((r) => r.source === "greenhouse");
+    const copy = rows.find((r) => r.source === "lever");
     expect(original?.duplicateOf).toBeNull();
     expect(copy?.duplicateOf).toBe(original?.id);
+  });
+
+  it("does not mark a new job as a duplicate of a closed one", () => {
+    const acme = insertOrGetCompany(db, { ats: "lever", slug: "acme", name: "Acme", website: null, homeCountry: null, origin: "manual" }, NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "acme:a", company: "Acme", title: "Senior Dev" })], NOW, { companyId: acme });
+    markClosedJobs(db, acme, [], NOW);
+    upsertJobs(db, [makeJob({ source: "ashby", externalId: "acme:b", company: "Acme", title: "Senior Dev" })], "2026-11-10T00:00:00.000Z");
+    const copy = db.select().from(jobs).all().find((r) => r.source === "ashby");
+    expect(copy?.duplicateOf).toBeNull();
   });
 
   it("does not mark same-source jobs", () => {
@@ -108,40 +147,137 @@ describe("duplicate marking", () => {
   });
 
   it("does not mark when original is older than 30 days", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a" })], "2026-10-09T00:00:00.000Z");
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a" })], "2026-10-09T00:00:00.000Z");
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b" })], NOW);
     expect(db.select().from(jobs).all().every((r) => r.duplicateOf === null)).toBe(true);
   });
 
   it("matches on identical applyUrl", () => {
     const applyUrl = "https://boards.greenhouse.io/acme/jobs/1";
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a", title: "Dev A", applyUrl })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", company: "Other", title: "Totally different", applyUrl })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a", title: "Dev A", applyUrl })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", company: "Other", title: "Totally different", applyUrl })], NOW);
     const rows = db.select().from(jobs).all();
-    expect(rows.find((r) => r.source === "jobicy")?.duplicateOf).toBe(rows.find((r) => r.source === "remoteok")?.id);
+    expect(rows.find((r) => r.source === "lever")?.duplicateOf).toBe(rows.find((r) => r.source === "greenhouse")?.id);
   });
 
   it("does not match null applyUrls to each other", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a", title: "One" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", company: "Other", title: "Two" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a", title: "One" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", company: "Other", title: "Two" })], NOW);
     expect(db.select().from(jobs).all().every((r) => r.duplicateOf === null)).toBe(true);
   });
 
   it("points at the oldest original and never chains duplicates", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b" })], NOW);
-    upsertJobs(db, [makeJob({ source: "remotive", externalId: "c" })], NOW);
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b" })], NOW);
+    upsertJobs(db, [makeJob({ source: "ashby", externalId: "c" })], NOW);
     const rows = db.select().from(jobs).all();
-    const original = rows.find((r) => r.source === "remoteok");
-    expect(rows.find((r) => r.source === "jobicy")?.duplicateOf).toBe(original?.id);
-    expect(rows.find((r) => r.source === "remotive")?.duplicateOf).toBe(original?.id);
+    const original = rows.find((r) => r.source === "greenhouse");
+    expect(rows.find((r) => r.source === "lever")?.duplicateOf).toBe(original?.id);
+    expect(rows.find((r) => r.source === "ashby")?.duplicateOf).toBe(original?.id);
   });
 
   it("does not change duplicateOf when an existing job is updated", () => {
-    upsertJobs(db, [makeJob({ source: "remoteok", externalId: "a" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b" })], NOW);
-    upsertJobs(db, [makeJob({ source: "jobicy", externalId: "b", title: "Developer" })], "2026-11-10T00:00:00.000Z");
-    const copy = db.select().from(jobs).all().find((r) => r.source === "jobicy");
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "a" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b" })], NOW);
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", title: "Developer" })], "2026-11-10T00:00:00.000Z");
+    const copy = db.select().from(jobs).all().find((r) => r.source === "lever");
     expect(copy?.duplicateOf).not.toBeNull();
+  });
+});
+
+describe("ATS job storage", () => {
+  const NOW = "2026-11-16T12:00:00.000Z";
+  const daysAgo = (d: number) => new Date(Date.parse(NOW) - d * 86_400_000).toISOString();
+  const company = (slug: string) =>
+    insertOrGetCompany(db, { ats: "greenhouse", slug, name: slug, website: null, homeCountry: null, origin: "manual" }, NOW);
+  const ats = (externalId: string, over: Partial<Job> = {}) =>
+    makeJob({ source: "greenhouse", externalId: `acme:${externalId}`, title: `Engineer ${externalId}`, ...over });
+  const rows = () => db.select().from(jobs).all();
+
+  it("stores companyId", () => {
+    const id = company("acme");
+    upsertJobs(db, [ats("1")], NOW, { companyId: id });
+    expect(rows()[0]?.companyId).toBe(id);
+  });
+
+  it("markClosedJobs closes only unseen open jobs of that company", () => {
+    const acme = company("acme");
+    const other = company("other");
+    upsertJobs(db, [ats("1"), ats("2"), ats("3")], NOW, { companyId: acme });
+    upsertJobs(db, [makeJob({ source: "greenhouse", externalId: "other:1", title: "Other job" })], NOW, { companyId: other });
+    const closed = markClosedJobs(db, acme, ["acme:1", "acme:3"], "2026-11-17T00:00:00.000Z");
+    expect(closed).toBe(1);
+    const byId = Object.fromEntries(rows().map((r) => [r.externalId, r.closedAt]));
+    expect(byId).toEqual({
+      "acme:1": null,
+      "acme:2": "2026-11-17T00:00:00.000Z",
+      "acme:3": null,
+      "other:1": null,
+    });
+    // Already-closed jobs are not closed again.
+    expect(markClosedJobs(db, acme, ["acme:1", "acme:3"], "2026-11-18T00:00:00.000Z")).toBe(0);
+    expect(rows().find((r) => r.externalId === "acme:2")?.closedAt).toBe("2026-11-17T00:00:00.000Z");
+  });
+
+  it("markClosedJobs with an empty list closes all of the company's open jobs", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("1"), ats("2")], NOW, { companyId: acme });
+    expect(markClosedJobs(db, acme, [], NOW)).toBe(2);
+  });
+
+  it("a reappearing job is reopened by upsert", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("1")], NOW, { companyId: acme });
+    markClosedJobs(db, acme, [], NOW);
+    expect(rows()[0]?.closedAt).toBe(NOW);
+    const r = upsertJobs(db, [ats("1")], "2026-11-17T00:00:00.000Z", { companyId: acme });
+    expect(r).toEqual({ inserted: 0, updated: 1 });
+    expect(rows()[0]?.closedAt).toBeNull();
+  });
+
+  it("compaction drops descriptions of jobs closed 30+ days ago and keeps the rows", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("old"), ats("recent"), ats("open")], NOW, { companyId: acme });
+    markClosedJobs(db, acme, ["acme:recent", "acme:open"], daysAgo(31)); // closes "old" 31 days ago
+    markClosedJobs(db, acme, ["acme:open"], daysAgo(29)); // closes "recent" 29 days ago
+    expect(compactClosedJobs(db, NOW)).toBe(1);
+    expect(rows().map((r) => [r.externalId, r.descriptionHtml, r.descriptionText])).toEqual([
+      ["acme:old", "", ""],
+      ["acme:recent", "<p>x</p>", "x"],
+      ["acme:open", "<p>x</p>", "x"],
+    ]);
+    expect(compactClosedJobs(db, NOW)).toBe(0);
+  });
+
+  it("a compacted job that reappears keeps its id and gets its description back", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("old")], NOW, { companyId: acme });
+    markClosedJobs(db, acme, [], daysAgo(31));
+    compactClosedJobs(db, NOW);
+    const id = rows()[0]!.id;
+    expect(upsertJobs(db, [ats("old")], NOW, { companyId: acme })).toEqual({ inserted: 0, updated: 1 });
+    expect(rows().find((r) => r.externalId === "acme:old")).toMatchObject({ id, closedAt: null, descriptionHtml: "<p>x</p>", descriptionText: "x" });
+  });
+
+  it("compaction keeps duplicate links", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("1", { title: "Same Title", company: "Acme" })], NOW, { companyId: acme });
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "acme:9", title: "Same Title", company: "Acme" })], NOW);
+    markClosedJobs(db, acme, [], daysAgo(40));
+    compactClosedJobs(db, NOW);
+    const original = rows().find((r) => r.source === "greenhouse")!;
+    expect(rows()).toHaveLength(2);
+    expect(rows().find((r) => r.source === "lever")?.duplicateOf).toBe(original.id);
+  });
+
+  it("countJobs openOnly excludes closed jobs and still accepts a plain source", () => {
+    const acme = company("acme");
+    upsertJobs(db, [ats("1"), ats("2")], NOW, { companyId: acme });
+    markClosedJobs(db, acme, ["acme:1"], NOW);
+    expect(countJobs(db)).toBe(2);
+    expect(countJobs(db, { openOnly: true })).toBe(1);
+    expect(countJobs(db, { source: "greenhouse", openOnly: true })).toBe(1);
+    expect(countJobs(db, { source: "lever" })).toBe(0);
+    expect(countJobs(db, "greenhouse")).toBe(2);
   });
 });
