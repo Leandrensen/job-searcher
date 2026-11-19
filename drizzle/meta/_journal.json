@@ -36,6 +36,13 @@
       "when": 1795031072142,
       "tag": "0004_previous_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1795130842816,
+      "tag": "0005_opposite_celestials",
+      "breakpoints": true
     }
   ]
 }

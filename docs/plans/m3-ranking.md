@@ -182,7 +182,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
 - Tests first (`client.test.ts`): add `creates job_embeddings and stores a vector blob`. Insert a job, then a `jobEmbeddings` row with `vector: Buffer.from(new Float32Array([0.5, -1]).buffer)`. Reading it back as a copy, `Array.from(new Float32Array(row.vector.buffer.slice(row.vector.byteOffset, row.vector.byteOffset + row.vector.byteLength)))` gives `[0.5, -1]`.
 - Verify: `npm test -- src/db/client.test.ts` passes, `npx drizzle-kit generate` then reports "No schema changes", and `ls drizzle/*.sql | wc -l` is `6`.
 - Commit: `feat(m3): add the job_embeddings table (M3 T4)`
-- [ ] Done
+- [x] Done
 
 ### T5: Ranking queries
 - Depends on: T4

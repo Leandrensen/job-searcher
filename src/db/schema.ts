@@ -1,4 +1,4 @@
-import { index, integer, real, sqliteTable, text, uniqueIndex, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
+import { blob, index, integer, real, sqliteTable, text, uniqueIndex, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 import { ATS_IDS } from "../core/job";
 
 export const companies = sqliteTable(
@@ -114,3 +114,15 @@ export const fetchRuns = sqliteTable(
   },
   (t) => [index("fetch_runs_source_started_idx").on(t.source, t.startedAt)],
 );
+
+/** One local embedding per job. Re-computed only when the model or the embedded text (its hash) changes. */
+export const jobEmbeddings = sqliteTable("job_embeddings", {
+  jobId: integer("job_id")
+    .primaryKey()
+    .references(() => jobs.id),
+  model: text("model").notNull(),
+  textHash: text("text_hash").notNull(),
+  /** Float32Array bytes, little-endian. */
+  vector: blob("vector", { mode: "buffer" }).notNull(),
+  createdAt: text("created_at").notNull(),
+});
