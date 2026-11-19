@@ -24,6 +24,14 @@ describe("normalizeCompany", () => {
     ["Visa", "visa"],
     ["Inc", "inc"],
     ["Ácme", "ácme"],
+    ["Acme Co., Ltd", "acme"],
+    ["  ACME   Inc.  ", "acme"],
+    ["Acme Inc Inc", "acme"],
+    ["Acme GmbH & Co", "acmegmbh"],
+    ["", ""],
+    ["Inc.", "inc"],
+    ["Ltd", "ltd"],
+    ["Société Générale SA", "sociétégénérale"],
   ])("normalizes %j to %j", (input, expected) => {
     expect(normalizeCompany(input)).toBe(expected);
   });
@@ -39,7 +47,22 @@ describe("normalizeTitle", () => {
   });
 });
 
+describe("normalizeTitle edge cases", () => {
+  it("handles empty and punctuation-only titles", () => {
+    expect(normalizeTitle("")).toBe("");
+    expect(normalizeTitle(" -- / ")).toBe("");
+  });
+
+  it("keeps non-ASCII letters and digits", () => {
+    expect(normalizeTitle("Développeur C++ (Sénior) #2")).toBe("développeur c sénior 2");
+  });
+});
+
 describe("dedupeKey", () => {
+  it("separates different companies with the same title", () => {
+    expect(dedupeKey({ company: "Acme", title: "Dev" })).not.toBe(dedupeKey({ company: "Beta", title: "Dev" }));
+  });
+
   it("is stable across formatting", () => {
     expect(dedupeKey({ company: "ACME Inc", title: "Senior React Dev!" })).toBe(
       dedupeKey({ company: "acme", title: "senior react dev" }),

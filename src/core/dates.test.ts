@@ -24,4 +24,33 @@ describe("toIsoUtc", () => {
     expect(toIsoUtc(null)).toBeNull();
     expect(toIsoUtc(undefined)).toBeNull();
   });
+
+  it("accepts a space separator, missing seconds and fractional seconds in naive strings", () => {
+    expect(toIsoUtc("2026-11-07 01:10:55")).toBe("2026-11-07T01:10:55.000Z");
+    expect(toIsoUtc("2026-11-07T01:10")).toBe("2026-11-07T01:10:00.000Z");
+    expect(toIsoUtc("2026-11-07T01:10:55.123")).toBe("2026-11-07T01:10:55.123Z");
+  });
+
+  it("keeps an explicit Z and trims surrounding whitespace", () => {
+    expect(toIsoUtc("  2026-11-07T01:10:55Z  ")).toBe("2026-11-07T01:10:55.000Z");
+  });
+
+  it("treats date-only strings as UTC midnight", () => {
+    expect(toIsoUtc("2026-11-07")).toBe("2026-11-07T00:00:00.000Z");
+  });
+
+  it("treats epoch 0 as a valid date, not as missing", () => {
+    expect(toIsoUtc(0)).toBe("1970-01-01T00:00:00.000Z");
+  });
+
+  it("returns null for whitespace-only and non-finite or out-of-range numbers", () => {
+    expect(toIsoUtc("   ")).toBeNull();
+    expect(toIsoUtc(Number.NaN)).toBeNull();
+    expect(toIsoUtc(Number.POSITIVE_INFINITY)).toBeNull();
+    expect(toIsoUtc(1e20)).toBeNull();
+  });
+
+  it("returns null for an impossible naive date", () => {
+    expect(toIsoUtc("2026-13-45T00:00:00")).toBeNull();
+  });
 });
