@@ -16,7 +16,8 @@
     "db:migrate": "drizzle-kit migrate",
     "test:coverage": "vitest run --coverage",
     "seed": "tsx src/scripts/seed.ts",
-    "company": "tsx src/scripts/company.ts"
+    "company": "tsx src/scripts/company.ts",
+    "rank": "tsx src/scripts/rank.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.2",

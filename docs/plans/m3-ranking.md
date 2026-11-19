@@ -381,7 +381,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
 - Tests first: none (wiring only). This is checked by the real run below.
 - Verify: `npm test`, lint and typecheck pass. `npm run rank -- --bogus; echo $?` prints `Unknown option: --bogus`, then `1`.
 - Commit: `feat(m3): add npm run rank (M3 T11)`
-- [ ] Done
+- [x] Done
 
 ### T12: Real run and docs
 - Depends on: T11
