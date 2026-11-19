@@ -397,7 +397,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   4. `PLAN.md`: mark M3 `(done)` and M4 `(current)`. Add `Detailed spec: [docs/plans/m3-ranking.md](docs/plans/m3-ranking.md)` under M3 if it's missing. Append to the decisions log: `- <date>: M3 done: <open jobs> open jobs, <kept> after hard rules; first rank <time> (model download + <n> embeddings), second <time>; Transformers.js 4.3.2 pinned; hard rules: seniority, salary floor per currency, excluded departments and title keywords.`
 - Verify: the milestone verification below passes.
 - Commit: `docs(m3): wrap up M3: rank command, plan status and decisions log (M3 T12)`
-- [ ] Done
+- [x] Done
 
 ## Milestone verification
 1. `nvm use && npm run lint && npm run typecheck && npm test && npm run test:coverage` all pass, including the coverage thresholds.

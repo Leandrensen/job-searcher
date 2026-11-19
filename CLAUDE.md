@@ -8,13 +8,13 @@ Personal, single-user tool that fetches IT jobs from companies' ATS job boards (
 - Fetch jobs: `npm run fetch` (single source: `npm run fetch -- --source remoteok`; `--force` ignores intervals; `--skip-resolve` skips resolving new candidates). It discovers companies from boards, resolves candidates to ATS boards, and refreshes ATS jobs.
 - Seed companies: `npm run seed [-- --limit N | --no-resolve | --only yc|remoteintech]` (monthly; resumable)
 - Companies: `npm run company -- add|review|confirm|reject|sample`
+- Rank jobs: `npm run rank [-- --top N]` (embeds new or changed open jobs locally, then prints the best matches)
 - Test: `npm test` (single file: `npm test -- path/to/file.test.ts`)
 - Live API checks (real network, run manually): `npm run test:live`
 - Coverage: `npm run test:coverage` (text summary; HTML report in `coverage/`; thresholds enforced)
 - Lint/typecheck: `npm run lint && npm run typecheck`
 - DB: `npm run db:generate` (new migration), `npm run db:migrate` (apply)
 - Planned:
-  - `npm run rank` (M3)
   - `npm run score` and `npm run score -- --next` (M4)
 
 ## Configuration and secrets

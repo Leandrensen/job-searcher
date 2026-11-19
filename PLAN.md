@@ -192,7 +192,7 @@ Verify:
 - A second run the same day skips companies already fetched.
 - A job removed from a fixture gets `closedAt`.
 
-### M3: Search config, filters and embedding ranking (current)
+### M3: Search config, filters and embedding ranking (done)
 Detailed spec: [docs/plans/m3-ranking.md](docs/plans/m3-ranking.md)
 
 - `config/search.md`: one specific search description in plain text, the most visible and easiest-to-change setting. Gitignored; `config/search.example.md` is committed.
@@ -204,7 +204,7 @@ Detailed spec: [docs/plans/m3-ranking.md](docs/plans/m3-ranking.md)
   - jobs are ranked by cosine similarity
 - `npm run rank`: prints the top N ranked jobs.
 
-### M4: Claude scoring
+### M4: Claude scoring (current)
 - Score the top N (default 100) open, unscored jobs: a 0–100 score plus short reasons. Stored with the model, a hash of the search description (for reference) and the date.
 - **Each job is scored once and never re-scored.** Changing `config/search.md` affects ranking for new scoring but leaves existing scores in place.
 - `npm run score` scores the top N. `npm run score -- --next` ("get next") continues down the ranking and scores the next page on demand (default 100, configurable), skipping scored and closed jobs.
@@ -263,3 +263,4 @@ Daily `npm run fetch` and monthly `npm run seed` on a local schedule, nightly pr
 - 2026-11-18: M2.4 review fixes: Ashby slugs must end cleanly (no shortened slugs); rate-limited resolutions are retried daily without counting toward the 5-error backoff; the Lever/Ashby name proof is case-sensitive and treats hyphens as part of a word; only 404s in a row (3) deactivate a company.
 - 2026-11-18: M2.5: closed jobs are no longer deleted after 30 days, only compacted (descriptions dropped), so "scored once, ever" survives a repost (supersedes "Closed jobs are deleted 30 days after closing"); companies based outside the allowed countries are not fetched; a new careers URL reopens an unresolved candidate; resolutions are stamped when recorded.
 - 2026-11-18: M2.6: a location made only of region names (LATAM, Americas, Global, EMEA, ...) has an unknown workplace type instead of onsite, so the region rule decides (a bare country still counts as onsite); jobs.company_id has no ON DELETE action, matching the live DB, since companies are deactivated and never deleted.
+- 2026-11-19: M3 done: 211 open jobs, 211 after hard rules (no preferences.json yet); first rank 4 min 13 s (211 embeddings on the cached model), second 1.6 s (0 embeddings, 211 reused); Transformers.js 4.3.2 pinned; hard rules: seniority, salary floor per currency, excluded departments and title keywords. The run used a copy of config/search.example.md, since config/search.md didn't exist.
