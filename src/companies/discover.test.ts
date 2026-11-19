@@ -3,7 +3,7 @@ import type { Job } from "@/core/job";
 import { openDb, type Db } from "@/db/client";
 import { companyCandidates, fetchRuns } from "@/db/schema";
 import { createHimalayas } from "@/sources/boards/himalayas";
-import { runSources } from "@/sources/runner";
+import { runBoardSources } from "@/sources/board-runner";
 import type { HttpClient } from "@/core/http";
 import { loadFixture } from "@/test-utils/fixtures";
 import { recordCandidatesFromBoardJobs } from "./discover";
@@ -115,7 +115,7 @@ describe("boards use the newest recorded postedAt to stop paging", () => {
       getText: vi.fn(),
     };
     const adapter = createHimalayas({ sleep: async () => {} });
-    const run = () => runSources({ db, http, adapters: [adapter], force: true, now: () => new Date(NOW), log: () => {} });
+    const run = () => runBoardSources({ db, http, adapters: [adapter], force: true, now: () => new Date(NOW), log: () => {} });
 
     await run();
     expect(requested).toEqual(["", "c1", "c2"]);

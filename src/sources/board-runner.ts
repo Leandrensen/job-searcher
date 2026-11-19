@@ -6,12 +6,12 @@ import { lastSuccessfulRunAt, latestPostedAt, recordRun } from "@/db/queries";
 import { runAdapter } from "./run-adapter";
 import type { AnyAdapter, FetchResult } from "./types";
 
-export interface SourceRunSummary extends Omit<FetchResult, "jobs"> {
+export interface BoardRunSummary extends Omit<FetchResult, "jobs"> {
   inserted: number;
   updated: number;
 }
 
-export interface RunSourcesOptions {
+export interface RunBoardSourcesOptions {
   db: Db;
   http: HttpClient;
   adapters: AnyAdapter[];
@@ -22,13 +22,13 @@ export interface RunSourcesOptions {
 
 const MAX_CONCURRENCY = 4;
 
-export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSummary[]> {
+export async function runBoardSources(opts: RunBoardSourcesOptions): Promise<BoardRunSummary[]> {
   const { db, http, adapters, force = false } = opts;
   const now = opts.now ?? (() => new Date());
   const log = opts.log ?? (() => {});
 
   /** Runs one source. Never throws: unexpected failures (e.g. a DB error) become an `error` summary. */
-  async function runOne(adapter: AnyAdapter): Promise<SourceRunSummary> {
+  async function runOne(adapter: AnyAdapter): Promise<BoardRunSummary> {
     const startedAt = now();
     const startMs = Date.now();
     let counts = { fetched: 0, invalid: 0, filtered: 0 };
@@ -66,7 +66,7 @@ export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSumm
       });
       counts = { fetched: result.fetched, invalid: result.invalid, filtered: result.filtered };
       // Boards store no jobs: their postings only become company candidates.
-      if (!(BOARD_IDS as readonly string[]).includes(adapter.id)) throw new Error(`runSources only runs board adapters (got ${adapter.id})`);
+      if (!(BOARD_IDS as readonly string[]).includes(adapter.id)) throw new Error(`runBoardSources only runs board adapters (got ${adapter.id})`);
       const { inserted, updated } =
         result.status === "success"
           ? recordCandidatesFromBoardJobs(db, adapter.id as BoardId, jobs, startedAt.toISOString())
@@ -117,7 +117,7 @@ export async function runSources(opts: RunSourcesOptions): Promise<SourceRunSumm
     }
   }
 
-  const results: SourceRunSummary[] = new Array(adapters.length);
+  const results: BoardRunSummary[] = new Array(adapters.length);
   let next = 0;
   async function worker(): Promise<void> {
     while (next < adapters.length) {

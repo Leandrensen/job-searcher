@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { Job, SourceId } from "@/core/job";
 import { openDb, type Db } from "@/db/client";
 import { companyCandidates, fetchRuns, jobs } from "@/db/schema";
-import { runSources } from "./runner";
+import { runBoardSources } from "./board-runner";
 import { defineAdapter, type AnyAdapter } from "./types";
 
 const RawSchema = z.object({ id: z.string() });
@@ -55,11 +55,11 @@ function setup() {
   let t = Date.parse("2026-11-09T12:00:00.000Z");
   const clock = { now: () => new Date(t), advanceMinutes: (m: number) => (t += m * 60_000) };
   const run = (adapters: AnyAdapter[], force = false) =>
-    runSources({ db, http, adapters, force, now: clock.now, log: () => {} });
+    runBoardSources({ db, http, adapters, force, now: clock.now, log: () => {} });
   return { db, clock, run };
 }
 
-describe("runSources", () => {
+describe("runBoardSources", () => {
   it("skips source inside minInterval unless force", async () => {
     const { db, clock, run } = setup();
     const { adapter, fetchSpy } = fakeAdapter("remoteok", { minIntervalMinutes: 60 });
@@ -155,7 +155,7 @@ describe("runSources", () => {
     const log = vi.fn<(m: string) => void>();
     const { adapter } = fakeAdapter("remoteok");
 
-    const results = await runSources({
+    const results = await runBoardSources({
       db,
       http: { getJson: vi.fn(), getText: vi.fn() },
       adapters: [adapter],

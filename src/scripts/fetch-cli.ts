@@ -7,7 +7,7 @@ import type { Db } from "@/db/client";
 import { companyCounts } from "@/db/companies";
 import { compactClosedJobs, countJobs } from "@/db/queries";
 import { runAtsSources } from "@/sources/ats-runner";
-import { runSources } from "@/sources/runner";
+import { runBoardSources } from "@/sources/board-runner";
 import type { AnyAdapter } from "@/sources/types";
 import { CliUsageError } from "./cli-errors";
 
@@ -119,7 +119,7 @@ export async function runFetchCli(argv: string[], deps: CliDeps): Promise<number
 
   // 1. Boards only discover companies. They are single endpoints with their own intervals, so no pacing.
   const boardResults = boards.length
-    ? await runSources({ db, http: deps.http, adapters: boards, force: args.force, now, log: out.log })
+    ? await runBoardSources({ db, http: deps.http, adapters: boards, force: args.force, now, log: out.log })
     : [];
   if (boardResults.length) {
     out.table(
