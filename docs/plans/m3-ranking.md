@@ -162,7 +162,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - order: a job failing both title and salary → `"title"`
 - Verify: `npm test -- src/ranking/hard-rules.test.ts` passes.
 - Commit: `feat(m3): apply hard rules where unknown values pass (M3 T3)`
-- [ ] Done
+- [x] Done
 
 ### T4: The job_embeddings table
 - Depends on: none
