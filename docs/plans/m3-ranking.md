@@ -301,7 +301,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - `skips jobs without a vector`.
 - Verify: `npm test -- src/ranking/rank.test.ts` passes.
 - Commit: `feat(m3): apply hard rules and rank jobs by cosine similarity (M3 T8)`
-- [ ] Done
+- [x] Done
 
 ### T9: The Transformers.js embedder
 - Depends on: T7
