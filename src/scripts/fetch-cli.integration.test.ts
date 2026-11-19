@@ -7,7 +7,7 @@ import { companyCandidates, fetchRuns, jobs } from "@/db/schema";
 import { atsAdapters, atsProbes, boardAdapters } from "@/sources/registry";
 import { createFixtureHttp, type FixtureHttp } from "@/test-utils/fixture-http";
 import { ALL_SOURCE_ROUTES } from "@/test-utils/fixture-routes";
-import { runCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
+import { runFetchCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
 
 type ComparableRow = Omit<SummaryRow, "ms">;
 
@@ -48,7 +48,7 @@ async function run(argv: string[], client: HttpClient = http) {
   const logs: string[] = [];
   const errors: string[] = [];
   const tables: Array<SummaryRow[] | AtsSummaryRow[]> = [];
-  const code = await runCli(argv.includes("--source") ? argv : ["--skip-resolve", ...argv], {
+  const code = await runFetchCli(argv.includes("--source") ? argv : ["--skip-resolve", ...argv], {
     openDb: () => db,
     http: client,
     boardAdapters,

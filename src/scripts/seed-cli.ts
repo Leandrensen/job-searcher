@@ -6,7 +6,7 @@ import type { AtsId } from "@/core/job";
 import { createPacedHttpClient, DEFAULT_PACING, type PacingOptions } from "@/core/paced-http";
 import type { Db } from "@/db/client";
 import { type CandidateInput, companyCounts, upsertCandidate } from "@/db/companies";
-import { CliUsageError } from "./fetch-cli";
+import { CliUsageError } from "./cli-errors";
 
 export interface SeedArgs {
   limit: number | undefined;

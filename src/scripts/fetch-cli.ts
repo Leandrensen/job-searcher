@@ -9,13 +9,7 @@ import { compactClosedJobs, countJobs } from "@/db/queries";
 import { runAtsSources } from "@/sources/ats-runner";
 import { runSources } from "@/sources/runner";
 import type { AnyAdapter } from "@/sources/types";
-
-export class CliUsageError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "CliUsageError";
-  }
-}
+import { CliUsageError } from "./cli-errors";
 
 export interface FetchArgs {
   sources: string[];
@@ -93,7 +87,7 @@ export interface CliDeps {
 }
 
 /** Runs the fetch command and returns the process exit code. */
-export async function runCli(argv: string[], deps: CliDeps): Promise<number> {
+export async function runFetchCli(argv: string[], deps: CliDeps): Promise<number> {
   const { out } = deps;
 
   let args: FetchArgs;
@@ -171,7 +165,7 @@ export async function runCli(argv: string[], deps: CliDeps): Promise<number> {
     })),
   );
 
-  // 4. Forget jobs that have been closed for a month.
+  // 4. Drop the descriptions of jobs closed for a month (rows are kept, so a reposted job is never scored twice).
   out.log(`Compacted ${compactClosedJobs(db, now().toISOString())} closed jobs`);
   out.log(`Open jobs in DB: ${countJobs(db, { openOnly: true })}`);
   out.log(`Active companies: ${companyCounts(db).active}`);

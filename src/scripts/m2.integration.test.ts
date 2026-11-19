@@ -8,7 +8,7 @@ import { atsAdapters, atsProbes, boardAdapters } from "@/sources/registry";
 import { createFixtureHttp, type FixtureRoute } from "@/test-utils/fixture-http";
 import { ALL_SOURCE_ROUTES } from "@/test-utils/fixture-routes";
 import { runCompanyCli } from "./company-cli";
-import { runCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
+import { runFetchCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
 import { runSeedCli } from "./seed-cli";
 
 const NO_PACING = { minIntervalMs: 0, perHostMinIntervalMs: {} };
@@ -55,7 +55,7 @@ async function seed() {
 
 async function fetchAll() {
   const { logs, errors, tables, out } = io();
-  const code = await runCli([], {
+  const code = await runFetchCli([], {
     openDb: () => db,
     http: http(),
     boardAdapters,

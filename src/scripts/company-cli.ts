@@ -13,7 +13,7 @@ import {
   rejectCandidate,
   upsertCandidate,
 } from "@/db/companies";
-import { CliUsageError } from "./fetch-cli";
+import { CliUsageError } from "./cli-errors";
 
 const USAGE =
   "Usage: company add <ats> <slug> [--name <name>] [--country <ISO2>] | review | confirm <candidateId> <ats> <slug> | reject <candidateId> | sample <n>";
