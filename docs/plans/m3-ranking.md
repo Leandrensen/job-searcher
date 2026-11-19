@@ -324,7 +324,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
 - Tests first (`transformers-embedder.live.test.ts`, run only by `npm run test:live`; give it a 600,000 ms timeout because the first run downloads about 340 MB): `embeds English and Spanish into the same space`. Embed `["Senior React developer, remote", "Desarrollador React senior, remoto", "Experienced line cook for a busy restaurant"]`. Expect 3 vectors of length 768, each with a norm within `1e-3` of 1, and `cosine(en, es) > cosine(en, cook)`.
 - Verify: `npm test` passes (the live test isn't part of it). Then run `npx vitest run --config vitest.live.config.mts src/ranking/transformers-embedder.live.test.ts` once, so you don't hit the board APIs. It passes, and `ls data/models` shows the cached model.
 - Commit: `feat(m3): local embeddings with Transformers.js and gte-multilingual-base (M3 T9)`
-- [ ] Done
+- [x] Done
 
 ### T10: `npm run rank` logic
 - Depends on: T2, T5, T7, T8
