@@ -86,7 +86,7 @@ Base: commit `4745eb6` on branch `feat/m2-companies-ats` (M2, PR #14). Executed 
   - `"Staff Engineer / Tech Lead"` → `"staff"`
 - Verify: `npm test -- src/ranking/seniority.test.ts` passes.
 - Commit: `feat(m3): derive seniority from job titles (M3 T1)`
-- [ ] Done
+- [x] Done
 
 ### T2: Config loading and the example files
 - Depends on: T1
