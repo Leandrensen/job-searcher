@@ -65,4 +65,19 @@ describe("loadJobFilterRules", () => {
     write("job-filter-rules.json", '{"keywords":[]}');
     expect(messageOf(() => loadJobFilterRules(dir)).startsWith("config/job-filter-rules.json: keywords: ")).toBe(true);
   });
+
+  it.each([
+    ['{"keywords":["-"]}', "config/job-filter-rules.json: keywords.0: must contain a letter or digit"],
+    ['{"keywords":["react","/"]}', "config/job-filter-rules.json: keywords.1: must contain a letter or digit"],
+    ['{"keywords":["react"],"excludeTitleKeywords":["_"]}', "config/job-filter-rules.json: excludeTitleKeywords.0: must contain a letter or digit"],
+    ['{"keywords":["react"],"excludeDepartments":[" "]}', "config/job-filter-rules.json: excludeDepartments.0: must contain a letter or digit"],
+  ])("rejects an entry without a letter or digit: %s", (content, message) => {
+    write("job-filter-rules.json", content);
+    expect(messageOf(() => loadJobFilterRules(dir))).toBe(message);
+  });
+
+  it("keeps keywords with symbols", () => {
+    write("job-filter-rules.json", '{"keywords":["C++","node.js"]}');
+    expect(loadJobFilterRules(dir)).toEqual({ rules: { keywords: ["C++", "node.js"] }, fromExample: false });
+  });
 });

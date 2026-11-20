@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { deriveSeniority, SENIORITY_LEVELS } from "./seniority";
 
-const nonEmptyStrings = z.array(z.string().trim().min(1));
+// An entry without a letter or digit (say "-") normalizes to an empty pattern that would match every job.
+const nonEmptyStrings = z.array(z.string().trim().regex(/[\p{L}\p{N}]/u, "must contain a letter or digit"));
 
 /** Every job filter the user controls (config/job-filter-rules.json). Applied once, at fetch. */
 export const JobFilterRulesSchema = z
