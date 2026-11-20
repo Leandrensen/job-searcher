@@ -251,6 +251,15 @@ describe("runBoardSources", () => {
     expect(candidatesFor(db, "board:remoteok")).toHaveLength(0);
   });
 
+  it("passes the rules to the adapters", async () => {
+    const { db } = setup();
+    const { adapter } = fakeAdapter("remoteok");
+    const filtering = defineAdapter({ ...(adapter as unknown as Parameters<typeof defineAdapter>[0]), techFilter: true });
+    const [summary] = await runBoardSources({ db, http: { getJson: vi.fn(), getText: vi.fn() }, adapters: [filtering], rules: { keywords: ["developer"] } });
+    expect(summary).toMatchObject({ filtered: 0, inserted: 2 });
+    expect(candidatesFor(db, "board:remoteok")).toHaveLength(2);
+  });
+
   it("records a null latestPostedAt for a run without dated jobs", async () => {
     const { db, run } = setup();
     const { adapter } = fakeAdapter("remoteok", { fetch: async () => [] });

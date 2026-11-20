@@ -157,7 +157,7 @@ export async function runFetchCli(argv: string[], deps: CliDeps): Promise<number
       inserted: r.inserted,
       updated: r.updated,
       invalid: r.invalid,
-      filteredTech: r.filteredTech,
+      filteredTech: r.filteredRules,
       filteredLocation: r.filteredLocation,
       closed: r.closed,
       ms: r.durationMs,

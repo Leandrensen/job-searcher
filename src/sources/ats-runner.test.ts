@@ -8,6 +8,7 @@ import { insertOrGetCompany, recordResolution, upsertCandidate } from "@/db/comp
 import { countJobs } from "@/db/queries";
 import { companies, companyCandidates, fetchRuns, jobs } from "@/db/schema";
 import { createFixtureHttp } from "@/test-utils/fixture-http";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 import { greenhouse } from "./ats/greenhouse";
 import { CompanyRefSchema } from "./ats/shared";
 import { runAtsSources } from "./ats-runner";
@@ -84,8 +85,10 @@ beforeEach(() => {
 
 const addCompany = (ats: AtsId, slug: string, homeCountry: string | null = "US") =>
   insertOrGetCompany(db, { ats, slug, name: slug.toUpperCase(), website: null, homeCountry, origin: "manual" }, T0.toISOString());
-const run = (adapters: AnyAdapter[], over: { force?: boolean; at?: Date; log?: (m: string) => void } = {}) =>
-  runAtsSources({ db, http, adapters, force: over.force, now: () => over.at ?? T0, log: over.log ?? (() => {}) });
+const run = (
+  adapters: AnyAdapter[],
+  over: { force?: boolean; at?: Date; log?: (m: string) => void; rules?: Parameters<typeof runAtsSources>[0]["rules"] } = {},
+) => runAtsSources({ db, http, adapters, force: over.force, now: () => over.at ?? T0, log: over.log ?? (() => {}), rules: over.rules });
 const company = (slug: string) => db.select().from(companies).all().find((c) => c.slug === slug)!;
 
 describe("runAtsSources", () => {
@@ -102,7 +105,7 @@ describe("runAtsSources", () => {
       inserted: 2,
       updated: 0,
       invalid: 0,
-      filteredTech: 1,
+      filteredRules: 1,
       filteredLocation: 2,
       closed: 0,
       error: null,
@@ -225,6 +228,16 @@ describe("runAtsSources", () => {
     boards.acme = [GOOD[0]!];
     const [clean] = await run([adapter], { at: hoursLater(42) });
     expect(clean).toMatchObject({ invalid: 0, closed: 1 });
+    expect(countJobs(db, { openOnly: true })).toBe(1);
+  });
+
+  it("applies the hard rules and closes jobs that stop passing", async () => {
+    addCompany("greenhouse", "acme");
+    const { adapter } = fakeAts("greenhouse", { acme: GOOD });
+    const keywords = keywordRules().keywords;
+    expect((await run([adapter], { rules: { keywords } }))[0]).toMatchObject({ inserted: 2 });
+    const [second] = await run([adapter], { at: hoursLater(21), rules: { keywords, excludeTitleKeywords: ["Node"] } });
+    expect(second).toMatchObject({ filteredRules: 2, closed: 1 });
     expect(countJobs(db, { openOnly: true })).toBe(1);
   });
 
@@ -358,7 +371,7 @@ describe("runAtsSources with the real Greenhouse adapter and a fixture", () => {
       companies: 1,
       fetched: 3,
       invalid: 0,
-      filteredTech: 2,
+      filteredRules: 2,
       filteredLocation: 1,
       inserted: 0,
       closed: 0,
