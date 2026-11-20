@@ -31,8 +31,9 @@ export type RuleInput = {
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const normalize = (s: string) => s.toLowerCase().replace(/[-_/]/g, " ").replace(/\s+/g, " ").trim();
+// Exclusions normalize both sides like keywords do, so "front end" excludes "Front-End Developer".
 const mentions = (text: string, phrase: string) =>
-  new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(phrase)}(?![\\p{L}\\p{N}])`, "iu").test(text);
+  new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(normalize(phrase))}(?![\\p{L}\\p{N}])`, "u").test(normalize(text));
 
 /** Whether the title, departments or tags contain a keyword (whole words; descriptions are never read). */
 export function matchesKeywords(job: Pick<RuleInput, "title" | "departments" | "tags">, keywords: readonly string[]): boolean {

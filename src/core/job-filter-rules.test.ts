@@ -100,6 +100,10 @@ describe("checkJobRules", () => {
     ["a currency without a floor passes", { salaryMax: 100, salaryCurrency: "EUR", salaryPeriod: "year" }, floor, PASS],
     ["an unknown period skips the salary rule", usd(59999, null), floor, PASS],
     ["an unrecognized period skips the salary rule", usd(1000, "week"), floor, PASS],
+    ["a hyphenated title is excluded by a spaced phrase", { title: "Senior React Front-End Developer" }, { keywords: ["react"], excludeTitleKeywords: ["front end"] }, { pass: false, reason: "title" }],
+    ["a spaced title is excluded by a hyphenated phrase", { title: "Senior React Data Scientist" }, { keywords: ["react"], excludeTitleKeywords: ["Data-Scientist"] }, { pass: false, reason: "title" }],
+    ["an underscored department is excluded", { departments: ["Customer_Success"] }, { keywords: ["react"], excludeDepartments: ["Customer Success"] }, { pass: false, reason: "department" }],
+    ["an exclusion inside another word doesn't match", { title: "Senior Reactive React Developer" }, { keywords: ["react"], excludeTitleKeywords: ["React Dev"] }, PASS],
     ["the first failing rule is reported", { title: "Senior Accountant", ...usd(1, "year") }, floor, { pass: false, reason: "keywords" }],
   ])("%s", (_label, over, rules, expected) => {
     expect(checkJobRules({ ...base, ...over }, rules)).toEqual(expected);
