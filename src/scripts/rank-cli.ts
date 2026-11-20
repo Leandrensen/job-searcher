@@ -1,10 +1,10 @@
 import type { Db } from "@/db/client";
 import { listOpenJobsForRanking } from "@/db/ranking";
 import { ConfigError } from "@/core/config-error";
-import { loadPreferences, loadSearchDescription } from "@/ranking/config";
+import { loadSearchDescription } from "@/ranking/config";
 import { embedJobs } from "@/ranking/embed-jobs";
 import type { Embedder } from "@/ranking/embedder";
-import { applyHardRules, rankJobs } from "@/ranking/rank";
+import { rankJobs } from "@/ranking/rank";
 import { CliUsageError } from "./cli-errors";
 
 const DEFAULT_TOP = 100;
@@ -25,7 +25,7 @@ export function parseRankArgs(argv: string[]): { top: number } {
 }
 
 export interface RankCliDeps {
-  /** Called only after the config is valid. */
+  /** Called only after search.md is valid. */
   openDb: () => Db;
   /** Called only when there are jobs to rank, because loading the model is slow. */
   createEmbedder: () => Promise<Embedder>;
@@ -55,13 +55,8 @@ export async function runRankCli(argv: string[], deps: RankCliDeps): Promise<num
   }
 
   let search: string;
-  let prefs;
   try {
-    const configDir = deps.configDir ?? "config";
-    search = loadSearchDescription(configDir);
-    const loaded = loadPreferences(configDir);
-    prefs = loaded.prefs;
-    if (!loaded.found) out.log("No config/preferences.json: no hard rules applied");
+    search = loadSearchDescription(deps.configDir ?? "config");
   } catch (err) {
     if (err instanceof ConfigError) {
       out.error(err.message);
@@ -70,32 +65,41 @@ export async function runRankCli(argv: string[], deps: RankCliDeps): Promise<num
     throw err;
   }
 
+  // The job filter rules were applied at fetch, so every open job is a candidate: rank only orders them.
   const db = deps.openDb();
   const jobs = listOpenJobsForRanking(db);
   if (jobs.length === 0) {
     out.log("No open jobs to rank. Run npm run fetch first.");
     return 0;
   }
+  out.log(`Open jobs: ${jobs.length}`);
 
-  const { kept, excluded } = applyHardRules(jobs, prefs);
-  out.log(
-    `Open jobs: ${jobs.length}, after hard rules: ${kept.length} (excluded: title ${excluded.title}, department ${excluded.department}, seniority ${excluded.seniority}, salary ${excluded.salary})`,
-  );
+  const errorText = (err: unknown) => {
+    const e = err instanceof Error ? err : new Error(String(err));
+    return `${e.name}: ${e.message}`;
+  };
+
+  let embedder: Embedder;
+  let searchVector: Float32Array;
+  try {
+    embedder = await deps.createEmbedder();
+    // The search is one text, so it is embedded on every run and always matches the current search.md.
+    searchVector = (await embedder.embed([search]))[0]!;
+  } catch (err) {
+    out.error(`Could not load the embedding model: ${errorText(err)}`);
+    return 1;
+  }
 
   let ranked;
   try {
-    const embedder = await deps.createEmbedder();
-    // The search is one text, so it is embedded on every run and always matches the current search.md.
-    const searchVector = (await embedder.embed([search]))[0]!;
-    const { vectors, embedded, reused } = await embedJobs(db, embedder, kept, {
+    const { vectors, embedded, reused } = await embedJobs(db, embedder, jobs, {
       nowIso: (deps.now ?? (() => new Date()))().toISOString(),
       log: out.log,
     });
     out.log(`Embedded ${embedded} new or changed jobs, reused ${reused}`);
-    ranked = rankJobs(kept, vectors, searchVector, top);
+    ranked = rankJobs(jobs, vectors, searchVector, top);
   } catch (err) {
-    const e = err instanceof Error ? err : new Error(String(err));
-    out.error(`Embedding failed: ${e.name}: ${e.message}`);
+    out.error(`Ranking failed: ${errorText(err)}`);
     return 1;
   }
 
@@ -109,6 +113,6 @@ export async function runRankCli(argv: string[], deps: RankCliDeps): Promise<num
       url: r.job.url,
     })),
   );
-  out.log(`Showing ${ranked.length} of ${kept.length}`);
+  out.log(`Showing ${ranked.length} of ${jobs.length}`);
   return 0;
 }

@@ -41,7 +41,6 @@ let db: Db;
 beforeEach(() => {
   dir = fs.mkdtempSync(path.join(os.tmpdir(), "m3-"));
   fs.writeFileSync(path.join(dir, "search.md"), "React and Node developer\n");
-  fs.writeFileSync(path.join(dir, "preferences.json"), '{ "excludeTitleKeywords": ["Mobile"] }');
   db = openDb({ url: ":memory:", migrate: true });
   const acme = insertOrGetCompany(db, { ats: "greenhouse", slug: "acme", name: "Acme", website: null, homeCountry: null, origin: "manual" }, NOW.toISOString());
   upsertJobs(
@@ -59,13 +58,13 @@ beforeEach(() => {
   markClosedJobs(db, acme, ["acme:a", "acme:b", "acme:c", "acme:d"], NOW.toISOString()); // closes acme:e
 });
 
-function setup(over: { embedder?: Embedder; openDb?: () => Db } = {}) {
+function setup(over: { embedder?: Embedder; openDb?: () => Db; createEmbedder?: () => Promise<Embedder> } = {}) {
   const logs: string[] = [];
   const errors: string[] = [];
   const tables: Array<Array<Record<string, string | number>>> = [];
   const openDbSpy = vi.fn(over.openDb ?? (() => db));
   const embedder = over.embedder ?? createFakeEmbedder();
-  const createEmbedder = vi.fn(async () => embedder);
+  const createEmbedder = vi.fn(over.createEmbedder ?? (async () => embedder));
   const run = (argv: string[] = []) =>
     runRankCli(argv, {
       openDb: openDbSpy,
@@ -78,28 +77,30 @@ function setup(over: { embedder?: Embedder; openDb?: () => Db } = {}) {
 }
 
 describe("runRankCli", () => {
-  it("ranks open jobs that pass the hard rules", async () => {
+  it("ranks every open job", async () => {
     const { logs, tables, run } = setup();
     expect(await run()).toBe(0);
-    expect(logs).toContain("Open jobs: 4, after hard rules: 3 (excluded: title 1, department 0, seniority 0, salary 0)");
-    expect(logs).toContain("Embedded 3 new or changed jobs, reused 0");
-    expect(tables[0]!.map((r) => r.title)).toEqual(["Senior React Developer", "Senior Node Engineer", "Senior Python Developer"]);
+    expect(logs).toContain("Open jobs: 4");
+    expect(logs).toContain("Embedded 4 new or changed jobs, reused 0");
+    // "Mobile Developer" (react) and "Senior Node Engineer" (node) are both about 0.707 from the search; the fake
+    // embedder's tiny per-axis offset puts "Mobile Developer" fractionally ahead.
+    expect(tables[0]!.map((r) => r.title)).toEqual(["Senior React Developer", "Mobile Developer", "Senior Node Engineer", "Senior Python Developer"]);
     expect(tables[0]![0]).toMatchObject({ rank: 1, company: "Acme", location: "Remote", url: "https://example.com/acme:a" });
-    expect(logs.at(-1)).toBe("Showing 3 of 3");
+    expect(logs.at(-1)).toBe("Showing 4 of 4");
   });
 
   it("a second run reuses every embedding", async () => {
     await setup().run();
     const second = setup();
     await second.run();
-    expect(second.logs).toContain("Embedded 0 new or changed jobs, reused 3");
+    expect(second.logs).toContain("Embedded 0 new or changed jobs, reused 4");
   });
 
   it("--top 1 shows one job", async () => {
     const { logs, tables, run } = setup();
     await run(["--top", "1"]);
     expect(tables[0]).toHaveLength(1);
-    expect(logs.at(-1)).toBe("Showing 1 of 3");
+    expect(logs.at(-1)).toBe("Showing 1 of 4");
   });
 
   it("a missing search.md fails before opening the DB", async () => {
@@ -111,22 +112,6 @@ describe("runRankCli", () => {
     expect(createEmbedder).not.toHaveBeenCalled();
   });
 
-  it("invalid preferences fail before opening the DB", async () => {
-    fs.writeFileSync(path.join(dir, "preferences.json"), '{"seniorty":["senior"]}');
-    const { errors, openDbSpy, run } = setup();
-    expect(await run()).toBe(1);
-    expect(errors[0]!.startsWith("config/preferences.json: ")).toBe(true);
-    expect(openDbSpy).not.toHaveBeenCalled();
-  });
-
-  it("no preferences file applies no rules", async () => {
-    fs.rmSync(path.join(dir, "preferences.json"));
-    const { logs, run } = setup();
-    await run();
-    expect(logs).toContain("No config/preferences.json: no hard rules applied");
-    expect(logs).toContain("Open jobs: 4, after hard rules: 4 (excluded: title 0, department 0, seniority 0, salary 0)");
-  });
-
   it("no open jobs returns 0 without loading the model", async () => {
     const empty = openDb({ url: ":memory:", migrate: true });
     const { logs, createEmbedder, run } = setup({ openDb: () => empty });
@@ -135,10 +120,17 @@ describe("runRankCli", () => {
     expect(createEmbedder).not.toHaveBeenCalled();
   });
 
-  it("an embedder failure returns 1", async () => {
-    const { errors, run } = setup({ embedder: createFakeEmbedder({ fail: () => true }) });
+  it("a model that fails to load returns 1", async () => {
+    const { errors, run } = setup({ createEmbedder: async () => Promise.reject(new Error("download failed")) });
     expect(await run()).toBe(1);
-    expect(errors).toEqual(["Embedding failed: Error: model crashed"]);
+    expect(errors).toEqual(["Could not load the embedding model: Error: download failed"]);
+  });
+
+  it("a failure while embedding jobs is labelled as ranking", async () => {
+    // Call 0 embeds the search; call 1 is the first batch of jobs.
+    const { errors, run } = setup({ embedder: createFakeEmbedder({ fail: (i) => i === 1 }) });
+    expect(await run()).toBe(1);
+    expect(errors).toEqual(["Ranking failed: Error: model crashed"]);
   });
 
   it.each([
