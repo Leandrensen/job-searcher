@@ -1,6 +1,10 @@
 // Offline end-to-end test of the M2 flow: seed, resolve, fetch, close, purge, review.
 // Real CLIs, runners, adapters and an in-memory DB. Only the network is replaced, by hand-written fixtures.
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 import { REMOTEINTECH_RAW_BASE, REMOTEINTECH_TREE_URL, YC_ALL_URL } from "@/companies/seeds";
 import { openDb, type Db } from "@/db/client";
 import { companies, companyCandidates, jobs } from "@/db/schema";
@@ -31,6 +35,8 @@ const T0 = Date.parse("2026-11-16T12:00:00.000Z");
 let clock = T0;
 let db: Db;
 let routes: Record<string, FixtureRoute>;
+const configDir = fs.mkdtempSync(path.join(os.tmpdir(), "m31-"));
+fs.writeFileSync(path.join(configDir, "job-filter-rules.json"), JSON.stringify(keywordRules()));
 
 function io() {
   const logs: string[] = [];
@@ -61,12 +67,13 @@ async function fetchAll() {
     boardAdapters,
     atsAdapters,
     probes: atsProbes,
+    configDir,
     now,
     pacing: NO_PACING,
     out: out as never,
   });
   const boards = tables.find((t) => "filtered" in (t[0] ?? {})) as unknown as SummaryRow[] | undefined;
-  const ats = tables.find((t) => "filteredTech" in (t[0] ?? {})) as unknown as AtsSummaryRow[];
+  const ats = tables.find((t) => "filteredRules" in (t[0] ?? {})) as unknown as AtsSummaryRow[];
   return { code, logs, errors, boards, ats };
 }
 
@@ -106,8 +113,8 @@ describe("M2 end to end, offline", () => {
     expect(errors).toEqual([]);
     expect(boards?.map((r) => r.status)).toEqual(Array(7).fill("success"));
     expect(logs).toContain("Resolution: checked 10, confirmed 0, ambiguous 0, not found 10, errors 0");
-    expect(atsRow(ats, "greenhouse")).toMatchObject({ status: "success", companies: 1, failed: 0, fetched: 3, inserted: 1, filteredTech: 1, filteredLocation: 1, closed: 0 });
-    expect(atsRow(ats, "lever")).toMatchObject({ status: "success", companies: 1, fetched: 2, inserted: 1, filteredTech: 0, filteredLocation: 1, closed: 0 });
+    expect(atsRow(ats, "greenhouse")).toMatchObject({ status: "success", companies: 1, failed: 0, fetched: 3, inserted: 1, filteredRules: 1, filteredLocation: 1, closed: 0 });
+    expect(atsRow(ats, "lever")).toMatchObject({ status: "success", companies: 1, fetched: 2, inserted: 1, filteredRules: 0, filteredLocation: 1, closed: 0 });
     expect(ats.filter((r) => r.status === "skipped").map((r) => r.source)).toEqual(["ashby", "recruitee", "smartrecruiters"]);
     expect(logs).toContain("Open jobs in DB: 2");
     expect(db.select().from(jobs).all().map((j) => j.title).sort()).toEqual(["Backend Developer (Node.js)", "Senior Full-Stack Engineer"]);

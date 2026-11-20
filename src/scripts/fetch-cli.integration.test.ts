@@ -1,6 +1,10 @@
 // Offline end-to-end test: real CLI + runner + all 9 adapters + in-memory DB.
 // Only the network is replaced, by recorded fixtures. No mocks of project code.
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 import type { HttpClient } from "@/core/http";
 import { openDb, type Db } from "@/db/client";
 import { companyCandidates, fetchRuns, jobs } from "@/db/schema";
@@ -37,8 +41,17 @@ const withoutMs = (r: SummaryRow): ComparableRow => ({
 let db: Db;
 let http: FixtureHttp;
 let clock: number;
+let configDir: string;
+
+/** A temporary config dir holding the example's keywords as the user's (or, with `asExample`, the example) rules file. */
+function makeConfigDir(asExample = false): string {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "m31-"));
+  fs.writeFileSync(path.join(dir, asExample ? "job-filter-rules.example.json" : "job-filter-rules.json"), JSON.stringify(keywordRules()));
+  return dir;
+}
 
 beforeEach(() => {
+  configDir = makeConfigDir();
   db = openDb({ url: ":memory:", migrate: true });
   http = createFixtureHttp(ALL_SOURCE_ROUTES);
   clock = Date.parse("2026-11-12T12:00:00.000Z");
@@ -54,6 +67,7 @@ async function run(argv: string[], client: HttpClient = http) {
     boardAdapters,
     atsAdapters,
     probes: atsProbes,
+    configDir,
     now: () => new Date(clock),
     out: { log: (m) => logs.push(m), error: (m) => errors.push(m), table: (rows) => tables.push(rows) },
   });
@@ -133,5 +147,13 @@ describe("fetch CLI, offline end to end", () => {
       ["Airbnb", "Alloy", "Blackbird Collective", "Lithic", "Notabene", "Proxify", "Quantum-Systems GmbH", "RainFocus", "Salvo Software", "Silver.dev"].sort(),
     );
     expect(found.every((c) => c.status === "pending" && c.origin.startsWith("board:"))).toBe(true);
+  });
+
+  it("falls back to the example rules and logs it", async () => {
+    configDir = makeConfigDir(true);
+    const { code, logs, rows } = await run([]);
+    expect(code).toBe(0);
+    expect(logs).toContain("No config/job-filter-rules.json: using config/job-filter-rules.example.json");
+    expect(rows.map(withoutMs)).toEqual(EXPECTED_FIRST_RUN);
   });
 });

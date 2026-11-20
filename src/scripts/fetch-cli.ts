@@ -1,7 +1,9 @@
 import { resolveDueCandidates } from "@/companies/resolve-runner";
 import type { ProbeFn } from "@/companies/types";
+import { ConfigError } from "@/core/config-error";
 import type { HttpClient } from "@/core/http";
 import type { AtsId } from "@/core/job";
+import { loadJobFilterRules } from "@/core/job-filter-rules-file";
 import { createPacedHttpClient, DEFAULT_PACING, type PacingOptions } from "@/core/paced-http";
 import type { Db } from "@/db/client";
 import { companyCounts } from "@/db/companies";
@@ -60,7 +62,7 @@ export interface AtsSummaryRow {
   inserted: number;
   updated: number;
   invalid: number;
-  filteredTech: number;
+  filteredRules: number;
   filteredLocation: number;
   closed: number;
   ms: number;
@@ -74,6 +76,8 @@ export interface CliDeps {
   boardAdapters: AnyAdapter[];
   atsAdapters: AnyAdapter[];
   probes: Record<AtsId, ProbeFn>;
+  /** Where config/job-filter-rules.json lives. Default "config". */
+  configDir?: string;
   /** Max candidates resolved per fetch run. Default 50. */
   resolveLimit?: number;
   now?: () => Date;
@@ -113,13 +117,27 @@ export async function runFetchCli(argv: string[], deps: CliDeps): Promise<number
   const boards = pick(deps.boardAdapters);
   const atsList = pick(deps.atsAdapters);
 
+  // The job filter rules decide what is stored, so an invalid file stops fetch before any network or DB access.
+  let rules;
+  try {
+    const loaded = loadJobFilterRules(deps.configDir ?? "config");
+    rules = loaded.rules;
+    if (loaded.fromExample) out.log("No config/job-filter-rules.json: using config/job-filter-rules.example.json");
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      out.error(err.message);
+      return 1;
+    }
+    throw err;
+  }
+
   const db = deps.openDb();
   const now = deps.now ?? (() => new Date());
   const paced = createPacedHttpClient(deps.http, deps.pacing ?? DEFAULT_PACING);
 
   // 1. Boards only discover companies. They are single endpoints with their own intervals, so no pacing.
   const boardResults = boards.length
-    ? await runBoardSources({ db, http: deps.http, adapters: boards, force: args.force, now, log: out.log })
+    ? await runBoardSources({ db, http: deps.http, adapters: boards, force: args.force, now, log: out.log, rules })
     : [];
   if (boardResults.length) {
     out.table(
@@ -146,7 +164,7 @@ export async function runFetchCli(argv: string[], deps: CliDeps): Promise<number
   }
 
   // 3. Fetch the jobs of every due company.
-  const atsResults = await runAtsSources({ db, http: paced, adapters: atsList, force: args.force, now, log: out.log });
+  const atsResults = await runAtsSources({ db, http: paced, adapters: atsList, force: args.force, now, log: out.log, rules });
   out.table(
     atsResults.map((r) => ({
       source: r.source,
@@ -157,7 +175,7 @@ export async function runFetchCli(argv: string[], deps: CliDeps): Promise<number
       inserted: r.inserted,
       updated: r.updated,
       invalid: r.invalid,
-      filteredTech: r.filteredRules,
+      filteredRules: r.filteredRules,
       filteredLocation: r.filteredLocation,
       closed: r.closed,
       ms: r.durationMs,
