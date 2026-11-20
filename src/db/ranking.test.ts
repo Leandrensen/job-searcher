@@ -1,9 +1,11 @@
+import { eq, sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Job } from "@/core/job";
 import { openDb, type Db } from "./client";
 import { insertOrGetCompany } from "./companies";
 import { markClosedJobs, upsertJobs } from "./queries";
 import { getEmbeddings, listOpenJobsForRanking, saveEmbeddings } from "./ranking";
+import { jobs } from "./schema";
 
 const NOW = "2026-11-19T12:00:00.000Z";
 
@@ -83,6 +85,76 @@ describe("duplicates", () => {
     upsertJobs(db, [makeJob("1", { title: "Same Title", company: "Acme" })], NOW);
     upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title", company: "Acme" })], NOW);
     expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([1]);
+  });
+
+  function insertOriginalAndCopy(): void {
+    upsertJobs(db, [makeJob("1", { title: "Same Title", company: "Acme" })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title", company: "Acme" })], NOW);
+  }
+
+  function setClosedAt(id: number, closedAt: string | null): void {
+    db.update(jobs).set({ closedAt }).where(eq(jobs.id, id)).run();
+  }
+
+  it("ranks the duplicate once its original closes", () => {
+    insertOriginalAndCopy();
+    setClosedAt(1, NOW);
+    expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([2]);
+  });
+
+  it("skips the duplicate again if the original reopens", () => {
+    insertOriginalAndCopy();
+    expect(db.select().from(jobs).all().map((j) => [j.id, j.duplicateOf])).toEqual([
+      [1, null],
+      [2, 1],
+    ]);
+    setClosedAt(1, NOW);
+    setClosedAt(1, null);
+    expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([1]);
+  });
+
+  it("ranks only the oldest open duplicate of a closed original", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title", company: "Acme" })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title", company: "Acme" })], NOW);
+    upsertJobs(db, [makeJob("7", { source: "ashby", title: "Same Title", company: "Acme" })], NOW);
+    expect(db.select().from(jobs).all().map((j) => [j.id, j.duplicateOf])).toEqual([
+      [1, null],
+      [2, 1],
+      [3, 1],
+    ]);
+    setClosedAt(1, NOW);
+    expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([2]);
+  });
+
+  it("ranks a job whose duplicateOf points at a missing row", () => {
+    upsertJobs(db, [makeJob("1")], NOW);
+    // Foreign keys are on, so a dangling pointer can only be written with them off.
+    db.run(sql`PRAGMA foreign_keys = OFF`);
+    db.update(jobs).set({ duplicateOf: 999 }).where(eq(jobs.id, 1)).run();
+    db.run(sql`PRAGMA foreign_keys = ON`);
+    expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([1]);
+  });
+
+  it("returns [] when there are no open jobs", () => {
+    expect(listOpenJobsForRanking(db)).toEqual([]);
+  });
+
+  it("returns exactly the RankableJob fields", () => {
+    insertOriginalAndCopy();
+    setClosedAt(1, NOW);
+    expect(Object.keys(listOpenJobsForRanking(db)[0]!).sort()).toEqual([
+      "company",
+      "departments",
+      "descriptionText",
+      "id",
+      "location",
+      "salaryCurrency",
+      "salaryMax",
+      "salaryMin",
+      "salaryPeriod",
+      "title",
+      "url",
+    ]);
   });
 });
 

@@ -1,4 +1,5 @@
-import { and, asc, inArray, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, isNull, or } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 import type { Db } from "./client";
 import { jobEmbeddings, jobs } from "./schema";
 
@@ -18,9 +19,13 @@ export type RankableJob = {
 
 export type StoredEmbedding = { model: string; textHash: string; vector: Float32Array };
 
-/** Open jobs that aren't duplicates, in id order, with only the fields ranking needs. */
+/**
+ * Open jobs to rank, in id order. A duplicate is skipped while its original is open; once the original closes, its oldest
+ * open duplicate takes its place.
+ */
 export function listOpenJobsForRanking(db: Db): RankableJob[] {
-  return db
+  const original = alias(jobs, "original");
+  const rows = db
     .select({
       id: jobs.id,
       title: jobs.title,
@@ -33,12 +38,33 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
       salaryCurrency: jobs.salaryCurrency,
       salaryPeriod: jobs.salaryPeriod,
       descriptionText: jobs.descriptionText,
+      duplicateOf: jobs.duplicateOf,
     })
     .from(jobs)
-    // A duplicate of another posting is the same job: ranking (and later scoring) it twice would waste a slot and a call.
-    .where(and(isNull(jobs.closedAt), isNull(jobs.duplicateOf)))
+    // Left join: a job that isn't a duplicate has no original and must still be listed.
+    .leftJoin(original, eq(original.id, jobs.duplicateOf))
+    // A duplicate of an open posting is the same job: ranking (and later scoring) it twice would waste a slot and a call.
+    // A missing original counts as gone.
+    .where(
+      and(
+        isNull(jobs.closedAt),
+        or(isNull(jobs.duplicateOf), isNull(original.id), isNotNull(original.closedAt)),
+      ),
+    )
     .orderBy(asc(jobs.id))
     .all();
+
+  // Several open copies of one closed original: keep only the first (lowest id), so the job still appears once.
+  const keptOriginals = new Set<number>();
+  const result: RankableJob[] = [];
+  for (const { duplicateOf, ...job } of rows) {
+    if (duplicateOf !== null) {
+      if (keptOriginals.has(duplicateOf)) continue;
+      keptOriginals.add(duplicateOf);
+    }
+    result.push(job);
+  }
+  return result;
 }
 
 // SQLite buffers can start at an offset that isn't a multiple of 4, so a Float32Array view over them can throw. Copy instead.
