@@ -36,10 +36,10 @@ const normalize = (s: string) => s.toLowerCase().replace(/[-_/]/g, " ").replace(
 const mentions = (text: string, phrase: string) =>
   new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(normalize(phrase))}(?![\\p{L}\\p{N}])`, "u").test(normalize(text));
 
-/** Whether the title, departments or tags contain a keyword (whole words; descriptions are never read). */
+/** Whether the title, departments or tags contain a keyword as whole words (any letter or digit, accented or not, is part of a word; descriptions are never read). */
 export function matchesKeywords(job: Pick<RuleInput, "title" | "departments" | "tags">, keywords: readonly string[]): boolean {
   const haystack = normalize([job.title, ...job.departments, ...job.tags].join(" | "));
-  return keywords.some((k) => new RegExp(`(?<![a-z0-9])${escapeRegExp(normalize(k))}(?![a-z0-9])`).test(haystack));
+  return keywords.some((k) => new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(normalize(k))}(?![\\p{L}\\p{N}])`, "u").test(haystack));
 }
 
 const PERIODS_PER_YEAR: Record<string, number> = { year: 1, month: 12, hour: 2080 };

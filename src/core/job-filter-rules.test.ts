@@ -69,6 +69,21 @@ describe("matchesKeywords", () => {
   it("a hyphenated keyword matches", () => {
     expect(matchesKeywords({ title: "Full Stack Dev", departments: [], tags: [] }, ["full-stack"])).toBe(true);
   });
+
+  it.each(["Qualitäts-Manager", "Universitäts-Klinikum Pflegekraft"])("an accented letter is part of the word: %s", (title) => {
+    expect(matchesKeywords(job(title), KEYWORDS)).toBe(false);
+  });
+
+  it.each(["Développeur Front-End", "Desarrollador Frontend Sénior", "Ingeniería de Software · Node.js"])(
+    "a keyword next to accented words still matches: %s",
+    (title) => {
+      expect(matchesKeywords(job(title), KEYWORDS)).toBe(true);
+    },
+  );
+
+  it("a keyword glued to CJK letters does not match", () => {
+    expect(matchesKeywords(job("JS開発者"), ["js"])).toBe(false);
+  });
 });
 
 describe("checkJobRules", () => {
