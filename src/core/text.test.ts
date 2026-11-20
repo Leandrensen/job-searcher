@@ -75,6 +75,10 @@ describe("htmlToText", () => {
     expect(htmlToText("&lt;p&gt;hi&lt;/p&gt;")).toBe("hi");
   });
 
+  it("keeps escaped less-than and greater-than signs in real html", () => {
+    expect(htmlToText("<p>Salary &lt; 100k and experience &gt; 5 years</p>")).toBe("Salary < 100k and experience > 5 years");
+  });
+
   it("drops style blocks", () => {
     expect(htmlToText("<style>.a{color:red}</style><p>Hi</p>")).toBe("Hi");
   });
