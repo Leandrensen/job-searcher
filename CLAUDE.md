@@ -28,13 +28,13 @@ Node 22 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQL
   - `ats/` (M2) – Greenhouse, Lever, ...: the only source of stored jobs
   - `boards/` – job boards from M1; from M2 they only discover companies, and their jobs are never stored
 - `src/companies/` (M2) – seeding, candidate discovery and precise ATS slug resolution
-- `src/ranking/` (M3) – hard-rule filters and embedding ranking
+- `src/ranking/` (M3) – search description loading, local embeddings and similarity ranking
 - `src/ai/` (M4) – Claude scoring
-- `src/core/` – normalized `Job` schema, dedupe, storage filters (tech filter + location filter), text helpers, shared HTTP helper
+- `src/core/` – normalized `Job` schema, dedupe, storage filters applied at fetch (job filter rules + location filter), text helpers, shared HTTP helper
 - `src/db/` – Drizzle schema, client, queries
 - `src/scripts/` – CLI entry points
 - `src/app/` – UI (M5)
-- `config/` – search description and hard rules (M3)
+- `config/` – search description and job filter rules (M3)
 - `test/fixtures/<source>/` – recorded real API responses
 
 Key patterns:
