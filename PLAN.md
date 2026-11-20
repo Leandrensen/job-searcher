@@ -194,6 +194,7 @@ Verify:
 
 ### M3: Search config, filters and embedding ranking (done)
 Detailed spec: [docs/plans/m3-ranking.md](docs/plans/m3-ranking.md)
+Review fixes and fetch-time filter rules: [docs/plans/m3.1-filter-rules.md](docs/plans/m3.1-filter-rules.md)
 
 - `config/search.md`: one specific search description in plain text, the most visible and easiest-to-change setting. Gitignored; `config/search.example.md` is committed.
 - `config/preferences.json` (Zod-validated): hard rules (seniority, salary floor, department). Remote-only and location are already handled by the M2 location filter. Gitignored; `config/preferences.example.json` is committed.
