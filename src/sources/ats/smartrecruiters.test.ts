@@ -3,6 +3,7 @@ import { HttpError, type HttpClient } from "@/core/http";
 import { expectCleanText } from "@/test-utils/assertions";
 import { createFixtureHttp } from "@/test-utils/fixture-http";
 import { loadFixture } from "@/test-utils/fixtures";
+import { exampleRules } from "@/test-utils/job-filter-rules";
 import { runAdapter } from "../run-adapter";
 import type { CompanyRef, FetchContext } from "../types";
 import { probeSmartRecruiters, smartrecruiters } from "./smartrecruiters";
@@ -58,6 +59,14 @@ describe("smartrecruiters adapter", () => {
     const failure = await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] }).catch((e: unknown) => e);
     expect(failure).toBeInstanceOf(HttpError);
     expect((failure as HttpError).status).toBe(500);
+  });
+
+  it("pre-filters with the rules' seniority", async () => {
+    const { ctx, http } = setup();
+    // The fixture's only matching posting is "Senior Full-Stack Engineer", whose level is outside ["junior"].
+    const items = await smartrecruiters.fetch({ ...ctx, rules: { keywords: exampleRules().keywords, seniority: ["junior"] } });
+    expect(items).toEqual([]);
+    expect(http.calls).toEqual([LIST_URL]);
   });
 
   it("makes no detail requests when nothing matches", async () => {

@@ -103,6 +103,15 @@ describe("runAdapter", () => {
     expect(off.jobs).toHaveLength(2);
   });
 
+  it("uses the keywords from ctx.rules", async () => {
+    const items = [{ id: "1", title: "Underwater Basket Weaver" }];
+    const matching = await runAdapter(makeAdapter(items, { techFilter: true }), { ...ctx(), rules: { keywords: ["basket"] } });
+    expect(matching).toMatchObject({ filtered: 0 });
+    expect(matching.jobs).toHaveLength(1);
+    const other = await runAdapter(makeAdapter(items, { techFilter: true }), { ...ctx(), rules: { keywords: ["react"] } });
+    expect(other).toMatchObject({ filtered: 1 });
+  });
+
   it("dedupes repeated externalIds", async () => {
     const r = await runAdapter(
       makeAdapter([

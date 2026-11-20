@@ -4,6 +4,7 @@ import type { HttpClient } from "@/core/http";
 import type { WorkplaceType } from "@/core/job";
 import { checkLocation } from "@/core/location-filter";
 import { deriveRegions, deriveWorkplaceType } from "@/core/locations";
+import { checkJobRules } from "@/core/job-filter-rules";
 import { isTechJob } from "@/core/tech-filter";
 import { htmlToText } from "@/core/text";
 import type { ProbeResult } from "@/companies/types";
@@ -87,7 +88,11 @@ const adapter: SourceAdapter<Raw> = {
           // The list has no description, so filter on what it does have before spending a request per posting.
           const partial = { title: list.name, departments: departmentsOf(list), tags: [] as string[] };
           const regions = deriveRegions(textsOf(list));
-          if (!isTechJob(partial)) continue;
+          // The list has no salary, so salary rules can only apply after the detail call (in the runner).
+          const passesRules = ctx.rules
+            ? checkJobRules({ ...partial, salaryMin: null, salaryMax: null, salaryCurrency: null, salaryPeriod: null }, ctx.rules).pass
+            : isTechJob(partial);
+          if (!passesRules) continue;
           if (!checkLocation({ workplaceType: workplaceOf(list), regions }, company.homeCountry).pass) continue;
           // A posting can be unpublished between the list call and its detail call; that must not fail the company.
           const detail = await nullOn404(() => ctx.http.getJson(`${base}/${list.id}`));

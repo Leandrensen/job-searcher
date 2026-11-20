@@ -1,5 +1,6 @@
 import { HttpError } from "@/core/http";
 import { JobSchema, type Job } from "@/core/job";
+import { matchesKeywords } from "@/core/job-filter-rules";
 import { isTechJob } from "@/core/tech-filter";
 import type { AnyAdapter, FetchContext, FetchResult } from "./types";
 
@@ -76,7 +77,9 @@ export async function runAdapter(adapter: AnyAdapter, ctx: FetchContext): Promis
     if (seen.has(valid.data.externalId)) continue;
     seen.add(valid.data.externalId);
 
-    if (adapter.techFilter && !isTechJob(valid.data)) {
+    // Boards keep only postings matching the user's keywords. Without rules, the old built-in list applies (temporary).
+    const wanted = ctx.rules ? matchesKeywords(valid.data, ctx.rules.keywords) : isTechJob(valid.data);
+    if (adapter.techFilter && !wanted) {
       result.filtered++;
       continue;
     }
