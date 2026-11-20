@@ -6,6 +6,7 @@ import { loadFixtureText } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { weworkremotely } from "./weworkremotely";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 const BASE = "https://weworkremotely.com/categories/";
 const FEED_URLS = [
@@ -20,13 +21,13 @@ const rss = loadFixtureText("weworkremotely/programming.rss");
 
 function ctx() {
   const http = createFixtureHttp(routes);
-  const context: FetchContext = { http, latestPostedAt: null, log: () => {} };
+  const context: FetchContext = { http, latestPostedAt: null, rules: keywordRules(), log: () => {} };
   return { context, http };
 }
 
 function ctxWithGetText(getText: HttpClient["getText"]) {
   const log = vi.fn<(msg: string) => void>();
-  const context: FetchContext = { http: { getJson: vi.fn(), getText }, latestPostedAt: null, log };
+  const context: FetchContext = { http: { getJson: vi.fn(), getText }, latestPostedAt: null, rules: keywordRules(), log };
   return { context, log };
 }
 

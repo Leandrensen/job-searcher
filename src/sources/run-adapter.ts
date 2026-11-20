@@ -1,7 +1,6 @@
 import { HttpError } from "@/core/http";
 import { JobSchema, type Job } from "@/core/job";
 import { matchesKeywords } from "@/core/job-filter-rules";
-import { isTechJob } from "@/core/tech-filter";
 import type { AnyAdapter, FetchContext, FetchResult } from "./types";
 
 const MAX_LOGGED_FAILURES = 3;
@@ -19,6 +18,11 @@ export async function runAdapter(adapter: AnyAdapter, ctx: FetchContext): Promis
     error: null,
     durationMs: 0,
   };
+
+  // Boards keep only postings matching the user's keywords, so they can't run without the rules.
+  if (adapter.techFilter && !ctx.rules) {
+    return { ...result, status: "error", error: `${adapter.id}: techFilter needs ctx.rules`, durationMs: Date.now() - start };
+  }
 
   let items: unknown[];
   try {
@@ -77,9 +81,7 @@ export async function runAdapter(adapter: AnyAdapter, ctx: FetchContext): Promis
     if (seen.has(valid.data.externalId)) continue;
     seen.add(valid.data.externalId);
 
-    // Boards keep only postings matching the user's keywords. Without rules, the old built-in list applies (temporary).
-    const wanted = ctx.rules ? matchesKeywords(valid.data, ctx.rules.keywords) : isTechJob(valid.data);
-    if (adapter.techFilter && !wanted) {
+    if (adapter.techFilter && !matchesKeywords(valid.data, ctx.rules!.keywords)) {
       result.filtered++;
       continue;
     }

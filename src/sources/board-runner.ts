@@ -20,7 +20,7 @@ export interface RunBoardSourcesOptions {
   now?: () => Date;
   log?: (msg: string) => void;
   /** The user's job filter rules; boards use only the keywords. */
-  rules?: JobFilterRules;
+  rules: JobFilterRules;
 }
 
 const MAX_CONCURRENCY = 4;

@@ -7,6 +7,7 @@ import { exampleRules } from "@/test-utils/job-filter-rules";
 import { runAdapter } from "../run-adapter";
 import type { CompanyRef, FetchContext } from "../types";
 import { probeSmartRecruiters, smartrecruiters } from "./smartrecruiters";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 const BASE = "https://api.smartrecruiters.com/v1/companies/BoschGroup/postings";
 const LIST_URL = `${BASE}?limit=100&offset=0`;
@@ -25,7 +26,7 @@ const detailRoutes = Object.fromEntries(IDS.map((id) => [detailUrl(id), `ats/sma
 /** `listFixture` is postings-tech.json (one hand-edited remote full-stack posting) or postings-page.json (none match). */
 function setup(listFixture = "postings-tech.json") {
   const http = createFixtureHttp({ [LIST_URL]: `ats/smartrecruiters/${listFixture}`, ...detailRoutes });
-  const ctx: FetchContext = { http, latestPostedAt: null, log: () => {}, companies: [bosch] };
+  const ctx: FetchContext = { http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] };
   return { http, ctx };
 }
 
@@ -49,14 +50,14 @@ describe("smartrecruiters adapter", () => {
   it("skips a posting whose detail request returns 404", async () => {
     const http = createFixtureHttp({ [LIST_URL]: "ats/smartrecruiters/postings-tech.json", [detailUrl(TECH_ID)]: { status: 404 } });
     const log = vi.fn<(msg: string) => void>();
-    const items = await smartrecruiters.fetch({ http, latestPostedAt: null, log, companies: [bosch] });
+    const items = await smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log, companies: [bosch] });
     expect(items).toEqual([]);
     expect(log.mock.calls).toEqual([["smartrecruiters/BoschGroup: posting 744000161904329 is gone, skipped"]]);
   });
 
   it("a 500 on a detail request still fails the fetch", async () => {
     const http = createFixtureHttp({ [LIST_URL]: "ats/smartrecruiters/postings-tech.json", [detailUrl(TECH_ID)]: { status: 500 } });
-    const failure = await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] }).catch((e: unknown) => e);
+    const failure = await smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] }).catch((e: unknown) => e);
     expect(failure).toBeInstanceOf(HttpError);
     expect((failure as HttpError).status).toBe(500);
   });
@@ -81,7 +82,7 @@ describe("smartrecruiters adapter", () => {
     const http = createFixtureHttp({ ...detailRoutes });
     const spy = vi.spyOn(http, "getJson");
     const wrapped: HttpClient = { getJson: async (url) => (url === LIST_URL ? list : http.getJson(url)), getText: http.getText };
-    const items = await smartrecruiters.fetch({ http: wrapped, latestPostedAt: null, log: () => {}, companies: [bosch] });
+    const items = await smartrecruiters.fetch({ http: wrapped, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] });
     expect(items).toEqual([]);
     expect(spy).not.toHaveBeenCalled();
   });
@@ -90,13 +91,13 @@ describe("smartrecruiters adapter", () => {
     const list = loadFixture("ats/smartrecruiters/postings-tech.json") as { content: Array<{ location: Record<string, unknown> }> };
     list.content[0]!.location = { ...list.content[0]!.location, fullLocation: "Remote - US" };
     const http: HttpClient = { getJson: async () => list, getText: vi.fn() };
-    expect(await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] })).toEqual([]);
+    expect(await smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] })).toEqual([]);
   });
 
   it("skips tech postings at companies based in a disallowed country", async () => {
     const { http } = setup();
     const argentinian = { ...bosch, homeCountry: "AR" };
-    expect(await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [argentinian] })).toEqual([]);
+    expect(await smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [argentinian] })).toEqual([]);
   });
 
   it("paginates until totalFound and stops at the end", async () => {
@@ -109,7 +110,7 @@ describe("smartrecruiters adapter", () => {
       }),
       getText: vi.fn(),
     };
-    await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] });
+    await smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] });
     expect(pages).toEqual([0, 100, 200]);
   });
 
@@ -118,7 +119,7 @@ describe("smartrecruiters adapter", () => {
       getJson: vi.fn(async (url: string) => ({ offset: Number(new URL(url).searchParams.get("offset")), limit: 100, totalFound: 5000, content: [] })),
       getText: vi.fn(),
     };
-    await smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] });
+    await smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] });
     expect(http.getJson).toHaveBeenCalledTimes(50);
   });
 
@@ -127,7 +128,7 @@ describe("smartrecruiters adapter", () => {
       getJson: vi.fn(async () => ({ offset: 0, limit: 100, totalFound: 5001, content: [] })),
       getText: vi.fn(),
     };
-    await expect(smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] })).rejects.toThrow(
+    await expect(smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] })).rejects.toThrow(
       "smartrecruiters/BoschGroup: 5001 postings, more than the 5000 this adapter can list",
     );
     expect(http.getJson).toHaveBeenCalledTimes(1);
@@ -135,12 +136,12 @@ describe("smartrecruiters adapter", () => {
 
   it("throws when the envelope has the wrong shape", async () => {
     const http: HttpClient = { getJson: vi.fn(async () => ({ nope: 1 })), getText: vi.fn() };
-    await expect(smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {}, companies: [bosch] })).rejects.toThrow();
+    await expect(smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch] })).rejects.toThrow();
   });
 
   it("throws without companies", async () => {
     const { http } = setup();
-    await expect(smartrecruiters.fetch({ http, latestPostedAt: null, log: () => {} })).rejects.toThrow("smartrecruiters: no companies in context");
+    await expect(smartrecruiters.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {} })).rejects.toThrow("smartrecruiters: no companies in context");
   });
 
   it("normalizes a typical item", async () => {

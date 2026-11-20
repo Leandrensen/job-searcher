@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 import type { Job } from "@/core/job";
 import { openDb, type Db } from "@/db/client";
 import { companyCandidates, fetchRuns } from "@/db/schema";
@@ -115,7 +116,7 @@ describe("boards use the newest recorded postedAt to stop paging", () => {
       getText: vi.fn(),
     };
     const adapter = createHimalayas({ sleep: async () => {} });
-    const run = () => runBoardSources({ db, http, adapters: [adapter], force: true, now: () => new Date(NOW), log: () => {} });
+    const run = () => runBoardSources({ db, http, adapters: [adapter], force: true, now: () => new Date(NOW), log: () => {}, rules: keywordRules() });
 
     await run();
     expect(requested).toEqual(["", "c1", "c2"]);

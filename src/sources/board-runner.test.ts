@@ -1,4 +1,5 @@
 import { sql } from "drizzle-orm";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import type { Job, SourceId } from "@/core/job";
@@ -55,7 +56,7 @@ function setup() {
   let t = Date.parse("2026-11-09T12:00:00.000Z");
   const clock = { now: () => new Date(t), advanceMinutes: (m: number) => (t += m * 60_000) };
   const run = (adapters: AnyAdapter[], force = false) =>
-    runBoardSources({ db, http, adapters, force, now: clock.now, log: () => {} });
+    runBoardSources({ db, http, adapters, force, now: clock.now, log: () => {}, rules: keywordRules() });
   return { db, clock, run };
 }
 
@@ -158,6 +159,7 @@ describe("runBoardSources", () => {
     const results = await runBoardSources({
       db,
       http: { getJson: vi.fn(), getText: vi.fn() },
+      rules: keywordRules(),
       adapters: [adapter],
       now: clock.now,
       log,

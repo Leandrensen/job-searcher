@@ -1,43 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { RuleInput } from "./hard-rules";
-import { applyHardRules, rankJobs } from "./rank";
-
-const job = (over: Partial<RuleInput> & { id: number }): RuleInput & { id: number } => ({
-  title: "Software Engineer",
-  departments: ["Engineering"],
-  salaryMin: null,
-  salaryMax: null,
-  salaryCurrency: null,
-  salaryPeriod: null,
-  ...over,
-});
-
-describe("applyHardRules", () => {
-  it("counts each exclusion", () => {
-    const jobs = [
-      job({ id: 1, title: "Mobile Engineer" }),
-      job({ id: 2, departments: ["Sales"] }),
-      job({ id: 3, title: "Junior Engineer" }),
-      job({ id: 4, salaryMax: 10000, salaryCurrency: "USD", salaryPeriod: "year" }),
-      job({ id: 5, title: "Senior Engineer" }),
-    ];
-    const { kept, excluded } = applyHardRules(jobs, {
-      excludeTitleKeywords: ["Mobile"],
-      excludeDepartments: ["Sales"],
-      seniority: ["senior"],
-      salaryFloor: { USD: 60000 },
-    });
-    expect(kept.map((j) => j.id)).toEqual([5]);
-    expect(excluded).toEqual({ title: 1, department: 1, seniority: 1, salary: 1 });
-  });
-
-  it("with no rules keeps everything in order", () => {
-    const jobs = [job({ id: 2 }), job({ id: 1 })];
-    const { kept, excluded } = applyHardRules(jobs, {});
-    expect(kept.map((j) => j.id)).toEqual([2, 1]);
-    expect(excluded).toEqual({ title: 0, department: 0, seniority: 0, salary: 0 });
-  });
-});
+import { rankJobs } from "./rank";
 
 describe("rankJobs", () => {
   const search = new Float32Array([1, 0]);

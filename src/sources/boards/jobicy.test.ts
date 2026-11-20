@@ -4,12 +4,13 @@ import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { jobicy } from "./jobicy";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 const fixture = loadFixture("jobicy/api.json") as { jobs: Array<Record<string, unknown> & { jobDescription: string }> };
 
 function ctxWith(body: unknown) {
   const getJson = vi.fn(async () => body);
-  const ctx: FetchContext = { http: { getJson, getText: vi.fn() }, latestPostedAt: null, log: () => {} };
+  const ctx: FetchContext = { http: { getJson, getText: vi.fn() }, latestPostedAt: null, rules: keywordRules(), log: () => {} };
   return { ctx, getJson };
 }
 

@@ -2,7 +2,6 @@ import type { HttpClient } from "@/core/http";
 import type { AtsId, Job } from "@/core/job";
 import { checkJobRules, type JobFilterRules } from "@/core/job-filter-rules";
 import { checkLocation, isAllowedHomeCountry } from "@/core/location-filter";
-import { isTechJob } from "@/core/tech-filter";
 import type { Db } from "@/db/client";
 import { listDueCompanies, recordCompanyFetch, type CompanyRow } from "@/db/companies";
 import { markClosedJobs, recordRun, upsertJobs } from "@/db/queries";
@@ -34,8 +33,8 @@ export interface RunAtsSourcesOptions {
   force?: boolean;
   now?: () => Date;
   log?: (msg: string) => void;
-  /** The user's job filter rules. Without them the old built-in keyword list applies (temporary). */
-  rules?: JobFilterRules;
+  /** The user's job filter rules: a job is stored only if it passes them (and the location filter). */
+  rules: JobFilterRules;
 }
 
 const errorMessage = (err: unknown): string => {
@@ -112,7 +111,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
           let ruleMisses = result.filtered;
           let location = 0;
           for (const job of result.jobs) {
-            if (!(rules ? checkJobRules(job, rules).pass : isTechJob(job))) ruleMisses++;
+            if (!checkJobRules(job, rules).pass) ruleMisses++;
             else if (!checkLocation(job, company.homeCountry).pass) location++;
             else kept.push(job);
           }

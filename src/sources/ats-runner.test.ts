@@ -88,7 +88,7 @@ const addCompany = (ats: AtsId, slug: string, homeCountry: string | null = "US")
 const run = (
   adapters: AnyAdapter[],
   over: { force?: boolean; at?: Date; log?: (m: string) => void; rules?: Parameters<typeof runAtsSources>[0]["rules"] } = {},
-) => runAtsSources({ db, http, adapters, force: over.force, now: () => over.at ?? T0, log: over.log ?? (() => {}), rules: over.rules });
+) => runAtsSources({ db, http, adapters, force: over.force, now: () => over.at ?? T0, log: over.log ?? (() => {}), rules: over.rules ?? keywordRules() });
 const company = (slug: string) => db.select().from(companies).all().find((c) => c.slug === slug)!;
 
 describe("runAtsSources", () => {
@@ -364,7 +364,7 @@ describe("runAtsSources with the real Greenhouse adapter and a fixture", () => {
   it("fetches, filters and records a real board", async () => {
     addCompany("greenhouse", "mozilla", "US");
     const fixtureHttp = createFixtureHttp({ "https://boards-api.greenhouse.io/v1/boards/mozilla/jobs?content=true": "ats/greenhouse/jobs.json" });
-    const [summary] = await runAtsSources({ db, http: fixtureHttp, adapters: [greenhouse], now: () => T0, log: () => {} });
+    const [summary] = await runAtsSources({ db, http: fixtureHttp, adapters: [greenhouse], now: () => T0, log: () => {}, rules: keywordRules() });
     // All 3 recorded Mozilla jobs are remote, but only in Europe or North America; two are not tech roles.
     expect(summary).toMatchObject({
       status: "success",

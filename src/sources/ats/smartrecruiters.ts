@@ -5,7 +5,6 @@ import type { WorkplaceType } from "@/core/job";
 import { checkLocation } from "@/core/location-filter";
 import { deriveRegions, deriveWorkplaceType } from "@/core/locations";
 import { checkJobRules } from "@/core/job-filter-rules";
-import { isTechJob } from "@/core/tech-filter";
 import { htmlToText } from "@/core/text";
 import type { ProbeResult } from "@/companies/types";
 import { defineAdapter, type SourceAdapter } from "../types";
@@ -68,6 +67,8 @@ const adapter: SourceAdapter<Raw> = {
 
   async fetch(ctx) {
     const items: unknown[] = [];
+    const rules = ctx.rules;
+    if (!rules) throw new Error("smartrecruiters: ctx.rules is required");
     for (const company of requireCompanies(ctx, "smartrecruiters")) {
       const base = postingsUrl(company.slug);
       let offset = 0;
@@ -89,10 +90,7 @@ const adapter: SourceAdapter<Raw> = {
           const partial = { title: list.name, departments: departmentsOf(list), tags: [] as string[] };
           const regions = deriveRegions(textsOf(list));
           // The list has no salary, so salary rules can only apply after the detail call (in the runner).
-          const passesRules = ctx.rules
-            ? checkJobRules({ ...partial, salaryMin: null, salaryMax: null, salaryCurrency: null, salaryPeriod: null }, ctx.rules).pass
-            : isTechJob(partial);
-          if (!passesRules) continue;
+          if (!checkJobRules({ ...partial, salaryMin: null, salaryMax: null, salaryCurrency: null, salaryPeriod: null }, rules).pass) continue;
           if (!checkLocation({ workplaceType: workplaceOf(list), regions }, company.homeCountry).pass) continue;
           // A posting can be unpublished between the list call and its detail call; that must not fail the company.
           const detail = await nullOn404(() => ctx.http.getJson(`${base}/${list.id}`));

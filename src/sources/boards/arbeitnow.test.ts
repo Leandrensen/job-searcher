@@ -4,6 +4,7 @@ import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { arbeitnow } from "./arbeitnow";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 type Page = { data: Array<Record<string, unknown>>; links: { next: string | null } };
 const fixture = loadFixture("arbeitnow/page1.json") as Page;
@@ -11,7 +12,7 @@ const fixture = loadFixture("arbeitnow/page1.json") as Page;
 function setup(pages: (n: number) => Page, latestPostedAt: string | null = null) {
   let n = 0;
   const getJson = vi.fn<(url: string) => Promise<unknown>>(async () => pages(++n));
-  const ctx: FetchContext = { http: { getJson, getText: vi.fn() }, latestPostedAt, log: () => {} };
+  const ctx: FetchContext = { http: { getJson, getText: vi.fn() }, latestPostedAt, rules: keywordRules(), log: () => {} };
   return { ctx, getJson };
 }
 
