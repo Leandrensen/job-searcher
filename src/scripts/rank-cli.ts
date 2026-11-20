@@ -1,6 +1,7 @@
 import type { Db } from "@/db/client";
 import { listOpenJobsForRanking } from "@/db/ranking";
-import { ConfigError, loadPreferences, loadSearchDescription } from "@/ranking/config";
+import { ConfigError } from "@/core/config-error";
+import { loadPreferences, loadSearchDescription } from "@/ranking/config";
 import { embedJobs } from "@/ranking/embed-jobs";
 import type { Embedder } from "@/ranking/embedder";
 import { applyHardRules, rankJobs } from "@/ranking/rank";

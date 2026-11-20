@@ -2,7 +2,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
-import { ConfigError, loadPreferences, loadSearchDescription, PreferencesSchema } from "./config";
+import { ConfigError } from "@/core/config-error";
+import { loadPreferences, loadSearchDescription, PreferencesSchema } from "./config";
 
 let dir: string;
 beforeEach(() => {

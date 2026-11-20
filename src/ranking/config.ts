@@ -1,14 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { SENIORITY_LEVELS } from "./seniority";
-
-export class ConfigError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ConfigError";
-  }
-}
+import { ConfigError } from "@/core/config-error";
+import { SENIORITY_LEVELS } from "@/core/seniority";
 
 const nonEmptyStrings = z.array(z.string().trim().min(1));
 

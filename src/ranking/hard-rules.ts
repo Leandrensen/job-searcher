@@ -1,5 +1,5 @@
 import type { Preferences } from "./config";
-import { deriveSeniority } from "./seniority";
+import { deriveSeniority } from "@/core/seniority";
 
 export type Exclusion = "title" | "department" | "seniority" | "salary";
 export type RuleInput = {
