@@ -1,4 +1,4 @@
-import { asc, inArray, isNull } from "drizzle-orm";
+import { and, asc, inArray, isNull } from "drizzle-orm";
 import type { Db } from "./client";
 import { jobEmbeddings, jobs } from "./schema";
 
@@ -18,7 +18,7 @@ export type RankableJob = {
 
 export type StoredEmbedding = { model: string; textHash: string; vector: Float32Array };
 
-/** Open jobs, in id order, with only the fields ranking needs. */
+/** Open jobs that aren't duplicates, in id order, with only the fields ranking needs. */
 export function listOpenJobsForRanking(db: Db): RankableJob[] {
   return db
     .select({
@@ -35,7 +35,8 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
       descriptionText: jobs.descriptionText,
     })
     .from(jobs)
-    .where(isNull(jobs.closedAt))
+    // A duplicate of another posting is the same job: ranking (and later scoring) it twice would waste a slot and a call.
+    .where(and(isNull(jobs.closedAt), isNull(jobs.duplicateOf)))
     .orderBy(asc(jobs.id))
     .all();
 }

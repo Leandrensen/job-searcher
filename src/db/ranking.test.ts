@@ -78,6 +78,14 @@ describe("listOpenJobsForRanking", () => {
   });
 });
 
+describe("duplicates", () => {
+  it("skips jobs marked as a duplicate of another", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title", company: "Acme" })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title", company: "Acme" })], NOW);
+    expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([1]);
+  });
+});
+
 describe("embeddings", () => {
   beforeEach(() => {
     upsertJobs(db, [makeJob("1"), makeJob("2")], NOW);
