@@ -43,7 +43,9 @@ export function decodeEntities(s: string): string {
 }
 
 export function htmlToText(html: string): string {
-  const text = decodeEntities(html)
+  // Only fully escaped markup (Greenhouse) is decoded first. In real html, `&lt;` is literal text and must survive.
+  const hasRealTags = /<[a-z!/]/i.test(html);
+  const text = (hasRealTags ? html : decodeEntities(html))
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, "")
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<br\s*\/?>|<\/(?:p|li|div|h[1-6])>/gi, "\n")
