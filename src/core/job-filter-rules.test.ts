@@ -114,4 +114,14 @@ describe("the example file", () => {
   it("is valid", () => {
     expect(JobFilterRulesSchema.safeParse(EXAMPLE).success).toBe(true);
   });
+
+  const martech = { title: "Senior Martech Engineer", departments: ["Marketing"], tags: [], salaryMin: null, salaryMax: null, salaryCurrency: null, salaryPeriod: null };
+
+  it("keeps a Martech Engineer in a Marketing department", () => {
+    expect(checkJobRules(martech, EXAMPLE)).toEqual({ pass: true });
+  });
+
+  it("still drops a Sales department", () => {
+    expect(checkJobRules({ ...martech, departments: ["Sales"] }, EXAMPLE)).toEqual({ pass: false, reason: "department" });
+  });
 });

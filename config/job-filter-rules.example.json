@@ -33,6 +33,6 @@
   ],
   "seniority": ["mid", "senior", "staff", "lead"],
   "salaryFloor": { "USD": 60000, "EUR": 55000 },
-  "excludeDepartments": ["Sales", "Marketing", "Customer Success"],
+  "excludeDepartments": ["Sales", "Customer Success"],
   "excludeTitleKeywords": ["Mobile", "iOS", "Android", "Data Scientist"]
 }
