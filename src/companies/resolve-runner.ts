@@ -1,4 +1,5 @@
 import type { AtsId } from "@/core/job";
+import { errorMessage } from "@/core/errors";
 import { HttpError, type HttpClient } from "@/core/http";
 import type { Db } from "@/db/client";
 import { listDueCandidates, recordResolution } from "@/db/companies";
@@ -93,8 +94,7 @@ export async function resolveDueCandidates(opts: ResolveDueOptions): Promise<Res
           probes,
         );
       } catch (err) {
-        const e = err instanceof Error ? err : new Error(String(err));
-        result = { status: "error", error: `${e.name}: ${e.message}` };
+        result = { status: "error", error: errorMessage(err) };
       }
       record(candidate.origin, candidate.name, candidate.id, result);
     }

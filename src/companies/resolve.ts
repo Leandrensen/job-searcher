@@ -1,4 +1,5 @@
 import { normalizeCompany, stripLegalSuffixesKeepCase } from "@/core/dedupe";
+import { errorMessage } from "@/core/errors";
 import { HttpError, type HttpClient } from "@/core/http";
 import type { AtsId } from "@/core/job";
 import { extractAtsRefs, slugGuesses, websiteDomain, type AtsRef } from "./slugs";
@@ -74,8 +75,7 @@ export async function resolveCandidate(
     try {
       return await probes[ats](http, slug);
     } catch (err) {
-      const e = err instanceof Error ? err : new Error(String(err));
-      firstError ??= `${e.name}: ${e.message}`;
+      firstError ??= errorMessage(err);
       if (!((err instanceof HttpError && err.status === 429) || err instanceof RateLimitedError)) onlyRateLimits = false;
       return null;
     }
