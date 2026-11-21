@@ -1,3 +1,4 @@
+import { errorMessage } from "@/core/errors";
 import type { HttpClient } from "@/core/http";
 import type { AtsId, Job } from "@/core/job";
 import { checkLocation, isAllowedHomeCountry } from "@/core/location-filter";
@@ -33,11 +34,6 @@ export interface RunAtsSourcesOptions {
   now?: () => Date;
   log?: (msg: string) => void;
 }
-
-const errorMessage = (err: unknown): string => {
-  const e = err instanceof Error ? err : new Error(String(err));
-  return `${e.name}: ${e.message}`;
-};
 
 const toRef = (c: CompanyRow): CompanyRef => ({ id: c.id, ats: c.ats as AtsId, slug: c.slug, name: c.name, homeCountry: c.homeCountry });
 

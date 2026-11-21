@@ -1,3 +1,4 @@
+import { errorMessage } from "@/core/errors";
 import type { HttpClient } from "@/core/http";
 import type { Db } from "@/db/client";
 import { recordCandidatesFromBoardJobs } from "@/companies/discover";
@@ -88,8 +89,7 @@ export async function runBoardSources(opts: RunBoardSourcesOptions): Promise<Boa
       });
       return { ...result, inserted, updated };
     } catch (err) {
-      const e = err instanceof Error ? err : new Error(String(err));
-      const message = `${e.name}: ${e.message}`;
+      const message = errorMessage(err);
       log(`${adapter.id}: ${message}`);
       try {
         recordRun(db, {
@@ -101,8 +101,7 @@ export async function runBoardSources(opts: RunBoardSourcesOptions): Promise<Boa
           error: message,
         });
       } catch (recordErr) {
-        const r = recordErr instanceof Error ? recordErr : new Error(String(recordErr));
-        log(`${adapter.id}: could not record run: ${r.name}: ${r.message}`);
+        log(`${adapter.id}: could not record run: ${errorMessage(recordErr)}`);
       }
       return {
         source: adapter.id,
