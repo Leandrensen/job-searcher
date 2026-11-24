@@ -1,5 +1,4 @@
-import { and, asc, eq, inArray, isNotNull, isNull, or } from "drizzle-orm";
-import { alias } from "drizzle-orm/sqlite-core";
+import { asc, inArray, isNull } from "drizzle-orm";
 import type { Db } from "./client";
 import { jobEmbeddings, jobs } from "./schema";
 
@@ -10,6 +9,7 @@ export type RankableJob = {
   location: string | null;
   url: string;
   departments: string[];
+  tags: string[];
   salaryMin: number | null;
   salaryMax: number | null;
   salaryCurrency: string | null;
@@ -20,11 +20,12 @@ export type RankableJob = {
 export type StoredEmbedding = { model: string; textHash: string; vector: Float32Array };
 
 /**
- * Open jobs to rank, in id order. A duplicate is skipped while its original is open; once the original closes, its oldest
- * open duplicate takes its place.
+ * Open jobs to rank, in id order, one per posting. Jobs are the same posting when they share a duplicate family or an
+ * apply URL, or the same company and title (from another source, or from the same source with the same description).
+ * The lowest id is ranked. Jobs failing `keep` are left out before grouping, so a passing copy still stands for its
+ * posting.
  */
-export function listOpenJobsForRanking(db: Db): RankableJob[] {
-  const original = alias(jobs, "original");
+export function listOpenJobsForRanking(db: Db, keep: (job: RankableJob) => boolean = () => true): RankableJob[] {
   const rows = db
     .select({
       id: jobs.id,
@@ -33,36 +34,46 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
       location: jobs.location,
       url: jobs.url,
       departments: jobs.departments,
+      tags: jobs.tags,
       salaryMin: jobs.salaryMin,
       salaryMax: jobs.salaryMax,
       salaryCurrency: jobs.salaryCurrency,
       salaryPeriod: jobs.salaryPeriod,
       descriptionText: jobs.descriptionText,
+      source: jobs.source,
       duplicateOf: jobs.duplicateOf,
+      dedupeKey: jobs.dedupeKey,
+      applyUrl: jobs.applyUrl,
     })
     .from(jobs)
-    // Left join: a job that isn't a duplicate has no original and must still be listed.
-    .leftJoin(original, eq(original.id, jobs.duplicateOf))
-    // A duplicate of an open posting is the same job: ranking (and later scoring) it twice would waste a slot and a call.
-    // A missing original counts as gone.
-    .where(
-      and(
-        isNull(jobs.closedAt),
-        or(isNull(jobs.duplicateOf), isNull(original.id), isNotNull(original.closedAt)),
-      ),
-    )
+    .where(isNull(jobs.closedAt))
+    // Id order makes the lowest id win. A duplicate is always inserted after its original, so an open original is
+    // kept before its duplicates; once it closes, its oldest open duplicate takes its place.
     .orderBy(asc(jobs.id))
     .all();
 
-  // Several open copies of one closed original: keep only the first (lowest id), so the job still appears once.
-  const keptOriginals = new Set<number>();
+  // Ranking (and later scoring) the same posting twice would waste a slot and a call.
+  // On one board, the same title with a different description is another opening; across sources the text is formatted
+  // differently, so company and title are enough there.
+  const seenFamilies = new Set<number>();
+  const seenApplyUrls = new Set<string>();
+  const seenByKey = new Map<string, { source: string; descriptionText: string }[]>();
   const result: RankableJob[] = [];
-  for (const { duplicateOf, ...job } of rows) {
-    if (duplicateOf !== null) {
-      if (keptOriginals.has(duplicateOf)) continue;
-      keptOriginals.add(duplicateOf);
-    }
-    result.push(job);
+  for (const { source, duplicateOf, dedupeKey, applyUrl, ...job } of rows) {
+    // A rejected row is neither kept nor remembered, so it can't hide a copy that passes.
+    if (!keep(job)) continue;
+    const family = duplicateOf ?? job.id;
+    const sameKey = seenByKey.get(dedupeKey) ?? [];
+    const isCopy =
+      seenFamilies.has(family) ||
+      (applyUrl !== null && seenApplyUrls.has(applyUrl)) ||
+      sameKey.some((s) => s.source !== source || s.descriptionText === job.descriptionText);
+    // Remember every row, kept or skipped, so a copy linked only through a skipped copy is caught too.
+    seenFamilies.add(family);
+    seenFamilies.add(job.id);
+    if (applyUrl !== null) seenApplyUrls.add(applyUrl);
+    seenByKey.set(dedupeKey, [...sameKey, { source, descriptionText: job.descriptionText }]);
+    if (!isCopy) result.push(job);
   }
   return result;
 }

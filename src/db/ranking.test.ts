@@ -57,6 +57,7 @@ describe("listOpenJobsForRanking", () => {
         location: "Remote",
         url: "https://example.com/a:1",
         departments: ["Engineering"],
+        tags: [],
         salaryMin: 80000,
         salaryMax: 100000,
         salaryCurrency: "USD",
@@ -70,6 +71,7 @@ describe("listOpenJobsForRanking", () => {
         location: null,
         url: "https://example.com/a:2",
         departments: ["Engineering"],
+        tags: [],
         salaryMin: null,
         salaryMax: null,
         salaryCurrency: null,
@@ -77,6 +79,13 @@ describe("listOpenJobsForRanking", () => {
         descriptionText: "Description a:2",
       },
     ]);
+  });
+});
+
+describe("tags", () => {
+  it("includes the job's tags", () => {
+    upsertJobs(db, [makeJob("1", { tags: ["react", "remote"] })], NOW);
+    expect(listOpenJobsForRanking(db)[0]!.tags).toEqual(["react", "remote"]);
   });
 });
 
@@ -152,9 +161,129 @@ describe("duplicates", () => {
       "salaryMax",
       "salaryMin",
       "salaryPeriod",
+      "tags",
       "title",
       "url",
     ]);
+  });
+
+  const ids = () => listOpenJobsForRanking(db).map((j) => j.id);
+
+  function insertThreeCities(): void {
+    upsertJobs(
+      db,
+      [
+        makeJob("1", { title: "Same Title", location: "Bogota", descriptionText: "Same description" }),
+        makeJob("2", { title: "Same Title", location: "Lima", descriptionText: "Same description" }),
+        makeJob("3", { title: "Same Title", location: "LatAm", descriptionText: "Same description" }),
+      ],
+      NOW,
+    );
+  }
+
+  it("ranks one copy of a posting listed in several cities", () => {
+    insertThreeCities();
+    expect(db.select().from(jobs).all().map((j) => j.duplicateOf)).toEqual([null, null, null]);
+    expect(ids()).toEqual([1]);
+  });
+
+  it("the next copy is ranked when the first closes", () => {
+    insertThreeCities();
+    setClosedAt(1, NOW);
+    expect(ids()).toEqual([2]);
+  });
+
+  it("a title differing only in case and punctuation is the same posting", () => {
+    upsertJobs(
+      db,
+      [
+        makeJob("1", { title: "Senior Full-Stack Engineer", descriptionText: "Same description" }),
+        makeJob("2", { title: "senior full stack engineer", descriptionText: "Same description" }),
+      ],
+      NOW,
+    );
+    expect(ids()).toEqual([1]);
+  });
+
+  it("the same title on one board with different descriptions is two jobs", () => {
+    upsertJobs(
+      db,
+      [
+        makeJob("1", { title: "Software Engineer in Test", descriptionText: "Payments team" }),
+        makeJob("2", { title: "Software Engineer in Test", descriptionText: "Infra team" }),
+      ],
+      NOW,
+    );
+    expect(ids()).toEqual([1, 2]);
+  });
+
+  it("the same title from another source is one job even when the text differs", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title", descriptionText: "Greenhouse text" })], NOW);
+    // 32 days later, so findOriginal doesn't link them.
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title", descriptionText: "Lever text" })], "2026-12-21T12:00:00.000Z");
+    expect(db.select().from(jobs).all().map((j) => j.duplicateOf)).toEqual([null, null]);
+    expect(ids()).toEqual([1]);
+  });
+
+  it("a copy linked only through a skipped copy is ranked once", () => {
+    upsertJobs(db, [makeJob("1", { source: "lever", title: "Senior Engineer", applyUrl: "https://apply.example.com/u" })], NOW);
+    upsertJobs(
+      db,
+      [makeJob("2", { source: "ashby", title: "Senior Engineer (Remote)", applyUrl: "https://apply.example.com/u", descriptionText: "Same description" })],
+      NOW,
+    );
+    upsertJobs(
+      db,
+      [makeJob("3", { source: "ashby", title: "Senior Engineer (Remote)", applyUrl: "https://apply.example.com/u2", descriptionText: "Same description" })],
+      NOW,
+    );
+    expect(db.select().from(jobs).all().map((j) => [j.id, j.duplicateOf])).toEqual([
+      [1, null],
+      [2, 1],
+      [3, null],
+    ]);
+    expect(ids()).toEqual([1]);
+  });
+
+  it("the same title at another company is another job", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title" }), makeJob("2", { title: "Same Title", company: "Globex" })], NOW);
+    expect(ids()).toEqual([1, 2]);
+  });
+
+  it("jobs sharing an apply URL are ranked once", () => {
+    upsertJobs(
+      db,
+      [makeJob("1", { applyUrl: "https://apply.example.com/x" }), makeJob("2", { applyUrl: "https://apply.example.com/x" })],
+      NOW,
+    );
+    expect(ids()).toEqual([1]);
+  });
+
+  it("a copy from a third site after the original closes is ranked once", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title" })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title" })], NOW);
+    setClosedAt(1, NOW);
+    upsertJobs(db, [makeJob("7", { source: "ashby", title: "Same Title" })], NOW);
+    expect(db.select().from(jobs).all().map((j) => [j.id, j.duplicateOf])).toEqual([
+      [1, null],
+      [2, 1],
+      [3, null],
+    ]);
+    expect(ids()).toEqual([2]);
+  });
+});
+
+describe("filter", () => {
+  it("a passing copy is ranked when the lowest-id copy fails the filter", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title", departments: ["Sales"] })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title" })], NOW);
+    expect(listOpenJobsForRanking(db, (j) => !j.departments.includes("Sales")).map((j) => j.id)).toEqual([2]);
+    expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([1]);
+  });
+
+  it("a filter rejecting every job gives []", () => {
+    upsertJobs(db, [makeJob("1")], NOW);
+    expect(listOpenJobsForRanking(db, () => false)).toEqual([]);
   });
 });
 

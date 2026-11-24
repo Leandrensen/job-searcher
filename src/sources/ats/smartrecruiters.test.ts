@@ -87,6 +87,24 @@ describe("smartrecruiters adapter", () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
+  it("reports each posting the rules drop before the detail request", async () => {
+    const onPrefiltered = vi.fn<(reason: "rules" | "location") => void>();
+    const { ctx } = setup();
+    const items = await smartrecruiters.fetch({ ...ctx, onPrefiltered });
+    expect(items).toHaveLength(1);
+    expect(onPrefiltered.mock.calls).toEqual([["rules"], ["rules"]]);
+  });
+
+  it("reports a posting the location pre-filter drops", async () => {
+    const onPrefiltered = vi.fn<(reason: "rules" | "location") => void>();
+    const list = loadFixture("ats/smartrecruiters/postings-tech.json") as { content: Array<{ location: Record<string, unknown> }> };
+    list.content[0]!.location = { ...list.content[0]!.location, remote: false, hybrid: false, fullLocation: "Berlin, Germany" };
+    const http = createFixtureHttp({ ...detailRoutes });
+    const wrapped: HttpClient = { getJson: async (url) => (url === LIST_URL ? list : http.getJson(url)), getText: http.getText };
+    await smartrecruiters.fetch({ http: wrapped, latestPostedAt: null, rules: keywordRules(), log: () => {}, companies: [bosch], onPrefiltered });
+    expect(onPrefiltered.mock.calls.map((c) => c[0]).sort()).toEqual(["location", "rules", "rules"]);
+  });
+
   it("skips a tech posting limited to another region", async () => {
     const list = loadFixture("ats/smartrecruiters/postings-tech.json") as { content: Array<{ location: Record<string, unknown> }> };
     list.content[0]!.location = { ...list.content[0]!.location, fullLocation: "Remote - US" };

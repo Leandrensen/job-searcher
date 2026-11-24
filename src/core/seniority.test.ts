@@ -18,6 +18,19 @@ describe("deriveSeniority", () => {
     ["Software Engineer", null],
     ["", null],
     ["Staff Engineer / Tech Lead", "staff"],
+    ["Semi Senior Developer", "mid"],
+    ["Desarrollador Semi-Senior", "mid"],
+    ["Semi Sr. Frontend Engineer", "mid"],
+    ["SemiSenior Backend Developer", "mid"],
+    ["Junior/Semi-Senior Back-End Engineer (.NET)", "mid"],
+    ["Semi Developer", null], // plain "semi" isn't a level: it also means semi-remote or semi-presencial
+    ["Backend Developer (Semi-Remote)", null],
+    ["Semiconductor Engineer", null],
+    ["Desarrollador SSr Java", "mid"],
+    ["Sr/SSr Backend Developer", "senior"],
+    ["Senior / Semi Senior Developer", "senior"],
+    ["Semi-Senior Lead Developer", "lead"],
+    ["Frontend Engineer (Next.js/SSR)", "mid"], // accepted false positive: SSR as server-side rendering
   ])("%j → %j", (title, expected) => {
     expect(deriveSeniority(title)).toBe(expected);
   });
