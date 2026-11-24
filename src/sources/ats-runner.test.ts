@@ -307,6 +307,32 @@ describe("runAtsSources", () => {
     ]);
   });
 
+  const reporting = (a: AnyAdapter): AnyAdapter => ({
+    ...a,
+    fetch: async (ctx) => {
+      ctx.onPrefiltered?.("rules");
+      ctx.onPrefiltered?.("rules");
+      ctx.onPrefiltered?.("location");
+      return a.fetch(ctx);
+    },
+  });
+
+  it("counts postings an adapter filtered before its detail requests", async () => {
+    addCompany("greenhouse", "acme");
+    const log = vi.fn<(m: string) => void>();
+    const [summary] = await run([reporting(fakeAts("greenhouse", { acme: GOOD }).adapter)], { log });
+    expect(summary).toMatchObject({ fetched: 8, inserted: 2, filteredRules: 3, filteredLocation: 3 });
+    expect(log).toHaveBeenCalledWith("greenhouse/acme: kept 2, filtered 3+3, closed 0");
+    expect(db.select().from(fetchRuns).all()[0]).toMatchObject({ fetched: 8, filtered: 6 });
+  });
+
+  it("pre-filtered counts are per company", async () => {
+    addCompany("greenhouse", "acme");
+    addCompany("greenhouse", "beta");
+    const [summary] = await run([reporting(fakeAts("greenhouse", { acme: GOOD, beta: GOOD }).adapter)]);
+    expect(summary).toMatchObject({ fetched: 16, inserted: 4, filteredRules: 6, filteredLocation: 6 });
+  });
+
   it("logs one line per company", async () => {
     addCompany("greenhouse", "acme");
     addCompany("greenhouse", "gone");

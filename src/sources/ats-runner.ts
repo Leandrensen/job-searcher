@@ -87,7 +87,11 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
         const label = `${adapter.id}/${company.slug}`;
         const nowIso = now().toISOString();
         try {
-          const result = await runAdapter(adapter, { http, companies: [toRef(company)], latestPostedAt: null, log, rules });
+          // Postings an adapter drops before its detail requests (SmartRecruiters) never reach the result, so count them here.
+          let preRules = 0;
+          let preLocation = 0;
+          const onPrefiltered = (reason: "rules" | "location") => (reason === "rules" ? preRules++ : preLocation++);
+          const result = await runAdapter(adapter, { http, companies: [toRef(company)], latestPostedAt: null, log, rules, onPrefiltered });
           if (result.status === "error" && result.httpStatus === 429) {
             // The host is rate limiting us. Hitting it again only prolongs the block, so stop and leave every
             // remaining company due (nothing is recorded for them, so none moves toward deactivation).
@@ -108,8 +112,8 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
             continue;
           }
           const kept: Job[] = [];
-          let ruleMisses = result.filtered;
-          let location = 0;
+          let ruleMisses = result.filtered + preRules;
+          let location = preLocation;
           for (const job of result.jobs) {
             if (!checkJobRules(job, rules).pass) ruleMisses++;
             else if (!checkLocation(job, company.homeCountry).pass) location++;
@@ -122,7 +126,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
             return { ...counts, closed: closedCount };
           });
           recordCompanyFetch(db, company.id, { kind: "success" }, nowIso);
-          summary.fetched += result.fetched;
+          summary.fetched += result.fetched + preRules + preLocation;
           summary.invalid += result.invalid;
           summary.inserted += inserted;
           summary.updated += updated;
