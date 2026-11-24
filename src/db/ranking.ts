@@ -1,5 +1,4 @@
-import { and, asc, eq, inArray, isNotNull, isNull, or } from "drizzle-orm";
-import { alias } from "drizzle-orm/sqlite-core";
+import { asc, inArray, isNull } from "drizzle-orm";
 import type { Db } from "./client";
 import { jobEmbeddings, jobs } from "./schema";
 
@@ -20,11 +19,10 @@ export type RankableJob = {
 export type StoredEmbedding = { model: string; textHash: string; vector: Float32Array };
 
 /**
- * Open jobs to rank, in id order. A duplicate is skipped while its original is open; once the original closes, its oldest
- * open duplicate takes its place.
+ * Open jobs to rank, in id order, one per posting. Jobs that are the same posting (a duplicate and its original, the
+ * same company and title in another city, or the same apply URL) are ranked once, as the lowest id.
  */
 export function listOpenJobsForRanking(db: Db): RankableJob[] {
-  const original = alias(jobs, "original");
   const rows = db
     .select({
       id: jobs.id,
@@ -39,29 +37,27 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
       salaryPeriod: jobs.salaryPeriod,
       descriptionText: jobs.descriptionText,
       duplicateOf: jobs.duplicateOf,
+      dedupeKey: jobs.dedupeKey,
+      applyUrl: jobs.applyUrl,
     })
     .from(jobs)
-    // Left join: a job that isn't a duplicate has no original and must still be listed.
-    .leftJoin(original, eq(original.id, jobs.duplicateOf))
-    // A duplicate of an open posting is the same job: ranking (and later scoring) it twice would waste a slot and a call.
-    // A missing original counts as gone.
-    .where(
-      and(
-        isNull(jobs.closedAt),
-        or(isNull(jobs.duplicateOf), isNull(original.id), isNotNull(original.closedAt)),
-      ),
-    )
+    .where(isNull(jobs.closedAt))
+    // Id order makes the lowest id win. A duplicate is always inserted after its original, so an open original is
+    // kept before its duplicates; once it closes, its oldest open duplicate takes its place.
     .orderBy(asc(jobs.id))
     .all();
 
-  // Several open copies of one closed original: keep only the first (lowest id), so the job still appears once.
-  const keptOriginals = new Set<number>();
+  // Ranking (and later scoring) the same posting twice would waste a slot and a call.
+  const keptFamilies = new Set<number>();
+  const keptKeys = new Set<string>();
+  const keptApplyUrls = new Set<string>();
   const result: RankableJob[] = [];
-  for (const { duplicateOf, ...job } of rows) {
-    if (duplicateOf !== null) {
-      if (keptOriginals.has(duplicateOf)) continue;
-      keptOriginals.add(duplicateOf);
-    }
+  for (const { duplicateOf, dedupeKey, applyUrl, ...job } of rows) {
+    const family = duplicateOf ?? job.id;
+    if (keptFamilies.has(family) || keptKeys.has(dedupeKey) || (applyUrl !== null && keptApplyUrls.has(applyUrl))) continue;
+    keptFamilies.add(family);
+    keptKeys.add(dedupeKey);
+    if (applyUrl !== null) keptApplyUrls.add(applyUrl);
     result.push(job);
   }
   return result;

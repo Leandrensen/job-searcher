@@ -156,6 +156,64 @@ describe("duplicates", () => {
       "url",
     ]);
   });
+
+  const ids = () => listOpenJobsForRanking(db).map((j) => j.id);
+
+  function insertThreeCities(): void {
+    upsertJobs(
+      db,
+      [
+        makeJob("1", { title: "Same Title", location: "Bogota" }),
+        makeJob("2", { title: "Same Title", location: "Lima" }),
+        makeJob("3", { title: "Same Title", location: "LatAm" }),
+      ],
+      NOW,
+    );
+  }
+
+  it("ranks one copy of a posting listed in several cities", () => {
+    insertThreeCities();
+    expect(db.select().from(jobs).all().map((j) => j.duplicateOf)).toEqual([null, null, null]);
+    expect(ids()).toEqual([1]);
+  });
+
+  it("the next copy is ranked when the first closes", () => {
+    insertThreeCities();
+    setClosedAt(1, NOW);
+    expect(ids()).toEqual([2]);
+  });
+
+  it("a title differing only in case and punctuation is the same posting", () => {
+    upsertJobs(db, [makeJob("1", { title: "Senior Full-Stack Engineer" }), makeJob("2", { title: "senior full stack engineer" })], NOW);
+    expect(ids()).toEqual([1]);
+  });
+
+  it("the same title at another company is another job", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title" }), makeJob("2", { title: "Same Title", company: "Globex" })], NOW);
+    expect(ids()).toEqual([1, 2]);
+  });
+
+  it("jobs sharing an apply URL are ranked once", () => {
+    upsertJobs(
+      db,
+      [makeJob("1", { applyUrl: "https://apply.example.com/x" }), makeJob("2", { applyUrl: "https://apply.example.com/x" })],
+      NOW,
+    );
+    expect(ids()).toEqual([1]);
+  });
+
+  it("a copy from a third site after the original closes is ranked once", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title" })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title" })], NOW);
+    setClosedAt(1, NOW);
+    upsertJobs(db, [makeJob("7", { source: "ashby", title: "Same Title" })], NOW);
+    expect(db.select().from(jobs).all().map((j) => [j.id, j.duplicateOf])).toEqual([
+      [1, null],
+      [2, 1],
+      [3, null],
+    ]);
+    expect(ids()).toEqual([2]);
+  });
 });
 
 describe("embeddings", () => {
