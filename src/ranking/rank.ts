@@ -17,12 +17,6 @@ export function rankJobs<J extends { id: number }>(
   return scored.slice(0, topN);
 }
 
-/** Jobs that pass the job filter rules, in their original order, and how many were skipped. */
-export function filterByRules<J extends RuleInput>(jobs: J[], rules: JobFilterRules): { passing: J[]; skipped: number } {
-  const passing = jobs.filter((job) => checkJobRules(job, rules).pass);
-  return { passing, skipped: jobs.length - passing.length };
-}
-
 /** A predicate for the job filter rules that counts the jobs it rejects. */
 export function createRuleFilter(rules: JobFilterRules): { keep: (job: RuleInput) => boolean; skipped: () => number } {
   let skipped = 0;
