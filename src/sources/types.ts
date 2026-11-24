@@ -21,6 +21,8 @@ export interface FetchContext {
   log: (msg: string) => void;
   /** The user's job filter rules (config/job-filter-rules.json). The runners always pass them. */
   rules?: JobFilterRules;
+  /** ATS adapters that drop postings before a detail request call this once per dropped posting, so the runner can count them. */
+  onPrefiltered?: (reason: "rules" | "location") => void;
 }
 
 export interface SourceAdapter<Raw> {

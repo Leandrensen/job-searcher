@@ -89,9 +89,15 @@ const adapter: SourceAdapter<Raw> = {
           // The list has no description, so filter on what it does have before spending a request per posting.
           const partial = { title: list.name, departments: departmentsOf(list), tags: [] as string[] };
           const regions = deriveRegions(textsOf(list));
-          // The list has no salary, so salary rules can only apply after the detail call (in the runner).
-          if (!checkJobRules({ ...partial, salaryMin: null, salaryMax: null, salaryCurrency: null, salaryPeriod: null }, rules).pass) continue;
-          if (!checkLocation({ workplaceType: workplaceOf(list), regions }, company.homeCountry).pass) continue;
+          // SmartRecruiters' public API has no salary (list or detail), so salary rules never apply here: unknown values pass.
+          if (!checkJobRules({ ...partial, salaryMin: null, salaryMax: null, salaryCurrency: null, salaryPeriod: null }, rules).pass) {
+            ctx.onPrefiltered?.("rules");
+            continue;
+          }
+          if (!checkLocation({ workplaceType: workplaceOf(list), regions }, company.homeCountry).pass) {
+            ctx.onPrefiltered?.("location");
+            continue;
+          }
           // A posting can be unpublished between the list call and its detail call; that must not fail the company.
           const detail = await nullOn404(() => ctx.http.getJson(`${base}/${list.id}`));
           if (detail === null) {
