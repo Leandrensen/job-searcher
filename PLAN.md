@@ -199,6 +199,7 @@ Rule fixes: [docs/plans/m3.2-rule-fixes.md](docs/plans/m3.2-rule-fixes.md)
 Duplicate ranking fix: [docs/plans/m3.3-duplicate-ranking.md](docs/plans/m3.3-duplicate-ranking.md)
 Pre-merge fixes: [docs/plans/m3.4-pre-merge-fixes.md](docs/plans/m3.4-pre-merge-fixes.md)
 Fixes before M4: [docs/plans/m3.5-pre-m4-fixes.md](docs/plans/m3.5-pre-m4-fixes.md)
+Grouping and seniority review fixes: [docs/plans/m3.6-grouping-fixes.md](docs/plans/m3.6-grouping-fixes.md)
 
 - `config/search.md`: one specific search description in plain text, the most visible and easiest-to-change setting. Gitignored; `config/search.example.md` is committed.
 - `config/job-filter-rules.json` (Zod-validated): every job filter (keywords, seniority, salary floor, excluded departments and title words), applied once at fetch with the location filter (M3.1). **Unknown values pass**; a job is only excluded when its data contradicts a rule. `npm run rank` re-checks open jobs against the current rules and skips the ones that fail (M3.5). Gitignored; `config/job-filter-rules.example.json` is committed and used when the personal file is missing.
