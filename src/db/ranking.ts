@@ -22,9 +22,10 @@ export type StoredEmbedding = { model: string; textHash: string; vector: Float32
 /**
  * Open jobs to rank, in id order, one per posting. Jobs are the same posting when they share a duplicate family or an
  * apply URL, or the same company and title (from another source, or from the same source with the same description).
- * The lowest id is ranked.
+ * The lowest id is ranked. Jobs failing `keep` are left out before grouping, so a passing copy still stands for its
+ * posting.
  */
-export function listOpenJobsForRanking(db: Db): RankableJob[] {
+export function listOpenJobsForRanking(db: Db, keep: (job: RankableJob) => boolean = () => true): RankableJob[] {
   const rows = db
     .select({
       id: jobs.id,
@@ -59,6 +60,8 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
   const seenByKey = new Map<string, { source: string; descriptionText: string }[]>();
   const result: RankableJob[] = [];
   for (const { source, duplicateOf, dedupeKey, applyUrl, ...job } of rows) {
+    // A rejected row is neither kept nor remembered, so it can't hide a copy that passes.
+    if (!keep(job)) continue;
     const family = duplicateOf ?? job.id;
     const sameKey = seenByKey.get(dedupeKey) ?? [];
     const isCopy =

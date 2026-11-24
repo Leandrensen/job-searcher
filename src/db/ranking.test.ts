@@ -273,6 +273,20 @@ describe("duplicates", () => {
   });
 });
 
+describe("filter", () => {
+  it("a passing copy is ranked when the lowest-id copy fails the filter", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title", departments: ["Sales"] })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title" })], NOW);
+    expect(listOpenJobsForRanking(db, (j) => !j.departments.includes("Sales")).map((j) => j.id)).toEqual([2]);
+    expect(listOpenJobsForRanking(db).map((j) => j.id)).toEqual([1]);
+  });
+
+  it("a filter rejecting every job gives []", () => {
+    upsertJobs(db, [makeJob("1")], NOW);
+    expect(listOpenJobsForRanking(db, () => false)).toEqual([]);
+  });
+});
+
 describe("embeddings", () => {
   beforeEach(() => {
     upsertJobs(db, [makeJob("1"), makeJob("2")], NOW);
