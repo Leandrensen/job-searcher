@@ -18,6 +18,13 @@ describe("deriveSeniority", () => {
     ["Software Engineer", null],
     ["", null],
     ["Staff Engineer / Tech Lead", "staff"],
+    ["Semi Senior Developer", "mid"],
+    ["Desarrollador Semi-Senior", "mid"],
+    ["Semi Sr. Frontend Engineer", "mid"],
+    ["SemiSenior Backend Developer", "mid"],
+    ["Junior/Semi-Senior Back-End Engineer (.NET)", "mid"],
+    ["Semi Developer", "mid"],
+    ["Semiconductor Engineer", null],
   ])("%j → %j", (title, expected) => {
     expect(deriveSeniority(title)).toBe(expected);
   });

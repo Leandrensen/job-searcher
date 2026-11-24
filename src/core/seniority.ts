@@ -9,6 +9,8 @@ const RULES: readonly { level: SeniorityLevel; words: string[] }[] = [
   { level: "principal", words: ["principal", "distinguished"] },
   { level: "staff", words: ["staff"] },
   { level: "lead", words: ["lead"] },
+  // Before "senior", which would otherwise win on "Semi Senior".
+  { level: "mid", words: ["semi senior", "semi sr", "semi sr.", "semisenior"] },
   { level: "senior", words: ["senior", "sr", "sr."] },
   { level: "mid", words: ["semi", "semi senior", "mid", "mid level", "intermediate"] },
   { level: "junior", words: ["junior", "jr", "jr.", "entry level", "graduate", "associate"] },
