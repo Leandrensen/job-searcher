@@ -20,8 +20,9 @@ export type RankableJob = {
 export type StoredEmbedding = { model: string; textHash: string; vector: Float32Array };
 
 /**
- * Open jobs to rank, in id order, one per posting. Jobs that are the same posting (a duplicate and its original, the
- * same company and title in another city, or the same apply URL) are ranked once, as the lowest id.
+ * Open jobs to rank, in id order, one per posting. Jobs are the same posting when they share a duplicate family or an
+ * apply URL, or the same company and title (from another source, or from the same source with the same description).
+ * The lowest id is ranked.
  */
 export function listOpenJobsForRanking(db: Db): RankableJob[] {
   const rows = db
@@ -38,6 +39,7 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
       salaryCurrency: jobs.salaryCurrency,
       salaryPeriod: jobs.salaryPeriod,
       descriptionText: jobs.descriptionText,
+      source: jobs.source,
       duplicateOf: jobs.duplicateOf,
       dedupeKey: jobs.dedupeKey,
       applyUrl: jobs.applyUrl,
@@ -50,17 +52,25 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
     .all();
 
   // Ranking (and later scoring) the same posting twice would waste a slot and a call.
-  const keptFamilies = new Set<number>();
-  const keptKeys = new Set<string>();
-  const keptApplyUrls = new Set<string>();
+  // On one board, the same title with a different description is another opening; across sources the text is formatted
+  // differently, so company and title are enough there.
+  const seenFamilies = new Set<number>();
+  const seenApplyUrls = new Set<string>();
+  const seenByKey = new Map<string, { source: string; descriptionText: string }[]>();
   const result: RankableJob[] = [];
-  for (const { duplicateOf, dedupeKey, applyUrl, ...job } of rows) {
+  for (const { source, duplicateOf, dedupeKey, applyUrl, ...job } of rows) {
     const family = duplicateOf ?? job.id;
-    if (keptFamilies.has(family) || keptKeys.has(dedupeKey) || (applyUrl !== null && keptApplyUrls.has(applyUrl))) continue;
-    keptFamilies.add(family);
-    keptKeys.add(dedupeKey);
-    if (applyUrl !== null) keptApplyUrls.add(applyUrl);
-    result.push(job);
+    const sameKey = seenByKey.get(dedupeKey) ?? [];
+    const isCopy =
+      seenFamilies.has(family) ||
+      (applyUrl !== null && seenApplyUrls.has(applyUrl)) ||
+      sameKey.some((s) => s.source !== source || s.descriptionText === job.descriptionText);
+    // Remember every row, kept or skipped, so a copy linked only through a skipped copy is caught too.
+    seenFamilies.add(family);
+    seenFamilies.add(job.id);
+    if (applyUrl !== null) seenApplyUrls.add(applyUrl);
+    seenByKey.set(dedupeKey, [...sameKey, { source, descriptionText: job.descriptionText }]);
+    if (!isCopy) result.push(job);
   }
   return result;
 }
