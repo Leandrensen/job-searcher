@@ -57,6 +57,7 @@ describe("listOpenJobsForRanking", () => {
         location: "Remote",
         url: "https://example.com/a:1",
         departments: ["Engineering"],
+        tags: [],
         salaryMin: 80000,
         salaryMax: 100000,
         salaryCurrency: "USD",
@@ -70,6 +71,7 @@ describe("listOpenJobsForRanking", () => {
         location: null,
         url: "https://example.com/a:2",
         departments: ["Engineering"],
+        tags: [],
         salaryMin: null,
         salaryMax: null,
         salaryCurrency: null,
@@ -77,6 +79,13 @@ describe("listOpenJobsForRanking", () => {
         descriptionText: "Description a:2",
       },
     ]);
+  });
+});
+
+describe("tags", () => {
+  it("includes the job's tags", () => {
+    upsertJobs(db, [makeJob("1", { tags: ["react", "remote"] })], NOW);
+    expect(listOpenJobsForRanking(db)[0]!.tags).toEqual(["react", "remote"]);
   });
 });
 
@@ -152,6 +161,7 @@ describe("duplicates", () => {
       "salaryMax",
       "salaryMin",
       "salaryPeriod",
+      "tags",
       "title",
       "url",
     ]);

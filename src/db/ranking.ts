@@ -9,6 +9,7 @@ export type RankableJob = {
   location: string | null;
   url: string;
   departments: string[];
+  tags: string[];
   salaryMin: number | null;
   salaryMax: number | null;
   salaryCurrency: string | null;
@@ -31,6 +32,7 @@ export function listOpenJobsForRanking(db: Db): RankableJob[] {
       location: jobs.location,
       url: jobs.url,
       departments: jobs.departments,
+      tags: jobs.tags,
       salaryMin: jobs.salaryMin,
       salaryMax: jobs.salaryMax,
       salaryCurrency: jobs.salaryCurrency,
