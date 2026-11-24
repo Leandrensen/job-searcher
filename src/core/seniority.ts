@@ -10,7 +10,7 @@ const RULES: readonly { level: SeniorityLevel; words: string[] }[] = [
   { level: "staff", words: ["staff"] },
   { level: "lead", words: ["lead"] },
   { level: "senior", words: ["senior", "sr", "sr."] },
-  { level: "mid", words: ["mid", "mid level", "intermediate"] },
+  { level: "mid", words: ["semi", "semi senior", "mid", "mid level", "intermediate"] },
   { level: "junior", words: ["junior", "jr", "jr.", "entry level", "graduate", "associate"] },
   { level: "intern", words: ["intern", "internship", "trainee", "apprentice"] },
 ];
