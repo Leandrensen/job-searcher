@@ -22,7 +22,7 @@ Personal, single-user tool that fetches IT jobs from companies' ATS job boards (
 - `ANTHROPIC_API_KEY` lives in `.env.local` (gitignored), loaded by npm scripts with Node's `--env-file-if-exists=.env.local` (M4).
 
 ## Architecture
-Node 22 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts, Transformers.js for local embeddings (M3), Anthropic SDK (M4).
+Node 26 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQLite + Drizzle, Zod, Vitest, `tsx` for scripts, Transformers.js for local embeddings (M3), Anthropic SDK (M4).
 
 - `src/sources/` – one adapter per source. The interface lives in `types.ts`, enabled adapters in `registry.ts`.
   - `ats/` (M2) – Greenhouse, Lever, ...: the only source of stored jobs
