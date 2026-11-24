@@ -23,7 +23,8 @@ describe("deriveSeniority", () => {
     ["Semi Sr. Frontend Engineer", "mid"],
     ["SemiSenior Backend Developer", "mid"],
     ["Junior/Semi-Senior Back-End Engineer (.NET)", "mid"],
-    ["Semi Developer", "mid"],
+    ["Semi Developer", null], // plain "semi" isn't a level: it also means semi-remote or semi-presencial
+    ["Backend Developer (Semi-Remote)", null],
     ["Semiconductor Engineer", null],
     ["Desarrollador SSr Java", "mid"],
     ["Sr/SSr Backend Developer", "senior"],
