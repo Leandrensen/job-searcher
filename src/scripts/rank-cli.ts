@@ -6,7 +6,7 @@ import { loadJobFilterRules } from "@/core/job-filter-rules-file";
 import { loadSearchDescription } from "@/ranking/config";
 import { embedJobs } from "@/ranking/embed-jobs";
 import type { Embedder } from "@/ranking/embedder";
-import { filterByRules, rankJobs } from "@/ranking/rank";
+import { createRuleFilter, rankJobs } from "@/ranking/rank";
 import { CliUsageError } from "./cli-errors";
 
 const DEFAULT_TOP = 100;
@@ -73,10 +73,13 @@ export async function runRankCli(argv: string[], deps: RankCliDeps): Promise<num
 
   // Rules can change after a fetch, so re-check them: a job that no longer passes is skipped here and closed by the next fetch.
   const db = deps.openDb();
-  const { passing: jobs, skipped } = filterByRules(listOpenJobsForRanking(db), rules);
+  // The rules run before copies are grouped, so a passing copy still stands for its posting.
+  const ruleFilter = createRuleFilter(rules);
+  const jobs = listOpenJobsForRanking(db, ruleFilter.keep);
+  const skipped = ruleFilter.skipped();
   if (skipped > 0) out.log(`Skipped by the current job filter rules: ${skipped}`);
   if (jobs.length === 0) {
-    out.log("No open jobs to rank. Run npm run fetch first.");
+    out.log(skipped > 0 ? "No open jobs pass the current job filter rules." : "No open jobs to rank. Run npm run fetch first.");
     return 0;
   }
   out.log(`Open jobs: ${jobs.length}`);

@@ -137,8 +137,19 @@ describe("runRankCli", () => {
     writeRules({ keywords: ["rust"] });
     const { logs, createEmbedder, run } = setup();
     expect(await run()).toBe(0);
-    expect(logs).toEqual(["Skipped by the current job filter rules: 4", "No open jobs to rank. Run npm run fetch first."]);
+    expect(logs).toEqual(["Skipped by the current job filter rules: 4", "No open jobs pass the current job filter rules."]);
     expect(createEmbedder).not.toHaveBeenCalled();
+  });
+
+  it("a copy that passes the rules is ranked when the lowest-id copy fails", async () => {
+    // A Lever copy of acme:d (so a duplicate of it) whose tags match the rules, while acme:d itself doesn't.
+    upsertJobs(db, [{ ...job("lever:m", "Mobile Developer", "React"), source: "lever", tags: ["react"] }], NOW.toISOString());
+    writeRules({ keywords: ["react"] });
+    const { logs, tables, run } = setup();
+    expect(await run()).toBe(0);
+    expect(logs).toContain("Skipped by the current job filter rules: 3");
+    expect(logs).toContain("Open jobs: 2");
+    expect(tables[0]!.map((r) => r.url).sort()).toEqual(["https://example.com/acme:a", "https://example.com/lever:m"]);
   });
 
   it("uses the example rules when the personal file is missing", async () => {
