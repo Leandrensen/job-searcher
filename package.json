@@ -16,9 +16,11 @@
     "db:migrate": "drizzle-kit migrate",
     "test:coverage": "vitest run --coverage",
     "seed": "tsx src/scripts/seed.ts",
-    "company": "tsx src/scripts/company.ts"
+    "company": "tsx src/scripts/company.ts",
+    "rank": "tsx src/scripts/rank.ts"
   },
   "dependencies": {
+    "@huggingface/transformers": "4.3.2",
     "better-sqlite3": "^13.0.3",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.6",

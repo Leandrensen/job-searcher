@@ -8,17 +8,17 @@ Personal, single-user tool that fetches IT jobs from companies' ATS job boards (
 - Fetch jobs: `npm run fetch` (single source: `npm run fetch -- --source remoteok`; `--force` ignores intervals; `--skip-resolve` skips resolving new candidates). It discovers companies from boards, resolves candidates to ATS boards, and refreshes ATS jobs.
 - Seed companies: `npm run seed [-- --limit N | --no-resolve | --only yc|remoteintech]` (monthly; resumable)
 - Companies: `npm run company -- add|review|confirm|reject|sample`
+- Rank jobs: `npm run rank [-- --top N]` (embeds new or changed open jobs locally, then prints the best matches)
 - Test: `npm test` (single file: `npm test -- path/to/file.test.ts`)
 - Live API checks (real network, run manually): `npm run test:live`
 - Coverage: `npm run test:coverage` (text summary; HTML report in `coverage/`; thresholds enforced)
 - Lint/typecheck: `npm run lint && npm run typecheck`
 - DB: `npm run db:generate` (new migration), `npm run db:migrate` (apply)
 - Planned:
-  - `npm run rank` (M3)
   - `npm run score` and `npm run score -- --next` (M4)
 
 ## Configuration and secrets
-- `config/search.md`: the one search description (M3). `config/preferences.json`: hard rules (M3). Both are gitignored; their `*.example.*` files are committed and kept in sync.
+- `config/search.md`: the one search description (M3). `config/job-filter-rules.json`: every job filter (keywords, seniority, salary floor, excluded departments and title words), applied once at fetch; without it, fetch uses `config/job-filter-rules.example.json`. Both are gitignored; their `*.example.*` files are committed and kept in sync.
 - `ANTHROPIC_API_KEY` lives in `.env.local` (gitignored), loaded by npm scripts with Node's `--env-file-if-exists=.env.local` (M4).
 
 ## Architecture
@@ -28,20 +28,20 @@ Node 22 (`.nvmrc`; run `nvm use`). Next.js (App Router) + TypeScript strict, SQL
   - `ats/` (M2) – Greenhouse, Lever, ...: the only source of stored jobs
   - `boards/` – job boards from M1; from M2 they only discover companies, and their jobs are never stored
 - `src/companies/` (M2) – seeding, candidate discovery and precise ATS slug resolution
-- `src/ranking/` (M3) – hard-rule filters and embedding ranking
+- `src/ranking/` (M3) – search description loading, local embeddings and similarity ranking
 - `src/ai/` (M4) – Claude scoring
-- `src/core/` – normalized `Job` schema, dedupe, storage filters (tech filter + location filter), text helpers, shared HTTP helper
+- `src/core/` – normalized `Job` schema, dedupe, storage filters applied at fetch (job filter rules + location filter), text helpers, shared HTTP helper
 - `src/db/` – Drizzle schema, client, queries
 - `src/scripts/` – CLI entry points
 - `src/app/` – UI (M5)
-- `config/` – search description and hard rules (M3)
+- `config/` – search description and job filter rules (M3)
 - `test/fixtures/<source>/` – recorded real API responses
 
 Key patterns:
 - Every source implements `SourceAdapter` and outputs the shared `Job` shape. A new source is one file plus a registry entry.
 - Validate every external response with Zod before normalizing.
 - All DB access goes through `src/db/`; all HTTP goes through `src/core/http.ts`.
-- Cheap before expensive: storage filters (tech filter + location filter), then hard rules, then embeddings, then Claude on the top N. Each job is embedded once (again only if its text changes) and scored once, ever.
+- Cheap before expensive: storage filters at fetch (job filter rules + location filter), then embeddings, then Claude on the top N. Each job is embedded once (again only if its text changes) and scored once, ever.
 
 ## Conventions
 - kebab-case file names. An adapter's `id` equals its file name.
@@ -65,7 +65,7 @@ Key patterns:
 - Ask before adding dependencies.
 - Never edit generated files (`drizzle/`, `.next/`, `coverage/`).
 - Never read or commit `.env*`.
-- Never commit `config/search.md` or `config/preferences.json` (personal). Reading or editing them is fine when asked.
+- Never commit `config/search.md` or `config/job-filter-rules.json` (personal). Reading or editing them is fine when asked.
 - Don't change the `Job` schema or the `SourceAdapter` interface without asking (the M2 changes listed in `PLAN.md` are approved).
 - Data sources must be free and public. No scraping, and never fetch company websites or careers pages; only parse URLs we already have. No LinkedIn/Wellfound.
 - The Anthropic API (Claude) is the only paid service. Embeddings run locally.

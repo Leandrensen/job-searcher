@@ -17,7 +17,9 @@ export default defineConfig({
         "src/scripts/fetch.ts", // process wiring only; the logic lives in fetch-cli.ts
         "src/scripts/seed.ts", // process wiring only; the logic lives in seed-cli.ts
         "src/scripts/company.ts", // process wiring only; the logic lives in company-cli.ts
+        "src/scripts/rank.ts", // process wiring only; the logic lives in rank-cli.ts
         "src/sources/types.ts", // types and one identity helper
+        "src/ranking/transformers-embedder.ts", // loads the real model; covered by the live check
       ],
       reporter: ["text", "html", "json-summary"],
       reportsDirectory: "coverage",

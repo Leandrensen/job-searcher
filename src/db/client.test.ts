@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { companies, companyCandidates, fetchRuns, jobs } from "./schema";
+import { companies, companyCandidates, fetchRuns, jobEmbeddings, jobs } from "./schema";
 import { openDb } from "./client";
 
 const baseJob = {
@@ -30,6 +30,17 @@ describe("openDb", () => {
     expect(job?.regions).toEqual(["latam"]);
     expect(job?.employmentType).toBe("full-time");
     expect(db.select().from(fetchRuns).get()?.fetched).toBe(0);
+  });
+
+  it("creates job_embeddings and stores a vector blob", () => {
+    const db = openDb({ url: ":memory:", migrate: true });
+    const job = db.insert(jobs).values(baseJob).returning().get();
+    db.insert(jobEmbeddings)
+      .values({ jobId: job.id, model: "m", textHash: "h", vector: Buffer.from(new Float32Array([0.5, -1]).buffer), createdAt: "2026-11-19T00:00:00.000Z" })
+      .run();
+    const row = db.select().from(jobEmbeddings).get()!;
+    const copy = row.vector.buffer.slice(row.vector.byteOffset, row.vector.byteOffset + row.vector.byteLength);
+    expect(Array.from(new Float32Array(copy))).toEqual([0.5, -1]);
   });
 
   it("enforces unique source + external_id", () => {

@@ -4,6 +4,7 @@ import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { createHimalayas } from "./himalayas";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 type Page = { jobs: Array<Record<string, unknown>>; nextCursor?: string | null };
 const fixture = loadFixture("himalayas/page1.json") as Page;
@@ -12,7 +13,7 @@ function setup(pages: (n: number) => Page, latestPostedAt: string | null = null)
   let n = 0;
   const getJson = vi.fn<(url: string) => Promise<unknown>>(async () => pages(++n));
   const sleep = vi.fn(async () => {});
-  const ctx: FetchContext = { http: { getJson, getText: vi.fn() }, latestPostedAt, log: () => {} };
+  const ctx: FetchContext = { http: { getJson, getText: vi.fn() }, latestPostedAt, rules: keywordRules(), log: () => {} };
   return { adapter: createHimalayas({ sleep }), ctx, getJson, sleep };
 }
 

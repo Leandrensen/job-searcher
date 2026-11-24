@@ -4,6 +4,7 @@ import { HttpError } from "@/core/http";
 import type { Job } from "@/core/job";
 import { runAdapter } from "./run-adapter";
 import { defineAdapter, type FetchContext } from "./types";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 const RawSchema = z.object({ id: z.string(), title: z.string() });
 type Raw = z.infer<typeof RawSchema>;
@@ -48,9 +49,9 @@ function makeAdapter(items: unknown[] | Error, opts: { techFilter?: boolean; nor
   });
 }
 
-function ctx() {
+function ctx(withRules = true) {
   const log = vi.fn<(msg: string) => void>();
-  const context: FetchContext = { http: { getJson: vi.fn(), getText: vi.fn() }, latestPostedAt: null, log };
+  const context: FetchContext = { http: { getJson: vi.fn(), getText: vi.fn() }, latestPostedAt: null, log, ...(withRules ? { rules: keywordRules() } : {}) };
   return Object.assign(context, { log });
 }
 
@@ -101,6 +102,23 @@ describe("runAdapter", () => {
     const off = await runAdapter(makeAdapter(items, { techFilter: false }), ctx());
     expect(off).toMatchObject({ filtered: 0 });
     expect(off.jobs).toHaveLength(2);
+  });
+
+  it("a techFilter adapter without rules is an error", async () => {
+    const fetchSpy = vi.fn(async () => [{ id: "1", title: "Backend Developer" }]);
+    const adapter = defineAdapter<Raw>({ ...(makeAdapter([]) as unknown as Parameters<typeof defineAdapter<Raw>>[0]), techFilter: true, fetch: fetchSpy });
+    const r = await runAdapter(adapter, ctx(false));
+    expect(r).toMatchObject({ status: "error", error: "remoteok: techFilter needs ctx.rules" });
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("uses the keywords from ctx.rules", async () => {
+    const items = [{ id: "1", title: "Underwater Basket Weaver" }];
+    const matching = await runAdapter(makeAdapter(items, { techFilter: true }), { ...ctx(), rules: { keywords: ["basket"] } });
+    expect(matching).toMatchObject({ filtered: 0 });
+    expect(matching.jobs).toHaveLength(1);
+    const other = await runAdapter(makeAdapter(items, { techFilter: true }), { ...ctx(), rules: { keywords: ["react"] } });
+    expect(other).toMatchObject({ filtered: 1 });
   });
 
   it("dedupes repeated externalIds", async () => {

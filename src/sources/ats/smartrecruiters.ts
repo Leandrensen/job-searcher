@@ -4,7 +4,7 @@ import type { HttpClient } from "@/core/http";
 import type { WorkplaceType } from "@/core/job";
 import { checkLocation } from "@/core/location-filter";
 import { deriveRegions, deriveWorkplaceType } from "@/core/locations";
-import { isTechJob } from "@/core/tech-filter";
+import { checkJobRules } from "@/core/job-filter-rules";
 import { htmlToText } from "@/core/text";
 import type { ProbeResult } from "@/companies/types";
 import { defineAdapter, type SourceAdapter } from "../types";
@@ -67,6 +67,8 @@ const adapter: SourceAdapter<Raw> = {
 
   async fetch(ctx) {
     const items: unknown[] = [];
+    const rules = ctx.rules;
+    if (!rules) throw new Error("smartrecruiters: ctx.rules is required");
     for (const company of requireCompanies(ctx, "smartrecruiters")) {
       const base = postingsUrl(company.slug);
       let offset = 0;
@@ -87,7 +89,8 @@ const adapter: SourceAdapter<Raw> = {
           // The list has no description, so filter on what it does have before spending a request per posting.
           const partial = { title: list.name, departments: departmentsOf(list), tags: [] as string[] };
           const regions = deriveRegions(textsOf(list));
-          if (!isTechJob(partial)) continue;
+          // The list has no salary, so salary rules can only apply after the detail call (in the runner).
+          if (!checkJobRules({ ...partial, salaryMin: null, salaryMax: null, salaryCurrency: null, salaryPeriod: null }, rules).pass) continue;
           if (!checkLocation({ workplaceType: workplaceOf(list), regions }, company.homeCountry).pass) continue;
           // A posting can be unpublished between the list call and its detail call; that must not fail the company.
           const detail = await nullOn404(() => ctx.http.getJson(`${base}/${list.id}`));

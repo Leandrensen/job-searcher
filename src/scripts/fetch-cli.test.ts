@@ -1,4 +1,8 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 import { atsAdapters, atsProbes, boardAdapters } from "@/sources/registry";
 import { CliUsageError } from "./cli-errors";
 import { parseFetchArgs, runFetchCli, type AtsSummaryRow, type SummaryRow } from "./fetch-cli";
@@ -66,8 +70,15 @@ describe("parseFetchArgs", () => {
   });
 });
 
+function rulesDir(content: string = JSON.stringify(keywordRules())): string {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "m31-"));
+  fs.writeFileSync(path.join(dir, "job-filter-rules.json"), content);
+  return dir;
+}
+
 function deps() {
   return {
+    configDir: rulesDir(),
     openDb: vi.fn(),
     http: { getJson: vi.fn(), getText: vi.fn() },
     boardAdapters,
@@ -119,6 +130,13 @@ describe("runFetchCli argument validation", () => {
     expect(await runFetchCli(["--bogus"], d)).toBe(1);
     expect(d.openDb).not.toHaveBeenCalled();
     expect(d.out.error).toHaveBeenCalledWith("Unknown option: --bogus");
+  });
+
+  it("an invalid rules file fails before opening the DB", async () => {
+    const d = { ...deps(), configDir: rulesDir('{"keywords":[]}') };
+    expect(await runFetchCli([], d)).toBe(1);
+    expect(d.out.error.mock.calls[0]?.[0]?.startsWith("config/job-filter-rules.json: keywords: ")).toBe(true);
+    expect(d.openDb).not.toHaveBeenCalled();
   });
 
   it("returns 1 for a missing --source value", async () => {

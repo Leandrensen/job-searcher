@@ -2,6 +2,7 @@ import type { HttpClient } from "@/core/http";
 import type { Db } from "@/db/client";
 import { recordCandidatesFromBoardJobs } from "@/companies/discover";
 import { BOARD_IDS, type BoardId } from "@/core/job";
+import type { JobFilterRules } from "@/core/job-filter-rules";
 import { lastSuccessfulRunAt, latestPostedAt, recordRun } from "@/db/queries";
 import { runAdapter } from "./run-adapter";
 import type { AnyAdapter, FetchResult } from "./types";
@@ -18,12 +19,14 @@ export interface RunBoardSourcesOptions {
   force?: boolean;
   now?: () => Date;
   log?: (msg: string) => void;
+  /** The user's job filter rules; boards use only the keywords. */
+  rules: JobFilterRules;
 }
 
 const MAX_CONCURRENCY = 4;
 
 export async function runBoardSources(opts: RunBoardSourcesOptions): Promise<BoardRunSummary[]> {
-  const { db, http, adapters, force = false } = opts;
+  const { db, http, adapters, force = false, rules } = opts;
   const now = opts.now ?? (() => new Date());
   const log = opts.log ?? (() => {});
 
@@ -63,6 +66,7 @@ export async function runBoardSources(opts: RunBoardSourcesOptions): Promise<Boa
         http,
         latestPostedAt: latestPostedAt(db, adapter.id),
         log,
+        rules,
       });
       counts = { fetched: result.fetched, invalid: result.invalid, filtered: result.filtered };
       // Boards store no jobs: their postings only become company candidates.

@@ -9,6 +9,7 @@ import { createPacedHttpClient } from "@/core/paced-http";
 import { runAdapter } from "./run-adapter";
 import { atsAdapters, atsProbes, boardAdapters } from "./registry";
 import type { CompanyRef } from "./types";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 const http = createHttpClient();
 
@@ -17,7 +18,7 @@ describe("live adapters", () => {
     it(
       `${adapter.id} returns valid jobs`,
       async () => {
-        const result = await runAdapter(adapter, { http, latestPostedAt: null, log: console.log });
+        const result = await runAdapter(adapter, { http, latestPostedAt: null, rules: keywordRules(), log: console.log });
         expect(result.error).toBeNull();
         expect(result.status).toBe("success");
         // Remotive's free feed is tiny, so only the status is asserted for it.
@@ -43,7 +44,7 @@ describe("live adapters", () => {
       `${adapter.id} returns valid jobs for a real company`,
       async () => {
         const company = atsCompanies[adapter.id]!;
-        const result = await runAdapter(adapter, { http, latestPostedAt: null, log: console.log, companies: [company] });
+        const result = await runAdapter(adapter, { http, latestPostedAt: null, rules: keywordRules(), log: console.log, companies: [company] });
         expect(result.error).toBeNull();
         expect(result.status).toBe("success");
         // SmartRecruiters ties a remote posting to one country and the adapter drops postings that fail the tech

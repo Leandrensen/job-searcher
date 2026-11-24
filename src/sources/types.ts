@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type { HttpClient } from "@/core/http";
 import type { AtsId, Job, SourceId } from "@/core/job";
+import type { JobFilterRules } from "@/core/job-filter-rules";
 
 /** A company whose ATS board an ATS adapter should fetch. */
 export interface CompanyRef {
@@ -18,6 +19,8 @@ export interface FetchContext {
   /** Max postedAt already stored for this source, or null. */
   latestPostedAt: string | null;
   log: (msg: string) => void;
+  /** The user's job filter rules (config/job-filter-rules.json). The runners always pass them. */
+  rules?: JobFilterRules;
 }
 
 export interface SourceAdapter<Raw> {
@@ -52,7 +55,7 @@ export interface FetchResult {
   fetched: number;
   /** Items rejected by itemSchema, by normalize returning null, or by JobSchema. */
   invalid: number;
-  /** Items dropped by the tech filter. */
+  /** Items dropped by the keyword filter (boards). */
   filtered: number;
   jobs: Job[];
   /** Newest postedAt among every valid job, including ones the filters dropped. */

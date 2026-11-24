@@ -6,6 +6,7 @@ import { loadFixture } from "@/test-utils/fixtures";
 import { runAdapter } from "../run-adapter";
 import type { FetchContext } from "../types";
 import { remoteok } from "./remoteok";
+import { keywordRules } from "@/test-utils/job-filter-rules";
 
 const URL = "https://remoteok.com/api";
 // Index 0 is the legal notice, which the adapter drops.
@@ -13,7 +14,7 @@ const fixture = loadFixture("remoteok/api.json") as Array<{ description: string 
 
 function ctx() {
   const http = createFixtureHttp({ [URL]: "remoteok/api.json" });
-  const context: FetchContext = { http, latestPostedAt: null, log: () => {} };
+  const context: FetchContext = { http, latestPostedAt: null, rules: keywordRules(), log: () => {} };
   return { context, http };
 }
 
@@ -32,7 +33,7 @@ describe("remoteok adapter", () => {
 
   it("fetch throws when the envelope is not an array", async () => {
     const http: HttpClient = { getJson: vi.fn(async () => ({ nope: true })), getText: vi.fn() };
-    await expect(remoteok.fetch({ http, latestPostedAt: null, log: () => {} })).rejects.toThrow();
+    await expect(remoteok.fetch({ http, latestPostedAt: null, rules: keywordRules(), log: () => {} })).rejects.toThrow();
   });
 
   it("normalizes a job with salary", async () => {

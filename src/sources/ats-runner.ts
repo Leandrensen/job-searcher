@@ -1,7 +1,7 @@
 import type { HttpClient } from "@/core/http";
 import type { AtsId, Job } from "@/core/job";
+import { checkJobRules, type JobFilterRules } from "@/core/job-filter-rules";
 import { checkLocation, isAllowedHomeCountry } from "@/core/location-filter";
-import { isTechJob } from "@/core/tech-filter";
 import type { Db } from "@/db/client";
 import { listDueCompanies, recordCompanyFetch, type CompanyRow } from "@/db/companies";
 import { markClosedJobs, recordRun, upsertJobs } from "@/db/queries";
@@ -17,7 +17,8 @@ export interface AtsRunSummary {
   inserted: number;
   updated: number;
   invalid: number;
-  filteredTech: number;
+  /** Dropped by the job filter rules (keywords, seniority, salary, departments, title words). */
+  filteredRules: number;
   filteredLocation: number;
   closed: number;
   latestPostedAt: string | null;
@@ -32,6 +33,8 @@ export interface RunAtsSourcesOptions {
   force?: boolean;
   now?: () => Date;
   log?: (msg: string) => void;
+  /** The user's job filter rules: a job is stored only if it passes them (and the location filter). */
+  rules: JobFilterRules;
 }
 
 const errorMessage = (err: unknown): string => {
@@ -47,7 +50,7 @@ const toRef = (c: CompanyRow): CompanyRef => ({ id: c.id, ats: c.ats as AtsId, s
  * and closes the company's jobs that disappeared. Never rejects.
  */
 export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunSummary[]> {
-  const { db, http, adapters, force = false } = opts;
+  const { db, http, adapters, force = false, rules } = opts;
   const now = opts.now ?? (() => new Date());
   const log = opts.log ?? (() => {});
 
@@ -63,7 +66,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
       inserted: 0,
       updated: 0,
       invalid: 0,
-      filteredTech: 0,
+      filteredRules: 0,
       filteredLocation: 0,
       closed: 0,
       latestPostedAt: null,
@@ -84,7 +87,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
         const label = `${adapter.id}/${company.slug}`;
         const nowIso = now().toISOString();
         try {
-          const result = await runAdapter(adapter, { http, companies: [toRef(company)], latestPostedAt: null, log });
+          const result = await runAdapter(adapter, { http, companies: [toRef(company)], latestPostedAt: null, log, rules });
           if (result.status === "error" && result.httpStatus === 429) {
             // The host is rate limiting us. Hitting it again only prolongs the block, so stop and leave every
             // remaining company due (nothing is recorded for them, so none moves toward deactivation).
@@ -105,10 +108,10 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
             continue;
           }
           const kept: Job[] = [];
-          let tech = result.filtered;
+          let ruleMisses = result.filtered;
           let location = 0;
           for (const job of result.jobs) {
-            if (!isTechJob(job)) tech++;
+            if (!checkJobRules(job, rules).pass) ruleMisses++;
             else if (!checkLocation(job, company.homeCountry).pass) location++;
             else kept.push(job);
           }
@@ -124,13 +127,13 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
           summary.inserted += inserted;
           summary.updated += updated;
           summary.closed += closed;
-          summary.filteredTech += tech;
+          summary.filteredRules += ruleMisses;
           summary.filteredLocation += location;
           if (result.latestPostedAt && (!summary.latestPostedAt || result.latestPostedAt > summary.latestPostedAt)) {
             summary.latestPostedAt = result.latestPostedAt;
           }
           if (result.invalid > 0) log(`${label}: ${result.invalid} invalid items, no jobs closed this run`);
-          log(`${label}: kept ${kept.length}, filtered ${tech}+${location}, closed ${closed}`);
+          log(`${label}: kept ${kept.length}, filtered ${ruleMisses}+${location}, closed ${closed}`);
         } catch (err) {
           const message = errorMessage(err);
           summary.companiesFailed++;
@@ -154,7 +157,7 @@ export async function runAtsSources(opts: RunAtsSourcesOptions): Promise<AtsRunS
         inserted: summary.inserted,
         updated: summary.updated,
         invalid: summary.invalid,
-        filtered: summary.filteredTech + summary.filteredLocation,
+        filtered: summary.filteredRules + summary.filteredLocation,
         latestPostedAt: summary.latestPostedAt,
         error: summary.error,
       });

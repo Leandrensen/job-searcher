@@ -9,7 +9,7 @@ A personal tool that finds the IT jobs that best fit one specific search. It bui
   - job boards (from M1) used **only to discover companies**; board jobs are never stored
   - jobs fetched from 5 ATSs: Greenhouse, Lever, Ashby, Recruitee, SmartRecruiters
   - storage filters: only tech jobs matching my stack keywords, remote, doable from Argentina, at companies based in the USA, Canada, Europe, Australia or New Zealand (or of unknown origin), are stored
-  - one search description in its own file (`config/search.md`) plus hard rules (`config/preferences.json`)
+  - one search description in its own file (`config/search.md`) plus job filter rules (`config/job-filter-rules.json`)
   - filters, then local embedding ranking, then Claude scoring of the top N; each job scored once; "get next"
   - saving or dismissing jobs in the UI (no learning from these decisions)
   - local UI
@@ -40,7 +40,7 @@ A personal tool that finds the IT jobs that best fit one specific search. It bui
 ## Pipeline
 1. **Companies:** seed lists + board discovery + manual adds → candidates → precise slug resolution → confirmed companies.
 2. **Jobs:** fetch each active company's ATS board about once a day; store only jobs that pass the storage filters (tech filter + location filter); mark jobs that disappeared as closed.
-3. **Filter:** hard rules from `config/preferences.json` (seniority, salary floor, department). Unknown values pass.
+3. **Filter:** at fetch, ATS jobs are stored only if they pass `config/job-filter-rules.json` (keywords, seniority, salary floor, excluded departments and title words) and the location filter. Unknown values pass. Boards use only the keywords.
 4. **Rank:** embed each open job once; rank by similarity to `config/search.md`.
 5. **Score:** Claude scores the top N (default 100) once each, with reasons; "get next" scores the next page on demand.
 
@@ -192,17 +192,22 @@ Verify:
 - A second run the same day skips companies already fetched.
 - A job removed from a fixture gets `closedAt`.
 
-### M3: Search config, filters and embedding ranking (current)
+### M3: Search config, filters and embedding ranking (done)
+Detailed spec: [docs/plans/m3-ranking.md](docs/plans/m3-ranking.md)
+Review fixes and fetch-time filter rules: [docs/plans/m3.1-filter-rules.md](docs/plans/m3.1-filter-rules.md)
+Rule fixes: [docs/plans/m3.2-rule-fixes.md](docs/plans/m3.2-rule-fixes.md)
+Duplicate ranking fix: [docs/plans/m3.3-duplicate-ranking.md](docs/plans/m3.3-duplicate-ranking.md)
+Pre-merge fixes: [docs/plans/m3.4-pre-merge-fixes.md](docs/plans/m3.4-pre-merge-fixes.md)
+
 - `config/search.md`: one specific search description in plain text, the most visible and easiest-to-change setting. Gitignored; `config/search.example.md` is committed.
-- `config/preferences.json` (Zod-validated): hard rules (seniority, salary floor, department). Remote-only and location are already handled by the M2 location filter. Gitignored; `config/preferences.example.json` is committed.
-- Filters from the hard rules, using structured ATS fields first and keywords second. **Unknown values pass**; a job is only excluded when its data contradicts a rule.
+- `config/job-filter-rules.json` (Zod-validated): every job filter (keywords, seniority, salary floor, excluded departments and title words), applied once at fetch with the location filter (M3.1). **Unknown values pass**; a job is only excluded when its data contradicts a rule. `npm run rank` only orders open jobs. Gitignored; `config/job-filter-rules.example.json` is committed and used when the personal file is missing.
 - Local embeddings with Transformers.js using `onnx-community/gte-multilingual-base` (quantized `q8`, about 340 MB, Apache-2.0, 768 dimensions, CLS pooling + normalize, no prefixes). It reads up to 8,192 tokens, so we embed the title plus the description, capped at about 1,500 tokens to bound CPU time. Verified on 2026-11-16: it loads in Transformers.js (with a warning that it falls back to a generic encoder) and matches English and Spanish postings across languages. Pin the Transformers.js version, and keep a test that loads the model in the live checks. Fallback if it ever breaks: `Xenova/multilingual-e5-small`.
   - each open job is embedded once and re-embedded only if its text changes
   - the search description is embedded whenever `config/search.md` changes
   - jobs are ranked by cosine similarity
 - `npm run rank`: prints the top N ranked jobs.
 
-### M4: Claude scoring
+### M4: Claude scoring (current)
 - Score the top N (default 100) open, unscored jobs: a 0–100 score plus short reasons. Stored with the model, a hash of the search description (for reference) and the date.
 - **Each job is scored once and never re-scored.** Changing `config/search.md` affects ranking for new scoring but leaves existing scores in place.
 - `npm run score` scores the top N. `npm run score -- --next` ("get next") continues down the ranking and scores the next page on demand (default 100, configurable), skipping scored and closed jobs.
@@ -261,3 +266,8 @@ Daily `npm run fetch` and monthly `npm run seed` on a local schedule, nightly pr
 - 2026-11-18: M2.4 review fixes: Ashby slugs must end cleanly (no shortened slugs); rate-limited resolutions are retried daily without counting toward the 5-error backoff; the Lever/Ashby name proof is case-sensitive and treats hyphens as part of a word; only 404s in a row (3) deactivate a company.
 - 2026-11-18: M2.5: closed jobs are no longer deleted after 30 days, only compacted (descriptions dropped), so "scored once, ever" survives a repost (supersedes "Closed jobs are deleted 30 days after closing"); companies based outside the allowed countries are not fetched; a new careers URL reopens an unresolved candidate; resolutions are stamped when recorded.
 - 2026-11-18: M2.6: a location made only of region names (LATAM, Americas, Global, EMEA, ...) has an unknown workplace type instead of onsite, so the region rule decides (a bare country still counts as onsite); jobs.company_id has no ON DELETE action, matching the live DB, since companies are deactivated and never deleted.
+- 2026-11-19: M3 done: 211 open jobs, 211 after hard rules (no preferences.json yet); first rank 4 min 13 s (211 embeddings on the cached model), second 1.6 s (0 embeddings, 211 reused); Transformers.js 4.3.2 pinned; hard rules: seniority, salary floor per currency, excluded departments and title keywords. The run used a copy of config/search.example.md, since config/search.md didn't exist.
+- 2026-11-20: M3.1: all job filters (keywords, seniority, salary floor, excluded departments and title words) live in config/job-filter-rules.json and are applied once at fetch (boards use only keywords); rank only orders open jobs; preferences.json and the hard-coded keyword list are gone; a salary with an unknown period no longer excludes a job; duplicates aren't ranked.
+- 2026-11-20: M3.2: job filter exclusions normalize hyphens, slashes and underscores like keywords; rule entries must contain a letter or digit; the example rules no longer exclude Marketing (their martech keywords target it).
+- 2026-11-20: M3.3: a job marked as a duplicate is skipped by ranking only while its original is open; once the original closes, its oldest open duplicate is ranked instead.
+- 2026-11-20: M3.4: job filter keywords treat any Unicode letter or digit as part of a word, like exclusions (an accented letter is no longer a word break); CLAUDE.md's Architecture section no longer mentions rank-time hard rules or the tech filter.
