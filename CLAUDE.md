@@ -18,7 +18,7 @@ Personal, single-user tool that fetches IT jobs from companies' ATS job boards (
   - `npm run score` and `npm run score -- --next` (M4)
 
 ## Configuration and secrets
-- `config/search.md`: the one search description (M3). `config/job-filter-rules.json`: every job filter (keywords, seniority, salary floor, excluded departments and title words), applied once at fetch; without it, fetch uses `config/job-filter-rules.example.json`. Both are gitignored; their `*.example.*` files are committed and kept in sync.
+- `config/search.md`: the one search description (M3). `config/job-filter-rules.json`: every job filter (keywords, seniority, salary floor, excluded departments and title words), applied at fetch and re-checked by `npm run rank`; without it, both use `config/job-filter-rules.example.json`. Both are gitignored; their `*.example.*` files are committed and kept in sync.
 - `ANTHROPIC_API_KEY` lives in `.env.local` (gitignored), loaded by npm scripts with Node's `--env-file-if-exists=.env.local` (M4).
 
 ## Architecture
