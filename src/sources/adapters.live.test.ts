@@ -37,7 +37,8 @@ describe("live adapters", () => {
     lever: { id: 2, ats: "lever", slug: "curai", name: "Curai", homeCountry: "US" },
     ashby: { id: 3, ats: "ashby", slug: "livekit", name: "LiveKit", homeCountry: "US" },
     recruitee: { id: 4, ats: "recruitee", slug: "tether", name: "Tether", homeCountry: null },
-    smartrecruiters: { id: 5, ats: "smartrecruiters", slug: "BoschGroup", name: "Bosch Group", homeCountry: "DE" },
+    // Mirantis (about 100 postings, two pages) and not a giant like Bosch, which outgrew the adapter's 5000 cap.
+    smartrecruiters: { id: 5, ats: "smartrecruiters", slug: "mirantis", name: "Mirantis", homeCountry: "US" },
   };
   for (const adapter of atsAdapters) {
     it(
