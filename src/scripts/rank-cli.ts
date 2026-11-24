@@ -1,10 +1,12 @@
 import type { Db } from "@/db/client";
 import { listOpenJobsForRanking } from "@/db/ranking";
 import { ConfigError } from "@/core/config-error";
+import type { JobFilterRules } from "@/core/job-filter-rules";
+import { loadJobFilterRules } from "@/core/job-filter-rules-file";
 import { loadSearchDescription } from "@/ranking/config";
 import { embedJobs } from "@/ranking/embed-jobs";
 import type { Embedder } from "@/ranking/embedder";
-import { rankJobs } from "@/ranking/rank";
+import { filterByRules, rankJobs } from "@/ranking/rank";
 import { CliUsageError } from "./cli-errors";
 
 const DEFAULT_TOP = 100;
@@ -55,8 +57,12 @@ export async function runRankCli(argv: string[], deps: RankCliDeps): Promise<num
   }
 
   let search: string;
+  let rules: JobFilterRules;
   try {
     search = loadSearchDescription(deps.configDir ?? "config");
+    const loaded = loadJobFilterRules(deps.configDir ?? "config");
+    rules = loaded.rules;
+    if (loaded.fromExample) out.log("No config/job-filter-rules.json: using config/job-filter-rules.example.json");
   } catch (err) {
     if (err instanceof ConfigError) {
       out.error(err.message);
@@ -65,9 +71,10 @@ export async function runRankCli(argv: string[], deps: RankCliDeps): Promise<num
     throw err;
   }
 
-  // The job filter rules were applied at fetch, so every open job is a candidate: rank only orders them.
+  // Rules can change after a fetch, so re-check them: a job that no longer passes is skipped here and closed by the next fetch.
   const db = deps.openDb();
-  const jobs = listOpenJobsForRanking(db);
+  const { passing: jobs, skipped } = filterByRules(listOpenJobsForRanking(db), rules);
+  if (skipped > 0) out.log(`Skipped by the current job filter rules: ${skipped}`);
   if (jobs.length === 0) {
     out.log("No open jobs to rank. Run npm run fetch first.");
     return 0;

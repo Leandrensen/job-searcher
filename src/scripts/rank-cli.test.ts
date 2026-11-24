@@ -37,10 +37,12 @@ function job(externalId: string, title: string, description: string): Job {
 }
 
 let dir: string;
+const writeRules = (rules: unknown) => fs.writeFileSync(path.join(dir, "job-filter-rules.json"), JSON.stringify(rules));
 let db: Db;
 beforeEach(() => {
   dir = fs.mkdtempSync(path.join(os.tmpdir(), "m3-"));
   fs.writeFileSync(path.join(dir, "search.md"), "React and Node developer\n");
+  writeRules({ keywords: ["developer", "engineer"] });
   db = openDb({ url: ":memory:", migrate: true });
   const acme = insertOrGetCompany(db, { ats: "greenhouse", slug: "acme", name: "Acme", website: null, homeCountry: null, origin: "manual" }, NOW.toISOString());
   upsertJobs(
@@ -118,6 +120,53 @@ describe("runRankCli", () => {
     expect(await run()).toBe(0);
     expect(logs).toEqual(["No open jobs to rank. Run npm run fetch first."]);
     expect(createEmbedder).not.toHaveBeenCalled();
+  });
+
+  it("skips open jobs that fail the current rules", async () => {
+    writeRules({ keywords: ["developer", "engineer"], excludeTitleKeywords: ["Mobile"] });
+    const { logs, tables, run } = setup();
+    expect(await run()).toBe(0);
+    expect(logs).toContain("Skipped by the current job filter rules: 1");
+    expect(logs).toContain("Open jobs: 3");
+    expect(logs).toContain("Embedded 3 new or changed jobs, reused 0");
+    expect(tables[0]!.map((r) => r.title)).toEqual(["Senior React Developer", "Senior Node Engineer", "Senior Python Developer"]);
+    expect(logs.at(-1)).toBe("Showing 3 of 3");
+  });
+
+  it("every open job failing the rules returns 0 without loading the model", async () => {
+    writeRules({ keywords: ["rust"] });
+    const { logs, createEmbedder, run } = setup();
+    expect(await run()).toBe(0);
+    expect(logs).toEqual(["Skipped by the current job filter rules: 4", "No open jobs to rank. Run npm run fetch first."]);
+    expect(createEmbedder).not.toHaveBeenCalled();
+  });
+
+  it("uses the example rules when the personal file is missing", async () => {
+    fs.rmSync(path.join(dir, "job-filter-rules.json"));
+    fs.copyFileSync("config/job-filter-rules.example.json", path.join(dir, "job-filter-rules.example.json"));
+    const { logs, run } = setup();
+    expect(await run()).toBe(0);
+    expect(logs).toContain("No config/job-filter-rules.json: using config/job-filter-rules.example.json");
+    // Under the example rules, Python has no keyword and Mobile is an excluded title word.
+    expect(logs).toContain("Skipped by the current job filter rules: 2");
+    expect(logs).toContain("Open jobs: 2");
+  });
+
+  it("missing rule files fail before opening the DB", async () => {
+    fs.rmSync(path.join(dir, "job-filter-rules.json"));
+    const { errors, openDbSpy, run } = setup();
+    expect(await run()).toBe(1);
+    expect(errors).toEqual(["Missing config/job-filter-rules.json and config/job-filter-rules.example.json."]);
+    expect(openDbSpy).not.toHaveBeenCalled();
+  });
+
+  it("invalid rules fail before opening the DB", async () => {
+    writeRules({ keywords: [] });
+    const { errors, openDbSpy, run } = setup();
+    expect(await run()).toBe(1);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatch(/^config\/job-filter-rules\.json: keywords: /);
+    expect(openDbSpy).not.toHaveBeenCalled();
   });
 
   it("a model that fails to load returns 1", async () => {
