@@ -22,3 +22,16 @@ export function filterByRules<J extends RuleInput>(jobs: J[], rules: JobFilterRu
   const passing = jobs.filter((job) => checkJobRules(job, rules).pass);
   return { passing, skipped: jobs.length - passing.length };
 }
+
+/** A predicate for the job filter rules that counts the jobs it rejects. */
+export function createRuleFilter(rules: JobFilterRules): { keep: (job: RuleInput) => boolean; skipped: () => number } {
+  let skipped = 0;
+  return {
+    keep(job) {
+      const pass = checkJobRules(job, rules).pass;
+      if (!pass) skipped++;
+      return pass;
+    },
+    skipped: () => skipped,
+  };
+}
