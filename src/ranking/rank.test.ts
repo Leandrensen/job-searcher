@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { rankJobs } from "./rank";
+import { filterByRules, rankJobs } from "./rank";
 
 describe("rankJobs", () => {
   const search = new Float32Array([1, 0]);
@@ -35,5 +35,35 @@ describe("rankJobs", () => {
 
   it("no jobs gives no results", () => {
     expect(rankJobs([], vectors, search, 10)).toEqual([]);
+  });
+});
+
+describe("filterByRules", () => {
+  const input = (id: number, title: string) => ({
+    id,
+    title,
+    departments: [],
+    tags: [],
+    salaryMin: null,
+    salaryMax: null,
+    salaryCurrency: null,
+    salaryPeriod: null,
+  });
+
+  it("keeps the passing jobs in order and counts the rest", () => {
+    const { passing, skipped } = filterByRules(
+      [input(1, "React Developer"), input(2, "Account Executive"), input(3, "Node Engineer")],
+      { keywords: ["react", "node"] },
+    );
+    expect(passing.map((j) => j.id)).toEqual([1, 3]);
+    expect(skipped).toBe(1);
+  });
+
+  it("no jobs", () => {
+    expect(filterByRules([], { keywords: ["react"] })).toEqual({ passing: [], skipped: 0 });
+  });
+
+  it("a job with no salary passes a salary floor", () => {
+    expect(filterByRules([input(1, "React Developer")], { keywords: ["react"], salaryFloor: { USD: 60000 } }).skipped).toBe(0);
   });
 });
