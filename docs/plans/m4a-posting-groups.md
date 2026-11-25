@@ -173,7 +173,7 @@ It also includes the small cleanups left from the M3.6 review.
   Use whatever `externalId` / `source` fields the local `makeJob` supports, and read the helper before writing.
 - Verify: `npm test -- src/db/queries.test.ts src/db/groups.test.ts` passes.
 - Commit: `feat(m4): group each job when it is stored (M4a T3)`
-- [ ] Done
+- [x] Done
 
 ### T4: Ranking reads the stored groups
 - Depends on: T3

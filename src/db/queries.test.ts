@@ -1,3 +1,4 @@
+import { asc } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Job } from "@/core/job";
 import { openDb, type Db } from "./client";
@@ -279,5 +280,37 @@ describe("ATS job storage", () => {
     expect(countJobs(db, { source: "greenhouse", openOnly: true })).toBe(1);
     expect(countJobs(db, { source: "lever" })).toBe(0);
     expect(countJobs(db, "greenhouse")).toBe(2);
+  });
+});
+
+describe("posting groups", () => {
+  const groupIds = () =>
+    db
+      .select({ groupId: jobs.groupId })
+      .from(jobs)
+      .orderBy(asc(jobs.id))
+      .all()
+      .map((j) => j.groupId);
+
+  it("a new job gets its own group", () => {
+    upsertJobs(db, [makeJob()], "2026-11-09T00:00:00.000Z");
+    expect(groupIds()).toEqual([1]);
+  });
+
+  it("a copy stored later joins the group", () => {
+    upsertJobs(db, [makeJob({ externalId: "a", title: "Same Title" })], "2026-11-09T00:00:00.000Z");
+    upsertJobs(db, [makeJob({ source: "lever", externalId: "b", title: "Same Title" })], "2026-11-09T00:00:00.000Z");
+    expect(groupIds()).toEqual([1, 1]);
+  });
+
+  it("updating a job keeps its group", () => {
+    upsertJobs(
+      db,
+      [makeJob({ externalId: "a", title: "Same Title", descriptionText: "One" }), makeJob({ externalId: "b", title: "Same Title", descriptionText: "Two" })],
+      "2026-11-09T00:00:00.000Z",
+    );
+    expect(groupIds()).toEqual([1, 2]);
+    upsertJobs(db, [makeJob({ externalId: "b", title: "Same Title", descriptionText: "One" })], "2026-11-10T00:00:00.000Z");
+    expect(groupIds()).toEqual([1, 2]);
   });
 });

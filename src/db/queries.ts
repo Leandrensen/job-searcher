@@ -2,6 +2,7 @@ import { and, asc, count, eq, gte, isNotNull, isNull, lte, max, ne, notInArray, 
 import { dedupeKey } from "@/core/dedupe";
 import { BOARD_IDS, type Job, type SourceId } from "@/core/job";
 import type { Db } from "./client";
+import { assignGroup } from "./groups";
 import { fetchRuns, jobs } from "./schema";
 
 const DUPLICATE_WINDOW_DAYS = 30;
@@ -61,16 +62,21 @@ export function upsertJobs(
           .run();
         updated++;
       } else {
-        tx.insert(jobs)
+        const companyId = opts.companyId ?? null;
+        const { id } = tx
+          .insert(jobs)
           .values({
             ...job,
             firstSeenAt: nowIso,
             lastSeenAt: nowIso,
             dedupeKey: key,
             duplicateOf: findOriginal(tx, job, key, nowIso),
-            companyId: opts.companyId ?? null,
+            companyId,
           })
-          .run();
+          .returning({ id: jobs.id })
+          .get();
+        // The posting group is decided once, here; updates above keep it.
+        assignGroup(tx, { id, source: job.source, dedupeKey: key, applyUrl: job.applyUrl, descriptionText: job.descriptionText, companyId, firstSeenAt: nowIso });
         inserted++;
       }
     }
