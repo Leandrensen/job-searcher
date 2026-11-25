@@ -244,7 +244,7 @@ It also includes the small cleanups left from the M3.6 review.
 - Failure cases: none (docs only).
 - Verify: `tail -1 PLAN.md` shows the line.
 - Commit: `docs(m4): record the M4a posting groups (M4a T7)`
-- [ ] Done
+- [x] Done
 
 ## Milestone verification
 1. `nvm use && npm run lint && npm run typecheck && npm test && npm run test:coverage` pass, including the thresholds.
