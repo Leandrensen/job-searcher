@@ -202,7 +202,7 @@ It also includes the small cleanups left from the M3.6 review.
   - Every other existing test stays unchanged and must pass. Before the fix, `a copy from another site doesn't hide a different opening` gives `[1]` and `countOpenPostings` doesn't exist; confirm both fail first.
 - Verify: `npm test -- src/db/ranking.test.ts src/ranking/embed-jobs.test.ts` passes.
 - Commit: `fix(m4): ranking reads the stored posting groups (M4a T4)`
-- [ ] Done
+- [x] Done
 
 ### T5: Rank backfills groups and counts skipped postings
 - Depends on: T4

@@ -1,4 +1,4 @@
-import { asc, inArray, isNull } from "drizzle-orm";
+import { asc, countDistinct, inArray, isNull, sql } from "drizzle-orm";
 import type { Db } from "./client";
 import { jobEmbeddings, jobs } from "./schema";
 
@@ -20,10 +20,8 @@ export type RankableJob = {
 export type StoredEmbedding = { model: string; textHash: string; vector: Float32Array };
 
 /**
- * Open jobs to rank, in id order, one per posting. Jobs are the same posting when they share a duplicate family or an
- * apply URL, or the same company and title (from another source, or from the same source with the same description).
- * The lowest id is ranked. Jobs failing `keep` are left out before grouping, so a passing copy still stands for its
- * posting.
+ * Open jobs to rank, in id order, one per posting group (`jobs.group_id`, assigned when a job is stored). The lowest open
+ * id of a group that passes `keep` is ranked, so a passing copy still stands for its posting.
  */
 export function listOpenJobsForRanking(db: Db, keep: (job: RankableJob) => boolean = () => true): RankableJob[] {
   const rows = db
@@ -40,42 +38,35 @@ export function listOpenJobsForRanking(db: Db, keep: (job: RankableJob) => boole
       salaryCurrency: jobs.salaryCurrency,
       salaryPeriod: jobs.salaryPeriod,
       descriptionText: jobs.descriptionText,
-      source: jobs.source,
-      duplicateOf: jobs.duplicateOf,
-      dedupeKey: jobs.dedupeKey,
-      applyUrl: jobs.applyUrl,
+      groupId: jobs.groupId,
     })
     .from(jobs)
     .where(isNull(jobs.closedAt))
-    // Id order makes the lowest id win. A duplicate is always inserted after its original, so an open original is
-    // kept before its duplicates; once it closes, its oldest open duplicate takes its place.
     .orderBy(asc(jobs.id))
     .all();
 
   // Ranking (and later scoring) the same posting twice would waste a slot and a call.
-  // On one board, the same title with a different description is another opening; across sources the text is formatted
-  // differently, so company and title are enough there.
-  const seenFamilies = new Set<number>();
-  const seenApplyUrls = new Set<string>();
-  const seenByKey = new Map<string, { source: string; descriptionText: string }[]>();
+  const seenGroups = new Set<number>();
   const result: RankableJob[] = [];
-  for (const { source, duplicateOf, dedupeKey, applyUrl, ...job } of rows) {
-    // A rejected row is neither kept nor remembered, so it can't hide a copy that passes.
+  for (const { groupId, ...job } of rows) {
+    // A rejected row isn't remembered, so it can't hide a copy that passes.
     if (!keep(job)) continue;
-    const family = duplicateOf ?? job.id;
-    const sameKey = seenByKey.get(dedupeKey) ?? [];
-    const isCopy =
-      seenFamilies.has(family) ||
-      (applyUrl !== null && seenApplyUrls.has(applyUrl)) ||
-      sameKey.some((s) => s.source !== source || s.descriptionText === job.descriptionText);
-    // Remember every row, kept or skipped, so a copy linked only through a skipped copy is caught too.
-    seenFamilies.add(family);
-    seenFamilies.add(job.id);
-    if (applyUrl !== null) seenApplyUrls.add(applyUrl);
-    seenByKey.set(dedupeKey, [...sameKey, { source, descriptionText: job.descriptionText }]);
-    if (!isCopy) result.push(job);
+    const group = groupId ?? job.id;
+    if (seenGroups.has(group)) continue;
+    seenGroups.add(group);
+    result.push(job);
   }
   return result;
+}
+
+/** How many postings (groups) have at least one open job. */
+export function countOpenPostings(db: Db): number {
+  const row = db
+    .select({ n: countDistinct(sql`coalesce(${jobs.groupId}, ${jobs.id})`) })
+    .from(jobs)
+    .where(isNull(jobs.closedAt))
+    .get();
+  return row?.n ?? 0;
 }
 
 // SQLite buffers can start at an offset that isn't a multiple of 4, so a Float32Array view over them can throw. Copy instead.
