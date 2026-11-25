@@ -90,7 +90,7 @@ It also includes the small cleanups left from the M3.6 review.
   - Import `sql` from `drizzle-orm` if the file doesn't already.
 - Verify: `npm test -- src/db/client.test.ts` passes; a second `npx drizzle-kit generate` reports "No schema changes".
 - Commit: `feat(m4): add jobs.group_id for posting groups (M4a T1)`
-- [ ] Done
+- [x] Done
 
 ### T2: Assign posting groups
 - Depends on: T1

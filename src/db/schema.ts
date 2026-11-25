@@ -85,6 +85,8 @@ export const jobs = sqliteTable(
     // Companies are deactivated, never deleted, so no ON DELETE action is needed (and the live DB has none).
     companyId: integer("company_id").references(() => companies.id),
     closedAt: text("closed_at"),
+    /** The posting this job belongs to: the lowest job id of its group (M4a). Null only until grouped. */
+    groupId: integer("group_id"),
   },
   (t) => [
     uniqueIndex("jobs_source_external_id_uq").on(t.source, t.externalId),
@@ -92,6 +94,7 @@ export const jobs = sqliteTable(
     index("jobs_posted_at_idx").on(t.postedAt),
     index("jobs_company_idx").on(t.companyId),
     index("jobs_closed_at_idx").on(t.closedAt),
+    index("jobs_group_id_idx").on(t.groupId),
   ],
 );
 
