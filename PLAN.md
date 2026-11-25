@@ -210,6 +210,7 @@ Grouping and seniority review fixes: [docs/plans/m3.6-grouping-fixes.md](docs/pl
 - `npm run rank`: prints the top N ranked jobs.
 
 ### M4: Claude scoring (current)
+Detailed specs: [docs/plans/m4a-posting-groups.md](docs/plans/m4a-posting-groups.md) (stored posting groups, first), [docs/plans/m4b-claude-scoring.md](docs/plans/m4b-claude-scoring.md) (Claude scoring)
 - Score the top N (default 100) open, unscored jobs: a 0–100 score plus short reasons. Stored with the model, a hash of the search description (for reference) and the date.
 - **Each job is scored once and never re-scored.** Changing `config/search.md` affects ranking for new scoring but leaves existing scores in place.
 - `npm run score` scores the top N. `npm run score -- --next` ("get next") continues down the ranking and scores the next page on demand (default 100, configurable), skipping scored and closed jobs.
