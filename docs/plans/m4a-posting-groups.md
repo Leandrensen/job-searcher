@@ -235,7 +235,7 @@ It also includes the small cleanups left from the M3.6 review.
 - Tests first: none (removal and a comment). Confirm `grep -rn "createRuleFilter" src` prints nothing.
 - Verify: `npm test -- src/ranking/rank.test.ts` passes; `npm run lint && npm run typecheck` pass.
 - Commit: `refactor(m4): remove createRuleFilter and fix the rules comment (M4a T6)`
-- [ ] Done
+- [x] Done
 
 ### T7: Wrap-up
 - Depends on: T1–T6
