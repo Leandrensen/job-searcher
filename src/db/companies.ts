@@ -1,4 +1,5 @@
 import { and, asc, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
+import { addDays } from "@/core/dates";
 import { normalizeCompany } from "@/core/dedupe";
 import type { AtsId } from "@/core/job";
 import type { Resolution } from "@/companies/types";
@@ -17,7 +18,6 @@ export interface CandidateInput {
   origin: string;
 }
 
-const addDays = (iso: string, days: number) => new Date(Date.parse(iso) + days * 86_400_000).toISOString();
 const addHours = (iso: string, hours: number) => new Date(Date.parse(iso) + hours * 3_600_000).toISOString();
 const clean = (v: string | null | undefined) => (v && v.trim() !== "" ? v.trim() : null);
 

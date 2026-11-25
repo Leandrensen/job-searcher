@@ -1,8 +1,9 @@
 import { and, asc, eq, gte, inArray, isNotNull, isNull, ne, or, type SQL } from "drizzle-orm";
+import { addDays } from "@/core/dates";
 import type { Db } from "./client";
 import { jobs } from "./schema";
 
-/** Only jobs last seen this many days before a new job was first seen can share its posting group. */
+/** Only jobs last seen this many days before a new job was first seen can share its posting group. findOriginal uses the same window. */
 export const GROUP_WINDOW_DAYS = 30;
 
 export type GroupInput = {
@@ -37,9 +38,10 @@ function strongMatch(job: GroupInput): SQL | undefined {
 }
 
 /** Decides the posting group of one job, sets its group_id (merging groups it strongly links) and returns the group id. */
-export function assignGroup(tx: Pick<Db, "select" | "update">, job: GroupInput): number {
-  const cutoff = new Date(Date.parse(job.firstSeenAt) - GROUP_WINDOW_DAYS * 86_400_000).toISOString();
-  // Only grouped rows count, so an id-order backfill decides exactly what insert-time grouping would have.
+export function assignGroup(tx: Tx, job: GroupInput): number {
+  const cutoff = addDays(job.firstSeenAt, -GROUP_WINDOW_DAYS);
+  // Only grouped rows count, so an id-order backfill follows the same order as insert-time grouping. It reads the
+  // rows' current values, though, so a job changed since it was stored can land in a different group than it would have then.
   const live = and(isNotNull(jobs.groupId), ne(jobs.id, job.id), gte(jobs.lastSeenAt, cutoff));
 
   const strong = strongMatch(job);

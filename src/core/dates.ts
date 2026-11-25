@@ -12,3 +12,8 @@ export function toIsoUtc(input: string | number | null | undefined): string | nu
   }
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
+
+/** `iso` moved by `days` whole days (negative goes back), as a UTC ISO string. */
+export function addDays(iso: string, days: number): string {
+  return new Date(Date.parse(iso) + days * 86_400_000).toISOString();
+}

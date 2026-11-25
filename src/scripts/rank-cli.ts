@@ -76,7 +76,7 @@ export async function runRankCli(argv: string[], deps: RankCliDeps): Promise<num
   const db = deps.openDb();
   const grouped = ensureJobGroups(db);
   if (grouped > 0) out.log(`Assigned posting groups to ${grouped} jobs`);
-  // The rules run before copies are grouped, so a passing copy still stands for its posting.
+  // Groups are stored; the rules only pick which open copy of each posting is ranked, so a passing copy still stands for it.
   const jobs = listOpenJobsForRanking(db, (job) => checkJobRules(job, rules).pass);
   const skipped = countOpenPostings(db) - jobs.length;
   if (skipped > 0) out.log(`Skipped by the current job filter rules: ${skipped}`);

@@ -1,15 +1,15 @@
 import { and, asc, count, eq, gte, isNotNull, isNull, lte, max, ne, notInArray, or } from "drizzle-orm";
+import { addDays } from "@/core/dates";
 import { dedupeKey } from "@/core/dedupe";
 import { BOARD_IDS, type Job, type SourceId } from "@/core/job";
 import type { Db } from "./client";
-import { assignGroup } from "./groups";
+import { assignGroup, GROUP_WINDOW_DAYS } from "./groups";
 import { fetchRuns, jobs } from "./schema";
-
-const DUPLICATE_WINDOW_DAYS = 30;
 
 /** Oldest job from another source that looks like the same posting, or null. */
 function findOriginal(tx: Pick<Db, "select">, job: Job, key: string, nowIso: string): number | null {
-  const cutoff = new Date(Date.parse(nowIso) - DUPLICATE_WINDOW_DAYS * 86_400_000).toISOString();
+  // The same window as posting groups.
+  const cutoff = addDays(nowIso, -GROUP_WINDOW_DAYS);
   const row = tx
     .select({ id: jobs.id })
     .from(jobs)
@@ -129,7 +129,7 @@ export function markClosedJobs(db: Db, companyId: number, seenExternalIds: strin
  * reuses its row (and its embedding and score), so it is never embedded or scored twice. Returns how many rows changed.
  */
 export function compactClosedJobs(db: Db, nowIso: string, days = 30): number {
-  const cutoff = new Date(Date.parse(nowIso) - days * 86_400_000).toISOString();
+  const cutoff = addDays(nowIso, -days);
   return db
     .update(jobs)
     .set({ descriptionHtml: "", descriptionText: "" })
