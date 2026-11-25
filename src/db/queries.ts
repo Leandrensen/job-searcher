@@ -8,7 +8,7 @@ import { fetchRuns, jobs } from "./schema";
 
 /** Oldest job from another source that looks like the same posting, or null. */
 function findOriginal(tx: Pick<Db, "select">, job: Job, key: string, nowIso: string): number | null {
-  // The same window as posting groups.
+  // The same length as the posting-group window, but counted back from now over open jobs' firstSeenAt.
   const cutoff = addDays(nowIso, -GROUP_WINDOW_DAYS);
   const row = tx
     .select({ id: jobs.id })

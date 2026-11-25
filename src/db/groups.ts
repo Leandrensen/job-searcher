@@ -3,7 +3,7 @@ import { addDays } from "@/core/dates";
 import type { Db } from "./client";
 import { jobs } from "./schema";
 
-/** Only jobs last seen this many days before a new job was first seen can share its posting group. findOriginal uses the same window. */
+/** Only jobs last seen this many days before a new job was first seen can share its posting group. findOriginal uses the same length. */
 export const GROUP_WINDOW_DAYS = 30;
 
 export type GroupInput = {
