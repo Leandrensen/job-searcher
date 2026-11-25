@@ -71,7 +71,7 @@ async function run(argv: string[], client: HttpClient = http) {
     now: () => new Date(clock),
     out: { log: (m) => logs.push(m), error: (m) => errors.push(m), table: (rows) => tables.push(rows) },
   });
-  return { code, logs, errors, rows: (tables[0] ?? []) as SummaryRow[] };
+  return { code, logs, errors, tables, rows: (tables[0] ?? []) as SummaryRow[] };
 }
 
 describe("fetch CLI, offline end to end", () => {
@@ -122,6 +122,20 @@ describe("fetch CLI, offline end to end", () => {
     expect([...http.calls].sort()).toEqual(
       ["https://jobicy.com/api/v2/remote-jobs?count=100&industry=dev", "https://remoteok.com/api"].sort(),
     );
+  });
+
+  it("a run of boards only prints no ATS table", async () => {
+    const { code, tables } = await run(["--source", "remoteok"]);
+    expect(code).toBe(0);
+    expect(tables).toHaveLength(1);
+    expect(tables[0]!.map((r) => r.source)).toEqual(["remoteok"]);
+  });
+
+  it("a run of ATSs only prints no board table", async () => {
+    const { code, tables } = await run(["--source", "lever"]);
+    expect(code).toBe(0);
+    expect(tables).toHaveLength(1);
+    expect(tables[0]!.map((r) => r.source)).toEqual(["lever"]);
   });
 
   it("returns 1 when every selected source fails", async () => {

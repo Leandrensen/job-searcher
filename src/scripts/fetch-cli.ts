@@ -165,23 +165,26 @@ export async function runFetchCli(argv: string[], deps: CliDeps): Promise<number
 
   // 3. Fetch the jobs of every due company.
   const atsResults = await runAtsSources({ db, http: paced, adapters: atsList, force: args.force, now, log: out.log, rules });
-  out.table(
-    atsResults.map((r) => ({
-      source: r.source,
-      status: r.status,
-      companies: r.companies,
-      failed: r.companiesFailed,
-      fetched: r.fetched,
-      inserted: r.inserted,
-      updated: r.updated,
-      invalid: r.invalid,
-      filteredRules: r.filteredRules,
-      filteredLocation: r.filteredLocation,
-      closed: r.closed,
-      ms: r.durationMs,
-      error: r.error ?? "",
-    })),
-  );
+  // A --source run of boards only has no ATS results, so it prints no (empty) ATS table.
+  if (atsResults.length) {
+    out.table(
+      atsResults.map((r) => ({
+        source: r.source,
+        status: r.status,
+        companies: r.companies,
+        failed: r.companiesFailed,
+        fetched: r.fetched,
+        inserted: r.inserted,
+        updated: r.updated,
+        invalid: r.invalid,
+        filteredRules: r.filteredRules,
+        filteredLocation: r.filteredLocation,
+        closed: r.closed,
+        ms: r.durationMs,
+        error: r.error ?? "",
+      })),
+    );
+  }
 
   // 4. Drop the descriptions of jobs closed for a month (rows are kept, so a reposted job is never scored twice).
   out.log(`Compacted ${compactClosedJobs(db, now().toISOString())} closed jobs`);
