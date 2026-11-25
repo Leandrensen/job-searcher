@@ -153,7 +153,7 @@ It also includes the small cleanups left from the M3.6 review.
   - `ensureJobGroups counts the jobs it grouped and is idempotent`: insert two jobs, set both `groupId` to null; `ensureJobGroups(db)` is `2`, then `0`.
 - Verify: `npm test -- src/db/groups.test.ts` passes.
 - Commit: `feat(m4): assign posting groups (M4a T2)`
-- [ ] Done
+- [x] Done
 
 ### T3: Group jobs when they're stored
 - Depends on: T2
