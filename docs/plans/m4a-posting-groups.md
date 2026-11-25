@@ -223,7 +223,7 @@ It also includes the small cleanups left from the M3.6 review.
     - `run()` returns 0, and `logs` contains `"Assigned posting groups to 5 jobs"` and `"Open jobs: 4"`.
 - Verify: `npm test -- src/scripts/rank-cli.test.ts` passes; `npm run typecheck` passes.
 - Commit: `fix(m4): rank backfills posting groups and counts skipped postings (M4a T5)`
-- [ ] Done
+- [x] Done
 
 ### T6: Cleanups
 - Depends on: T5

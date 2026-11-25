@@ -6,6 +6,7 @@ import type { Job } from "@/core/job";
 import { openDb, type Db } from "@/db/client";
 import { insertOrGetCompany } from "@/db/companies";
 import { markClosedJobs, upsertJobs } from "@/db/queries";
+import { jobs } from "@/db/schema";
 import type { Embedder } from "@/ranking/embedder";
 import { createFakeEmbedder } from "@/test-utils/fake-embedder";
 import { runRankCli } from "./rank-cli";
@@ -147,9 +148,17 @@ describe("runRankCli", () => {
     writeRules({ keywords: ["react"] });
     const { logs, tables, run } = setup();
     expect(await run()).toBe(0);
-    expect(logs).toContain("Skipped by the current job filter rules: 3");
+    expect(logs).toContain("Skipped by the current job filter rules: 2");
     expect(logs).toContain("Open jobs: 2");
     expect(tables[0]!.map((r) => r.url).sort()).toEqual(["https://example.com/acme:a", "https://example.com/lever:m"]);
+  });
+
+  it("groups jobs stored before posting groups existed", async () => {
+    db.update(jobs).set({ groupId: null }).run();
+    const { logs, run } = setup();
+    expect(await run()).toBe(0);
+    expect(logs).toContain("Assigned posting groups to 5 jobs");
+    expect(logs).toContain("Open jobs: 4");
   });
 
   it("uses the example rules when the personal file is missing", async () => {
