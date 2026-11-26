@@ -86,6 +86,18 @@ describe("runAdapter", () => {
     expect(r).toMatchObject({ fetched: 1, invalid: 1, jobs: [] });
   });
 
+  it("counts a throwing normalize as invalid, logs it and keeps the other items", async () => {
+    const normalize = (r: Raw): Job => {
+      if (r.id === "bad") throw new Error("boom");
+      return fakeJob(r);
+    };
+    const c = ctx();
+    const r = await runAdapter(makeAdapter([{ id: "bad", title: "Dev" }, { id: "2", title: "Dev" }], { normalize }), c);
+    expect(r).toMatchObject({ status: "success", fetched: 2, invalid: 1 });
+    expect(r.jobs.map((j) => j.externalId)).toEqual(["2"]);
+    expect(c.log).toHaveBeenCalledWith("remoteok: normalize threw: boom");
+  });
+
   it("counts jobs failing the Job schema as invalid", async () => {
     const r = await runAdapter(makeAdapter([{ id: "1", title: "" }]), ctx());
     expect(r).toMatchObject({ fetched: 1, invalid: 1, jobs: [] });
