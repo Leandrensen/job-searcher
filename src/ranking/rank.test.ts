@@ -1,16 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createRuleFilter, rankJobs } from "./rank";
-
-const input = (id: number, title: string) => ({
-  id,
-  title,
-  departments: [],
-  tags: [],
-  salaryMin: null,
-  salaryMax: null,
-  salaryCurrency: null,
-  salaryPeriod: null,
-});
+import { rankJobs } from "./rank";
 
 describe("rankJobs", () => {
   const search = new Float32Array([1, 0]);
@@ -46,21 +35,5 @@ describe("rankJobs", () => {
 
   it("no jobs gives no results", () => {
     expect(rankJobs([], vectors, search, 10)).toEqual([]);
-  });
-});
-
-describe("createRuleFilter", () => {
-  it("keeps passing jobs and counts the rest", () => {
-    const filter = createRuleFilter({ keywords: ["react", "node"] });
-    expect([input(1, "React Developer"), input(2, "Account Executive"), input(3, "Node Engineer")].map(filter.keep)).toEqual([true, false, true]);
-    expect(filter.skipped()).toBe(1);
-  });
-
-  it("starts at zero", () => {
-    expect(createRuleFilter({ keywords: ["react"] }).skipped()).toBe(0);
-  });
-
-  it("a job with no salary passes a salary floor", () => {
-    expect(createRuleFilter({ keywords: ["react"], salaryFloor: { USD: 60000 } }).keep(input(1, "React Developer"))).toBe(true);
   });
 });

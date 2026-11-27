@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { companies, companyCandidates, fetchRuns, jobEmbeddings, jobs } from "./schema";
 import { openDb } from "./client";
@@ -97,5 +98,11 @@ describe("openDb", () => {
     const job = db.select().from(jobs).get();
     expect(job?.companyId).toBe(c.id);
     expect(job?.closedAt).toBe("2026-11-20T00:00:00.000Z");
+  });
+
+  it("jobs has a nullable group_id column", () => {
+    const db = openDb({ url: ":memory:", migrate: true });
+    const columns = db.all<{ name: string; type: string; notnull: number }>(sql`PRAGMA table_info(jobs)`);
+    expect(columns.find((c) => c.name === "group_id")).toMatchObject({ name: "group_id", type: "INTEGER", notnull: 0 });
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toIsoUtc } from "./dates";
+import { addDays, toIsoUtc } from "./dates";
 
 describe("toIsoUtc", () => {
   it("handles epoch seconds", () => {
@@ -23,5 +23,12 @@ describe("toIsoUtc", () => {
     expect(toIsoUtc("")).toBeNull();
     expect(toIsoUtc(null)).toBeNull();
     expect(toIsoUtc(undefined)).toBeNull();
+  });
+});
+
+describe("addDays", () => {
+  it("adds and subtracts whole days", () => {
+    expect(addDays("2026-11-19T12:00:00.000Z", 30)).toBe("2026-12-19T12:00:00.000Z");
+    expect(addDays("2026-12-20T12:00:00.000Z", -30)).toBe("2026-11-20T12:00:00.000Z");
   });
 });

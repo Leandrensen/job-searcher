@@ -4,7 +4,7 @@ import type { Job } from "@/core/job";
 import { openDb, type Db } from "./client";
 import { insertOrGetCompany } from "./companies";
 import { markClosedJobs, upsertJobs } from "./queries";
-import { getEmbeddings, listOpenJobsForRanking, saveEmbeddings } from "./ranking";
+import { countOpenPostings, getEmbeddings, listOpenJobsForRanking, saveEmbeddings } from "./ranking";
 import { jobs } from "./schema";
 
 const NOW = "2026-11-19T12:00:00.000Z";
@@ -219,10 +219,33 @@ describe("duplicates", () => {
 
   it("the same title from another source is one job even when the text differs", () => {
     upsertJobs(db, [makeJob("1", { title: "Same Title", descriptionText: "Greenhouse text" })], NOW);
-    // 32 days later, so findOriginal doesn't link them.
-    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title", descriptionText: "Lever text" })], "2026-12-21T12:00:00.000Z");
-    expect(db.select().from(jobs).all().map((j) => j.duplicateOf)).toEqual([null, null]);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title", descriptionText: "Lever text" })], NOW);
     expect(ids()).toEqual([1]);
+  });
+
+  it("the same title on another site long after is another job", () => {
+    upsertJobs(db, [makeJob("1", { title: "Same Title" })], NOW);
+    upsertJobs(db, [makeJob("9", { source: "lever", title: "Same Title" })], "2026-12-21T12:00:00.000Z");
+    expect(ids()).toEqual([1, 2]);
+  });
+
+  it("a copy from another site doesn't hide a different opening", () => {
+    upsertJobs(db, [makeJob("1", { title: "Software Engineer in Test", descriptionText: "Payments team" })], NOW);
+    upsertJobs(db, [makeJob("2", { source: "lever", title: "Software Engineer in Test" })], NOW);
+    upsertJobs(db, [makeJob("3", { title: "Software Engineer in Test", descriptionText: "Infra team" })], NOW);
+    expect(ids()).toEqual([1, 3]);
+  });
+
+  it("countOpenPostings counts groups with an open job", () => {
+    insertThreeCities();
+    upsertJobs(db, [makeJob("4")], NOW);
+    expect(countOpenPostings(db)).toBe(2);
+    setClosedAt(4, NOW);
+    expect(countOpenPostings(db)).toBe(1);
+  });
+
+  it("countOpenPostings is 0 with no open jobs", () => {
+    expect(countOpenPostings(db)).toBe(0);
   });
 
   it("a copy linked only through a skipped copy is ranked once", () => {

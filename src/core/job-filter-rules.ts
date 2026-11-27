@@ -4,7 +4,7 @@ import { deriveSeniority, SENIORITY_LEVELS } from "./seniority";
 // An entry without a letter or digit (say "-") normalizes to an empty pattern that would match every job.
 const nonEmptyStrings = z.array(z.string().trim().regex(/[\p{L}\p{N}]/u, "must contain a letter or digit"));
 
-/** Every job filter the user controls (config/job-filter-rules.json). Applied once, at fetch. */
+/** Every job filter the user controls (config/job-filter-rules.json). Applied at fetch and re-checked by npm run rank. */
 export const JobFilterRulesSchema = z
   .object({
     /** A job (or board posting) must match at least one, on its title, departments or tags. */
