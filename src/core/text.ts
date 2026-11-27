@@ -48,7 +48,7 @@ export function htmlToText(html: string): string {
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<br\s*\/?>|<\/(?:p|li|div|h[1-6])>/gi, "\n")
     .replace(/<li[^>]*>/gi, "- ")
-    .replace(/<[^>]+>/g, "");
+    .replace(/<\/?[a-z][^>]*>/gi, "");
   return decodeEntities(text)
     .replace(/[ \t]+/g, " ")
     .split("\n")

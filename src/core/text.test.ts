@@ -71,6 +71,12 @@ describe("htmlToText", () => {
     expect(htmlToText("<p>a</p><ul><li>b</li></ul>")).toBe("a\n- b");
   });
 
+  it("keeps comparison operators that are not tags", () => {
+    expect(htmlToText("<p>5 years &lt; experience &lt; 10 and salary &gt; 50k</p>")).toBe(
+      "5 years < experience < 10 and salary > 50k",
+    );
+  });
+
   it("handles double-encoded html", () => {
     expect(htmlToText("&lt;p&gt;hi&lt;/p&gt;")).toBe("hi");
   });
